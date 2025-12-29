@@ -70,9 +70,9 @@ CREATE TABLE EMPLOYEE_PENALTY (
 -- =========================
 
 INSERT INTO EMPLOYEE VALUES
-('E01','Nguyen Van A','1998-01-10','male','0901','a@gmail.com','HN','2021-01-01','Staff','Active'),
-('E02','Tran Thi B','1997-02-11','female','0902','b@gmail.com','HCM','2020-05-12','Staff','Active'),
-('E03','Le Van C','1996-03-12','male','0903','c@gmail.com','DN','2019-06-15','Staff','Active'),
+('E01','Nguyen Hong Ngoc','1998-01-10','female','0901','a@gmail.com','HN','2001-01-01','Manager','Active'),
+('E02','Tran Van Huy','1997-02-11','male','0902','b@gmail.com','HCM','2020-05-12','Staff','Active'),
+('E03','Pham Quoc Anh','2001-03-12','male','0903','c@gmail.com','DN','2019-06-15','Staff','Active'),
 ('E04','Pham Thi D','1999-04-13','female','0904','d@gmail.com','HN','2022-02-10','Staff','Active'),
 ('E05','Hoang Van E','1995-05-14','male','0905','e@gmail.com','HCM','2018-03-20','Staff','Inactive'),
 ('E06','Do Thi F','1998-06-15','female','0906','f@gmail.com','DN','2021-07-01','Staff','Active'),
@@ -102,11 +102,11 @@ VALUES
 
 -- =========================
 --LOGIC BONUS & PENALTY
--- > 15 ngày → BONUS
+-- > 24 ngày → BONUS
 -- < 15 ngày → PENALTY
 -- =========================
 
--- BONUS: nếu WorkDays > 15 → +500k
+-- BONUS: nếu WorkDays > 24 → +500k
 INSERT INTO EMPLOYEE_BONUS
 SELECT 
     CONCAT('B', PayrollID),
@@ -115,7 +115,7 @@ SELECT
     500000,
     CURDATE()
 FROM EMPLOYEE_PAYROLL
-WHERE WorkDays > 15;
+WHERE WorkDays >= 24;
 
 -- PENALTY: nếu WorkDays < 15 → -300k
 INSERT INTO EMPLOYEE_PENALTY
