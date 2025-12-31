@@ -18,6 +18,12 @@
                 <fx:include source="Payroll.fxml"/>
             </content>
         </Tab>
+        <Tab text="Check In">
+    <content>
+        <fx:include source="CheckIn.fxml"/>
+    </content>
+</Tab>
+
     </tabs>
 
 </TabPane>

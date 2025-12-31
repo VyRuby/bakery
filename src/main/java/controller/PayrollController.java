@@ -1,6 +1,6 @@
 package controller;
 
-import model.PayrollDAO;
+import DAO_Employee.PayrollDAO;
 import javafx.collections.*;
 import javafx.fxml.*;
 import javafx.scene.control.*;
@@ -10,7 +10,7 @@ import java.net.URL;
 import java.util.ResourceBundle;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.property.ReadOnlyStringWrapper;
-import model.PayrollDAO;
+import DAO_Employee.PayrollDAO;
 
 public class PayrollController implements Initializable {
 

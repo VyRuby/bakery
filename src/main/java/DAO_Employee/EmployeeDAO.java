@@ -1,9 +1,10 @@
-package model;
+package DAO_Employee;
 
-import app.bakery.ConnectDB;
+import app.ConnectDB;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import model.Employee;
 
 public class EmployeeDAO {
 
@@ -61,7 +62,7 @@ public class EmployeeDAO {
             ps.setString(1, e.getEmployeeID());
             ps.setString(2, e.getFullName());
             ps.setDate(3, e.getDob());        // ✅ KHÔNG valueOf
-            ps.setString(4, e.getGender());
+            ps.setString(4, e.getGender().toLowerCase());
             ps.setString(5, e.getPhone());
             ps.setString(6, e.getEmail());
             ps.setString(7, e.getAddress());
@@ -116,19 +117,6 @@ public class EmployeeDAO {
         }
     }
     
-    // ===== HARD DELETE =====
-public void delete(String empId) {
-    String sql = "DELETE FROM EMPLOYEE WHERE EmployeeID=?";
-
-    try (Connection con = ConnectDB.getConnection();
-         PreparedStatement ps = con.prepareStatement(sql)) {
-
-        ps.setString(1, empId);
-        ps.executeUpdate();
-
-    } catch (SQLException ex) {
-        ex.printStackTrace();
-    }
-}
+ 
 
 }

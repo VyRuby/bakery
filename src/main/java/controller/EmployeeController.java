@@ -1,7 +1,7 @@
 package controller;
 
 import model.Employee;
-import model.EmployeeDAO;
+import DAO_Employee.EmployeeDAO;
 
 import java.net.URL;
 import java.sql.Date;
@@ -150,26 +150,7 @@ public class EmployeeController implements Initializable {
         );
     }
     
-    // ================= DELETE =================
-@FXML
-private void handleDelete() {
-
-    Employee e = tblEmployee.getSelectionModel().getSelectedItem();
-    if (e == null) {
-        showAlert("Please select an employee to delete!");
-        return;
-    }
-
-    Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
-    confirm.setHeaderText("Confirm Delete");
-    confirm.setContentText("Are you sure you want to DELETE this employee?");
-
-    if (confirm.showAndWait().get() == ButtonType.OK) {
-        dao.delete(e.getEmployeeID());
-        loadData();
-        clearForm();
-    }
-}
+ 
 
 
     private void fillForm(Employee e) {

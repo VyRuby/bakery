@@ -3,7 +3,7 @@
  * Mô tả: Quản lý kết nối MySQL cho project Bakery
  * Người thực hiện: Quốc Anh (Nhóm 2)
  */
-package app.bakery;
+package app;
 
 import java.sql.Connection;
 import java.sql.DriverManager;

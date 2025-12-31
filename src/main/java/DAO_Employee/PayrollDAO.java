@@ -1,6 +1,6 @@
-package model;
+package DAO_Employee;
 
-import app.bakery.ConnectDB;
+import app.ConnectDB;
 import model.Payroll;
 
 import java.sql.*;

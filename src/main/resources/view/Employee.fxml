@@ -141,14 +141,7 @@
                                -fx-text-fill: white;
                                -fx-background-radius: 10;
                                -fx-font-weight: bold;"/>
-                <Button
-        text="Delete"
-        onAction="#handleDelete"
-        style="-fx-background-color: #B71C1C;
-               -fx-text-fill: white;
-               -fx-background-radius: 10;
-               -fx-font-weight: bold;"/>
-
+         
             </HBox>
         </VBox>
     </bottom>
