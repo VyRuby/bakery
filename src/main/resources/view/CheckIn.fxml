@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane
+        xmlns="http://javafx.com/javafx/25"
+        xmlns:fx="http://javafx.com/fxml/1"
+        fx:controller="controller.CheckInController"
+        style="-fx-background-color: #EED9C4;">
+
+    <!-- ================= TOP ================= -->
+    <top>
+        <VBox spacing="10" style="-fx-background-color: #EED9C4;">
+            <padding>
+                <Insets top="10" right="10" bottom="10" left="10"/>
+            </padding>
+
+            <!-- TITLE -->
+            <Label
+                    text="EMPLOYEE CHECK IN"
+                    style="-fx-font-size: 22px;
+                           -fx-font-weight: bold;
+                           -fx-text-fill: #3E2723;"/>
+
+            <!-- FORM -->
+            <HBox spacing="10">
+                <Label
+                        text="Employee ID:"
+                        style="-fx-text-fill: #3E2723;
+                               -fx-font-weight: bold;"/>
+
+                <TextField
+                        fx:id="txtEmployeeId"
+                        prefWidth="120"
+                        style="-fx-background-color: #FFFDF8;
+                               -fx-border-color: #C19A6B;
+                               -fx-border-radius: 8;"/>
+
+                <Button
+                        text="Check In"
+                        onAction="#handleCheckIn"
+                        style="-fx-background-color: #8B5E3C;
+                               -fx-text-fill: white;
+                               -fx-background-radius: 10;
+                               -fx-font-weight: bold;"/>
+
+                <Button
+                        text="Check Out"
+                        onAction="#handleCheckOut"
+                        style="-fx-background-color: #5D3A24;
+                               -fx-text-fill: white;
+                               -fx-background-radius: 10;
+                               -fx-font-weight: bold;"/>
+            </HBox>
+        </VBox>
+    </top>
+
+    <!-- ================= CENTER : TABLE ================= -->
+    <center>
+        <TableView
+                fx:id="tblCheckIn"
+                style="-fx-background-color: #FAEBD7;
+                       -fx-border-color: #C19A6B;
+                       -fx-border-radius: 10;">
+
+            <columns>
+                <TableColumn fx:id="colId" text="ID" prefWidth="60"/>
+                <TableColumn fx:id="colEmpId" text="Employee ID" prefWidth="120"/>
+                <TableColumn fx:id="colDate" text="Work Date" prefWidth="110"/>
+                <TableColumn fx:id="colIn" text="Check In" prefWidth="100"/>
+                <TableColumn fx:id="colOut" text="Check Out" prefWidth="100"/>
+                <TableColumn fx:id="colLate" text="Late" prefWidth="70"/>
+            </columns>
+        </TableView>
+    </center>
+
+    <!-- ================= BOTTOM ================= -->
+    <bottom>
+        <HBox alignment="CENTER_RIGHT" style="-fx-background-color: #EED9C4;">
+            <padding>
+                <Insets top="10" right="10" bottom="10" left="10"/>
+            </padding>
+
+            <Label
+                    text="Check-in based on real-time system"
+                    style="-fx-text-fill: gray;"/>
+        </HBox>
+    </bottom>
+
+</BorderPane>
