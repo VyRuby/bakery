@@ -15,8 +15,12 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.VBox?>
+<?import javafx.scene.control.ToggleGroup?> 
 
-<BorderPane prefHeight="700.0" prefWidth="1100.0" style="-fx-background-color: #F6F7FB;" xmlns="http://javafx.com/javafx/13" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.ProductController">
+<BorderPane prefHeight="700.0" prefWidth="1100.0" style="-fx-background-color: #F6F7FB;" 
+            xmlns="http://javafx.com/javafx/13" 
+            xmlns:fx="http://javafx.com/fxml/1" 
+            fx:controller="controller.ProductController">
 
     <!-- TOP BAR (giống Home) -->
     <top>

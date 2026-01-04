@@ -1,8 +1,8 @@
 -- =========================
 -- CREATE DATABASE
 -- =========================
-CREATE DATABASE IF NOT EXISTS payroll_db;
-USE payroll_db;
+CREATE DATABASE IF NOT EXISTS bakery_db;
+USE bakery_db;
 
 -- =========================
 -- TABLE: EMPLOYEE
@@ -247,25 +247,25 @@ WHERE
     p.Month = MONTH(CURDATE())
     AND p.Year  = YEAR(CURDATE());
 
--- =========================
--- PERMISSION
--- =========================
-GRANT ALL PRIVILEGES ON payroll_db.EMPLOYEE TO 'manager_user'@'localhost';
-GRANT ALL PRIVILEGES ON payroll_db.EMPLOYEE_PAYROLL TO 'manager_user'@'localhost';
-GRANT ALL PRIVILEGES ON payroll_db.EMPLOYEE_BONUS TO 'manager_user'@'localhost';
-GRANT ALL PRIVILEGES ON payroll_db.EMPLOYEE_PENALTY TO 'manager_user'@'localhost';
-GRANT ALL PRIVILEGES ON payroll_db.EMPLOYEE_CHECKIN TO 'manager_user'@'localhost';
-
-GRANT SELECT ON payroll_db.EMPLOYEE TO 'employee_user'@'localhost';
-GRANT SELECT ON payroll_db.EMPLOYEE_PAYROLL TO 'employee_user'@'localhost';
-GRANT SELECT ON payroll_db.EMPLOYEE_BONUS TO 'employee_user'@'localhost';
-GRANT SELECT ON payroll_db.EMPLOYEE_PENALTY TO 'employee_user'@'localhost';
-GRANT SELECT ON payroll_db.EMPLOYEE_CHECKIN TO 'employee_user'@'localhost';
-GRANT INSERT ON payroll_db.EMPLOYEE_CHECKIN TO 'employee_user'@'localhost'; --CHỈ CHECK-IN CHO CHÍNH MÌNH
-
-FLUSH PRIVILEGES;
-SHOW GRANTS FOR 'manager_user'@'localhost';
-SHOW GRANTS FOR 'employee_user'@'localhost';
+-- -- =========================
+-- -- PERMISSION
+-- -- =========================
+-- GRANT ALL PRIVILEGES ON bakery_db.EMPLOYEE TO 'manager_user'@'localhost';
+-- GRANT ALL PRIVILEGES ON bakery_db.EMPLOYEE_PAYROLL TO 'manager_user'@'localhost';
+-- GRANT ALL PRIVILEGES ON bakery_db.EMPLOYEE_BONUS TO 'manager_user'@'localhost';
+-- GRANT ALL PRIVILEGES ON bakery_db.EMPLOYEE_PENALTY TO 'manager_user'@'localhost';
+-- GRANT ALL PRIVILEGES ON bakery_db.EMPLOYEE_CHECKIN TO 'manager_user'@'localhost';
+-- 
+-- GRANT SELECT ON bakery_db.EMPLOYEE TO 'employee_user'@'localhost';
+-- GRANT SELECT ON bakery_db.EMPLOYEE_PAYROLL TO 'employee_user'@'localhost';
+-- GRANT SELECT ON bakery_db.EMPLOYEE_BONUS TO 'employee_user'@'localhost';
+-- GRANT SELECT ON bakery_db.EMPLOYEE_PENALTY TO 'employee_user'@'localhost';
+-- GRANT SELECT ON bakery_db.EMPLOYEE_CHECKIN TO 'employee_user'@'localhost';
+-- GRANT INSERT ON bakery_db.EMPLOYEE_CHECKIN TO 'employee_user'@'localhost'; --CHỈ CHECK-IN CHO CHÍNH MÌNH
+-- 
+-- FLUSH PRIVILEGES;
+-- SHOW GRANTS FOR 'manager_user'@'localhost';
+-- SHOW GRANTS FOR 'employee_user'@'localhost';
 
 -- =========================
 -- TRIGGER CHẶN NHÂN VIÊN INACTIVE

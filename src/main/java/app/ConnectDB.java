@@ -11,7 +11,7 @@ import java.sql.SQLException;
 
 public class ConnectDB {
 
-    private static final String url = "jdbc:mysql://localhost:3306/payroll_db?useSSL=false&serverTimezone=UTC";
+    private static final String url = "jdbc:mysql://localhost:3306/bakery_db?useSSL=false&serverTimezone=UTC";
     private static final String username = "root";
     private static final String password = "";
 

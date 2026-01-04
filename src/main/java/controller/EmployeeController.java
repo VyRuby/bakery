@@ -10,12 +10,33 @@ import java.util.ResourceBundle;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 
 public class EmployeeController implements Initializable {
+//    ====== TOP BAR=======
+    @FXML
+    private Button btnLogin;
+    @FXML
+    private Button btnLogout;
+     @FXML
+    private Button btnBack;
+    
+     @FXML
+    private void onLogin(ActionEvent event) {
+    }
+
+    @FXML
+    private void onLogout(ActionEvent event) {
+    }
+    @FXML
+    private void onBack(ActionEvent event) {
+    }
+    
+    
 
     // ===== TABLE =====
     @FXML private TableView<Employee> tblEmployee;
