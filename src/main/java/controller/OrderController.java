@@ -39,7 +39,7 @@ import javafx.stage.Stage;
  *
  * @author Admin
  */
-public class OrderController implements Initializable {
+public class OrderController extends BacktoHomeController implements Initializable {
 
 
     @FXML

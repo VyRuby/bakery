@@ -16,7 +16,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 
-public class EmployeeController implements Initializable {
+public class EmployeeController extends BacktoHomeController implements Initializable {
 //    ====== TOP BAR=======
     @FXML
     private Button btnLogin;

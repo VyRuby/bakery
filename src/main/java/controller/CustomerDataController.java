@@ -25,7 +25,7 @@ import javafx.scene.control.ToggleGroup;
  *
  * @author Admin
  */
-public class CustomerDataController implements Initializable {
+public class CustomerDataController extends BacktoHomeController implements Initializable {
 
     @FXML
     private ListView<Customer> ListCustomer;

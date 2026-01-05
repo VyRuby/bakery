@@ -29,7 +29,6 @@ public class Product {
     
     
     
-    
     public String getProductId() {
         return productId;
     }

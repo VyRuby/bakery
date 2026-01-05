@@ -11,7 +11,10 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane id="AnchorPane" prefHeight="688.0" prefWidth="929.0" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="demo.luanan_nhom2.OrderController">
+<AnchorPane id="AnchorPane" prefHeight="688.0" prefWidth="929.0" 
+            xmlns="http://javafx.com/javafx/13" 
+            xmlns:fx="http://javafx.com/fxml/1" 
+            fx:controller="controller.OrderController">
    <children>
       <Label layoutX="439.0" layoutY="14.0" text="Order">
          <font>
@@ -71,5 +74,11 @@
             <ListView fx:id="listProduct" layoutX="-1.0" prefHeight="575.0" prefWidth="490.0" />
          </children>
       </AnchorPane>
+       <!-- Back button chung -->
+            <Button fx:id="btnBack" text="← Back to Home"
+                    onAction="#goBack"
+                    prefHeight="40" maxWidth="1.7976931348623157E308"
+                    style="-fx-background-color: #8B5E3C; -fx-text-fill: white; -fx-font-weight: 800; -fx-background-radius: 12;"/>
    </children>
+   
 </AnchorPane>

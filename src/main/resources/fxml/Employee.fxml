@@ -205,8 +205,14 @@
                                -fx-text-fill: white;
                                -fx-background-radius: 10;
                                -fx-font-weight: bold;"/>
-                 <!-- Back button chung (copy y chang qua các trang khác) -->
-            <Button fx:id="btnBack" maxWidth="1.7976931348623157E308" onAction="#onBack" prefHeight="40" style="-fx-background-color: #8B5E3C; -fx-text-fill: white; -fx-font-weight: 800; -fx-background-radius: 12;" text="← Back to Home" />
+                 <!-- Back button chung -->
+            <Button 
+                fx:id="btnBack" 
+                maxWidth="1.7976931348623157E308" 
+                onAction="#goBack" 
+                prefHeight="40" 
+                style="-fx-background-color: #8B5E3C; -fx-text-fill: white; -fx-font-weight: 800; -fx-background-radius: 12;" 
+                text="← Back to Home" />
         
          
             </HBox>
