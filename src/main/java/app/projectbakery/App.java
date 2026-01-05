@@ -1,3 +1,4 @@
+
 package app.projectbakery;
 
 import javafx.application.Application;
@@ -19,6 +20,7 @@ public class App extends Application {
     public void start(Stage stage) throws IOException {
         scene = new Scene(loadFXML("Home"), 1000, 600);
         stage.setScene(scene);
+        stage.setTitle("Bakery Management");
         stage.show();
     }
 
@@ -34,5 +36,4 @@ public class App extends Application {
     public static void main(String[] args) {
         launch();
     }
-
 }

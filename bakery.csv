@@ -1,0 +1,6 @@
+id,name,category,unit,price,quantity
+1,Strawberry Short Cake,cake,slice,160000.0,8
+2,Butter Cookie,cookie,pack,25000.0,20
+4,Lemon Cake,cake,pack,70000.0,12
+5,Lemon Short Cake,cake,slice,120000.0,3
+6,Choco Fondue,cookie,jar,120000.0,14

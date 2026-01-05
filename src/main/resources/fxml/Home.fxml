@@ -27,7 +27,7 @@
             <HBox alignment="CENTER_LEFT" spacing="10">
                 <ImageView fitHeight="42.0" fitWidth="142.0" preserveRatio="true">
                     <image>
-                       
+                        <!-- Đổi path theo resources của bạn -->
                         <Image url="@../image/logo.jpeg" />
                     </image>
                 </ImageView>
@@ -53,9 +53,9 @@
                     <Label fx:id="lblStatus" style="-fx-font-size: 11px; -fx-text-fill: #6B7280;" text="Not logged in" />
                 </VBox>
 
-                <Button fx:id="btnLogin" onAction="#onLogin" prefHeight="34" prefWidth="92" style="-fx-background-color: #2563EB; -fx-text-fill: white; -fx-font-weight: 700; -fx-background-radius: 10;" text="Login" />
+                <Button fx:id="btnLogin" onAction="#onLogin" prefHeight="34" prefWidth="92" style="-fx-background-color: #8B5E3C; -fx-text-fill: white; -fx-font-weight: 700; -fx-background-radius: 10;" text="Login" />
 
-                <Button fx:id="btnLogout" onAction="#onLogout" prefHeight="34" prefWidth="92" style="-fx-background-color: #EEF2FF; -fx-text-fill: #1D4ED8; -fx-font-weight: 700; -fx-background-radius: 10;" text="Logout" />
+                <Button fx:id="btnLogout" onAction="#onLogout" prefHeight="34" prefWidth="92" style="-fx-background-color: #EEF2FF; -fx-text-fill: #8B5E3C; -fx-font-weight: 700; -fx-background-radius: 10;" text="Logout" />
             </HBox>
         </HBox>
     </top>
@@ -95,7 +95,7 @@
                     </VBox>
                 </StackPane>
 
-                <!-- Card 2: Promotion -->
+                <!-- Card 2: Employee -->
                 <StackPane style="-fx-background-color: white; -fx-background-radius: 18; -fx-border-radius: 18; -fx-border-color: #E6E8EF;" GridPane.columnIndex="1" GridPane.rowIndex="0">
                     <padding><Insets bottom="18" left="18" right="18" top="18" /></padding>
                     <VBox alignment="TOP_LEFT" spacing="10">
@@ -128,7 +128,7 @@
                     </VBox>
                 </StackPane>
 
-                <!-- Card 5: Employee -->
+                <!-- Card 5: Supplier -->
                 <StackPane style="-fx-background-color: white; -fx-background-radius: 18; -fx-border-radius: 18; -fx-border-color: #E6E8EF;" GridPane.columnIndex="1" GridPane.rowIndex="1">
                     <padding><Insets bottom="18" left="18" right="18" top="18" /></padding>
                     <VBox alignment="TOP_LEFT" spacing="10">

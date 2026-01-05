@@ -12,41 +12,29 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
-import javafx.scene.control.RadioButton;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
-import javafx.scene.control.ToggleGroup;
 import javafx.scene.input.KeyEvent;
+
 /**
  * FXML Controller class
  *
  * @author vy
  */
-public class ProductController extends BacktoHomeController implements Initializable {
+public class PromotionController extends BacktoHomeController implements Initializable {
 
-
-    @FXML
-    private ToggleGroup categoryGroup;
     @FXML
     private Label lblUser;
     @FXML
     private Label lblStatus;
     @FXML
-    private Button btnLogin;
-    @FXML
-    private Button btnLogout;
-    @FXML
-    private RadioButton rbCat1;
-    @FXML
-    private RadioButton rbCat2;
-    @FXML
-    private RadioButton rbCat3;
-    @FXML
     private TextField txtSearch;
     @FXML
     private ComboBox<?> cbFilter;
-  
+    @FXML
+    private Button btnRefresh;
+   
     @FXML
     private Button btnAdd;
     @FXML
@@ -54,23 +42,24 @@ public class ProductController extends BacktoHomeController implements Initializ
     @FXML
     private Button btnDelete;
     @FXML
-    private Button btnRefresh;
+    private Button btnExport;
     @FXML
-    private TableView<?> tblProducts;
+    private TableView<?> tblPromotions;
     @FXML
     private TableColumn<?, ?> colId;
     @FXML
+    private TableColumn<?, ?> colCode;
+    @FXML
     private TableColumn<?, ?> colName;
     @FXML
-    private TableColumn<?, ?> colCategory;
+    private TableColumn<?, ?> colDiscount;
     @FXML
-    private TableColumn<?, ?> colPrice;
+    private TableColumn<?, ?> colStartDate;
     @FXML
-    private TableColumn<?, ?> colQuantity;
-    @FXML
-    private TableColumn<?, ?> colUnit;
+    private TableColumn<?, ?> colEndDate;
     @FXML
     private Label lblHint;
+
     /**
      * Initializes the controller class.
      */
@@ -78,18 +67,6 @@ public class ProductController extends BacktoHomeController implements Initializ
     public void initialize(URL url, ResourceBundle rb) {
         // TODO
     }    
-    
-    @FXML
-    private void onLogin(ActionEvent event) {
-    }
-
-    @FXML
-    private void onLogout(ActionEvent event) {
-    }
-
-    @FXML
-    private void onCategoryChanged(ActionEvent event) {
-    }
 
     @FXML
     private void onSearchChanged(KeyEvent event) {
@@ -99,6 +76,11 @@ public class ProductController extends BacktoHomeController implements Initializ
     private void onFilterChanged(ActionEvent event) {
     }
 
+    @FXML
+    private void onRefresh(ActionEvent event) {
+    }
+
+  
 
     @FXML
     private void onAdd(ActionEvent event) {
@@ -113,7 +95,7 @@ public class ProductController extends BacktoHomeController implements Initializ
     }
 
     @FXML
-    private void onRefresh(ActionEvent event) {
+    private void onExport(ActionEvent event) {
     }
-
+    
 }

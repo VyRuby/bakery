@@ -76,17 +76,45 @@ public class HomeController implements Initializable {
 
     @FXML
     private void goPromotion(ActionEvent event) {
+         System.out.println("CLICK PROMOTION");
+    try {
+        App.setRoot("Promotion"); 
+        System.out.println("NAVIGATED TO PROMOTION");
+    } catch (Exception e) {
+        e.printStackTrace(); 
+    } 
     }
 
     @FXML
     private void goOrder(ActionEvent event) {
+        System.out.println("CLICK ORDER");
+    try {
+        App.setRoot("Order"); 
+        System.out.println("NAVIGATED TO PRODUCT");
+    } catch (Exception e) {
+        e.printStackTrace(); 
+    }
     }
 
     @FXML
     private void goCustomer(ActionEvent event) {
+         System.out.println("CLICK CUSTOMER");
+    try {
+        App.setRoot("customerdata"); 
+        System.out.println("NAVIGATED TO CUSTOMER");
+    } catch (Exception e) {
+        e.printStackTrace(); 
+    }
     }
     @FXML
      private void goEmployee(ActionEvent event) {
+          System.out.println("CLICK EMPLOYEE");
+    try {
+        App.setRoot("MainEmp"); 
+        System.out.println("NAVIGATED TO EMPLOYEE");
+    } catch (Exception e) {
+        e.printStackTrace(); 
+    }
     }
 
    
