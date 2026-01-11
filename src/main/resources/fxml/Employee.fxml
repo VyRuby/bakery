@@ -1,0 +1,222 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+
+<BorderPane
+        xmlns="http://javafx.com/javafx/13"
+        xmlns:fx="http://javafx.com/fxml/1"
+        fx:controller="controller.EmployeeController"
+        style="-fx-background-color: #EED9C4;">
+
+     <!-- TOP BAR (giống Home) -->
+    <top>
+        <HBox alignment="CENTER_LEFT" prefHeight="78.0" spacing="14.0" style="-fx-background-color: white; -fx-border-color: #E6E8EF; -fx-border-width: 0 0 1 0;">
+            <padding>
+                <Insets bottom="14" left="18" right="18" top="14" />
+            </padding>
+
+            <!-- Logo -->
+            <HBox alignment="CENTER_LEFT" spacing="10">
+                <ImageView fitHeight="42.0" fitWidth="42.0" preserveRatio="true">
+                    <image>
+                        <Image url="@image/logo.png" />
+                    </image>
+                </ImageView>
+
+                <VBox alignment="CENTER_LEFT" spacing="2">
+                    <Label style="-fx-font-size: 18px; -fx-font-weight: 800; -fx-text-fill: #1F2A37;" text="GATEAUET" />
+                    <Label style="-fx-font-size: 12px; -fx-text-fill: #6B7280;" text="Employee Management" />
+                </VBox>
+            </HBox>
+
+            <Region HBox.hgrow="ALWAYS" />
+
+            <!-- Banner (optional) -->
+            <ImageView fitHeight="38.0" fitWidth="140.0" opacity="0.92" preserveRatio="true">
+                <image>
+                    <Image url="@image/top-banner.png" />
+                </image>
+            </ImageView>
+
+            <Region HBox.hgrow="ALWAYS" />
+
+            <!-- User / login -->
+            <HBox alignment="CENTER_RIGHT" spacing="10">
+                <ImageView fitHeight="36.0" fitWidth="36.0" preserveRatio="true">
+                    <image>
+                        <Image url="@image/user.png" />
+                    </image>
+                </ImageView>
+
+                <VBox alignment="CENTER_LEFT" spacing="2">
+                    <Label fx:id="lblUser" style="-fx-font-size: 13px; -fx-font-weight: 600; -fx-text-fill: #111827;" text="Staff" />
+                    <Label fx:id="lblStatus" style="-fx-font-size: 11px; -fx-text-fill: #6B7280;" text="Not logged in" />
+                </VBox>
+
+<!--                <Button fx:id="btnLogin" 
+                        onAction="#onLogin" 
+                        prefHeight="34" 
+                        prefWidth="92" style="-fx-background-color: #8B5E3C; -fx-text-fill: white; -fx-font-weight: 700; -fx-background-radius: 10;" text="Login" />
+
+                <Button fx:id="btnLogout" 
+                        onAction="#onLogout" 
+                        prefHeight="34" prefWidth="92" style="-fx-background-color: #EEF2FF; -fx-text-fill: #8B5E3C; -fx-font-weight: 700; -fx-background-radius: 10;" text="Logout" />-->
+            </HBox>
+        </HBox>
+    </top>
+     <!--================= LEFT SIDE BAR: FILTER =================--> 
+    <left>
+    <VBox spacing="15"
+          prefWidth="220"
+          style="-fx-background-color: #FFF8F0; -fx-border-color: #E6E8EF; -fx-border-width: 0 1 0 0;">
+        <padding>
+            <Insets top="20" right="15" bottom="20" left="15"/>
+        </padding>
+
+        <!-- TITLE -->
+        <Label
+                text="FILTER"
+                style="-fx-font-size: 16px;
+                       -fx-font-weight: bold;
+                       -fx-text-fill: #3E2723;"/>
+
+        <Separator/>
+        
+            <Label
+                    text="Status:"
+                    style="-fx-text-fill: #3E2723;
+                           -fx-font-weight: bold;"/>
+
+            <ComboBox
+                    fx:id="cbFilterStatus"
+                    prefWidth="120"
+                    style="-fx-background-color: #FFFDF8;
+                           -fx-border-color: #C19A6B;
+                           -fx-border-radius: 8;"/>
+
+            <Button
+                    text="Load"
+                    onAction="#handleLoad"
+                    style="-fx-background-color: #8B5E3C;
+                           -fx-text-fill: white;
+                           -fx-background-radius: 10;
+                           -fx-font-weight: bold;"/>
+        
+    </VBox>
+    
+</left>
+
+
+    <!-- ================= CENTER : TABLE ================= -->
+    <center>
+        <TableView
+                fx:id="tblEmployee"
+                style="-fx-background-color: #FAEBD7;
+                       -fx-border-color: #C19A6B;
+                       -fx-border-radius: 10;">
+            <columns>
+                <TableColumn fx:id="colId" text="ID" prefWidth="80"/>
+                <TableColumn fx:id="colName" text="Full Name" prefWidth="150"/>
+                <TableColumn fx:id="colDob" text="DOB" prefWidth="100"/>
+                <TableColumn fx:id="colGender" text="Gender" prefWidth="80"/>
+                <TableColumn fx:id="colPhone" text="Phone" prefWidth="100"/>
+                <TableColumn fx:id="colEmail" text="Email" prefWidth="150"/>
+                <TableColumn fx:id="colPosition" text="Position" prefWidth="100"/>
+                <TableColumn fx:id="colStatus" text="Status" prefWidth="80"/>
+            </columns>
+        </TableView>
+    </center>
+
+    <!-- ================= BOTTOM : FORM ================= -->
+    <bottom>
+        <VBox spacing="15" style="-fx-background-color: #EED9C4;">
+            <padding>
+                <Insets top="10" right="10" bottom="10" left="10"/>
+            </padding>
+
+            <GridPane hgap="10" vgap="10">
+                <columnConstraints>
+                    <ColumnConstraints percentWidth="15"/>
+                    <ColumnConstraints percentWidth="35"/>
+                    <ColumnConstraints percentWidth="15"/>
+                    <ColumnConstraints percentWidth="35"/>
+                </columnConstraints>
+
+                <Label text="Employee ID:" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
+                <TextField fx:id="txtId" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
+
+                <Label text="Full Name:" GridPane.rowIndex="0" GridPane.columnIndex="2"/>
+                <TextField fx:id="txtName" GridPane.rowIndex="0" GridPane.columnIndex="3"/>
+
+                <Label text="DOB:" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
+                <DatePicker fx:id="dpDob" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
+
+                <Label text="Gender:" GridPane.rowIndex="1" GridPane.columnIndex="2"/>
+                <ComboBox fx:id="cbGender" GridPane.rowIndex="1" GridPane.columnIndex="3"/>
+
+                <Label text="Phone:" GridPane.rowIndex="2" GridPane.columnIndex="0"/>
+                <TextField fx:id="txtPhone" GridPane.rowIndex="2" GridPane.columnIndex="1"/>
+
+                <Label text="Email:" GridPane.rowIndex="2" GridPane.columnIndex="2"/>
+                <TextField fx:id="txtEmail" GridPane.rowIndex="2" GridPane.columnIndex="3"/>
+
+                <Label text="Address:" GridPane.rowIndex="3" GridPane.columnIndex="0"/>
+                <TextField fx:id="txtAddress" GridPane.rowIndex="3" GridPane.columnIndex="1"/>
+
+                <Label text="Hire Date:" GridPane.rowIndex="3" GridPane.columnIndex="2"/>
+                <DatePicker fx:id="dpHireDate" GridPane.rowIndex="3" GridPane.columnIndex="3"/>
+
+                <Label text="Position:" GridPane.rowIndex="4" GridPane.columnIndex="0"/>
+                <TextField fx:id="txtPosition" GridPane.rowIndex="4" GridPane.columnIndex="1"/>
+
+                <Label text="Status:" GridPane.rowIndex="4" GridPane.columnIndex="2"/>
+                <ComboBox fx:id="cbStatus" GridPane.rowIndex="4" GridPane.columnIndex="3"/>
+            </GridPane>
+
+            <!-- ================= BUTTONS ================= -->
+            <HBox spacing="15" alignment="CENTER_RIGHT">
+                <Button
+                        text="Add"
+                        onAction="#handleAdd"
+                        prefHeight="34" prefWidth="90"
+                        style="-fx-background-color: #8B5E3C;
+                               -fx-text-fill: white;
+                               -fx-background-radius: 10;
+                               -fx-font-weight: bold;"/>
+
+                <Button
+                        text="Update"
+                        onAction="#handleUpdate"
+                        prefHeight="34" prefWidth="90"
+                        style="-fx-background-color: #8B5E3C;
+                               -fx-text-fill: white;
+                               -fx-background-radius: 10;
+                               -fx-font-weight: bold;"/>
+
+                <Button
+                        text="Deactivate"
+                        onAction="#handleDeactivate"
+                        prefHeight="34" prefWidth="90"
+                        style="-fx-background-color: #5D3A24;
+                               -fx-text-fill: white;
+                               -fx-background-radius: 10;
+                               -fx-font-weight: bold;"/>
+                 <!-- Back button chung -->
+            <Button 
+                fx:id="btnBack" 
+                maxWidth="1.7976931348623157E308" 
+                onAction="#goBack" 
+                prefHeight="40" 
+                style="-fx-background-color: #8B5E3C; -fx-text-fill: white; -fx-font-weight: 800; -fx-background-radius: 12;" 
+                text="← Back to Home" />
+        
+         
+            </HBox>
+        </VBox>
+    </bottom>
+
+</BorderPane>

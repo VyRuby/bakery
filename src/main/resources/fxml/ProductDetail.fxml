@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Spinner?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.text.Font?>
+
+
+<AnchorPane id="AnchorPane" prefHeight="524.0" prefWidth="707.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/25" fx:controller="controller.ProductDetailController">
+   <children>
+      <ImageView fx:id="ImageProduct" fitHeight="204.0" fitWidth="246.0" layoutX="24.0" layoutY="14.0" pickOnBounds="true" preserveRatio="true" />
+      <Label fx:id="NameDetail" layoutX="375.0" layoutY="41.0" prefHeight="46.0" prefWidth="159.0" text="Product Name">
+         <font>
+            <Font size="24.0" />
+         </font>
+      </Label>
+      <Label fx:id="PriceDetail" contentDisplay="CENTER" layoutX="340.0" layoutY="102.0" prefHeight="18.0" prefWidth="205.0" text="Price" textAlignment="CENTER">
+         <font>
+            <Font size="16.0" />
+         </font>
+      </Label>
+      <Label layoutX="340.0" layoutY="142.0" prefHeight="18.0" prefWidth="58.0" text="Quantity:" />
+      <Label fx:id="QuantityDetail" layoutX="398.0" layoutY="143.0" prefHeight="18.0" prefWidth="58.0" text="number" />
+      <Label layoutX="340.0" layoutY="179.0" text="Category :" />
+      <Label fx:id="CategoryDetail" layoutX="406.0" layoutY="179.0" prefHeight="18.0" prefWidth="115.0" text="Category" />
+      <Spinner fx:id="SpinPick" layoutX="353.0" layoutY="218.0" />
+      <Label layoutX="68.0" layoutY="262.0" text="Decription: " />
+      <Label fx:id="DecriptionDetail" alignment="TOP_LEFT" contentDisplay="TOP" layoutX="68.0" layoutY="288.0" prefHeight="163.0" prefWidth="582.0" text="Label" />
+      <Button fx:id="SaveButton" layoutX="546.0" layoutY="476.0" mnemonicParsing="false" onAction="#handleSave" text="Save" />
+   </children>
+</AnchorPane>
