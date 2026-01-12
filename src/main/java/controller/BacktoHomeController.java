@@ -4,7 +4,7 @@
  */
 package controller;
 
-import app.projectbakery.App;
+import app.App;
 import java.io.IOException;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;

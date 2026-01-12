@@ -14,6 +14,7 @@ public class Product {
     private int quantity;
     private float price;
 
+//    =======constructor============
     public Product(String productId, String productName, String categoryId, int quantity, String unit, float price, String description, String image ) {
         this.productId = productId;
         this.productName = productName;
@@ -25,10 +26,10 @@ public class Product {
         this.image = image;
     }
 
-    
-    
-    
-    
+   public Product() {
+    }
+   
+//    =========GETTER============
     public String getProductId() {
         return productId;
     }
@@ -65,5 +66,45 @@ public class Product {
     public String toString() {
         return "Product{" + "productId=" + productId + ", productName=" + productName + ", categoryId=" + categoryId + ", unit=" + unit + ", description=" + description + ", image=" + image + ", quantity=" + quantity + ", price=" + price + '}';
     }
+    
+    //==========SETTER=================
+
+    public void setProductId(String productId) {
+        this.productId = productId;
+    }
+
+    public void setProductName(String productName) {
+        this.productName = productName;
+    }
+
+    public void setCategoryId(String categoryId) {
+        this.categoryId = categoryId;
+    }
+
+    public void setUnit(String unit) {
+        this.unit = unit;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public void setImage(String image) {
+        this.image = image;
+    }
+
+    public void setQuantity(int quantity) {
+        this.quantity = quantity;
+    }
+
+    public void setPrice(float price) {
+        this.price = price;
+    }
+
+    public Object getCategory() {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
+    
     
 }

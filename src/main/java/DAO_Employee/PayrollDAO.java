@@ -1,6 +1,6 @@
 package DAO_Employee;
 
-import ConnectDB.ConnectDB;
+import app.ConnectDB;
 import model.Payroll;
 
 import java.sql.*;

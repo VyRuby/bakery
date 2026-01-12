@@ -6,7 +6,7 @@ package controller;
  */
 
 
-import app.projectbakery.App;
+import app.App;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;

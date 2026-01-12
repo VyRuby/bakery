@@ -177,26 +177,26 @@ private CustomerDao customerDao = new CustomerDao();
         totalOrder.setText(total + "USD");
     }
     private void openProductDetail(Product product){
-        try{
-            FXMLLoader loader = new FXMLLoader(
-            getClass().getResource("/fxml/ProductDetail.fxml")
-            );
-            Parent root = loader.load();
-            
-            ProductDetailController controller = loader.getController();
-            controller.setProduct(product);
-            
-            Stage stage = new Stage();
-            stage.setScene(new Scene(root));
-            stage.showAndWait();
-            
-            int qty = controller.getSelectedQuantity();
-            if(qty > 0){
-                addOrder(product,qty);
-            }
-        }catch(Exception e){
-            System.out.println("Error !"+ e);
-        }
+//        try{
+//            FXMLLoader loader = new FXMLLoader(
+//            getClass().getResource("/fxml/ProductDetail.fxml")
+//            );
+//            Parent root = loader.load();
+//            
+//            ProductDetailController controller = loader.getController();
+//            controller.setProduct(product);
+//            
+//            Stage stage = new Stage();
+//            stage.setScene(new Scene(root));
+//            stage.showAndWait();
+//            
+//            int qty = controller.getSelectedQuantity();
+//            if(qty > 0){
+//                addOrder(product,qty);
+//            }
+//        }catch(Exception e){
+//            System.out.println("Error !"+ e);
+//        }
     }
     
 }

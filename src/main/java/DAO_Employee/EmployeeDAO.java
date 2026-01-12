@@ -1,6 +1,6 @@
 package DAO_Employee;
 
-import ConnectDB.ConnectDB;
+import app.ConnectDB;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;

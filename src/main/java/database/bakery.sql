@@ -7,7 +7,7 @@ USE bakery_db;
 -- =========================
 -- TABLE: EMPLOYEE
 -- =========================
-CREATE TABLE EMPLOYEE (
+CREATE TABLE IF NOT EXISTS EMPLOYEE (
     EmployeeID VARCHAR(30) PRIMARY KEY,
     FullName VARCHAR(100),
     DOB DATE,
@@ -23,7 +23,7 @@ CREATE TABLE EMPLOYEE (
 -- =========================
 -- TABLE: EMPLOYEE_PAYROLL
 -- =========================
-CREATE TABLE EMPLOYEE_PAYROLL (
+CREATE TABLE IF NOT EXISTS EMPLOYEE_PAYROLL (
     PayrollID VARCHAR(30) PRIMARY KEY,
     EmployeeID VARCHAR(30),
     LateWorkday INT DEFAULT 0,
@@ -46,7 +46,7 @@ CREATE TABLE EMPLOYEE_PAYROLL (
 -- =========================
 -- TABLE: EMPLOYEE_BONUS
 -- =========================
-CREATE TABLE EMPLOYEE_BONUS (
+CREATE TABLE IF NOT EXISTS EMPLOYEE_BONUS (
     BonusID VARCHAR(30) PRIMARY KEY,
     PayrollID VARCHAR(30),
     Description VARCHAR(255),
@@ -61,7 +61,7 @@ CREATE TABLE EMPLOYEE_BONUS (
 -- =========================
 -- TABLE: EMPLOYEE_PENALTY
 -- =========================
-CREATE TABLE EMPLOYEE_PENALTY (
+CREATE TABLE IF NOT EXISTS EMPLOYEE_PENALTY (
     PenaltyID VARCHAR(30) PRIMARY KEY,
     PayrollID VARCHAR(30),
     Description VARCHAR(255),
@@ -76,7 +76,7 @@ CREATE TABLE EMPLOYEE_PENALTY (
 -- =========================
 -- TABLE: EMPLOYEE_CHECKIN
 -- =========================
-CREATE TABLE EMPLOYEE_CHECKIN (
+CREATE TABLE IF NOT EXISTS EMPLOYEE_CHECKIN (
     CheckInID INT AUTO_INCREMENT PRIMARY KEY,
     EmployeeID VARCHAR(30),
     WorkDate DATE DEFAULT (CURDATE()),
@@ -289,5 +289,147 @@ END$$
 
 DELIMITER ;
 
+-- NGOC
+
+-- =========================
+-- TABLE: PRODUCT_CATEGORY
+-- =========================
+CREATE TABLE IF NOT EXISTS PRODUCT_CATEGORY (
+    CategoryID   VARCHAR(30)  PRIMARY KEY,
+    CategoryName VARCHAR(100) NOT NULL
+);
+
+-- =========================
+-- TABLE: PRODUCT
+-- =========================
+CREATE TABLE IF NOT EXISTS PRODUCT (
+    ProductID    VARCHAR(30)  PRIMARY KEY,
+    ProductName  VARCHAR(150) NOT NULL,
+    CategoryID   VARCHAR(30)  NOT NULL,
+    Quantity     INT NOT NULL DEFAULT 0,
+    Unit         VARCHAR(20),
+    Price        DECIMAL(12,2) NOT NULL DEFAULT 0,
+    Description  VARCHAR(255),
+    Image        VARCHAR(255),
+
+    CONSTRAINT fk_product_category
+        FOREIGN KEY (CategoryID)
+        REFERENCES PRODUCT_CATEGORY(CategoryID)
+        ON UPDATE CASCADE
+        ON DELETE RESTRICT
+) ;
+
+CREATE INDEX idx_product_category ON PRODUCT(CategoryID);
+CREATE INDEX idx_product_name ON PRODUCT(ProductName);
+
+-- =========================
+-- TABLE: IMPORT
+-- =========================
+CREATE TABLE IF NOT EXISTS IMPORT (
+    ImportID    VARCHAR(30) PRIMARY KEY,
+    ImportDate  DATE NOT NULL,
+    ProductID   VARCHAR(30) NOT NULL,
+    Quantity    INT NOT NULL DEFAULT 0,
+    CostPrice   DECIMAL(12,2) NOT NULL DEFAULT 0,
+
+    CONSTRAINT fk_import_product
+        FOREIGN KEY (ProductID)
+        REFERENCES PRODUCT(ProductID)
+        ON UPDATE CASCADE
+        ON DELETE RESTRICT
+) ;
+
+CREATE INDEX idx_import_product ON IMPORT(ProductID);
+CREATE INDEX idx_import_date ON IMPORT(ImportDate);
+
+-- =========================
+-- TABLE: PROMOTION
+-- =========================
+CREATE TABLE IF NOT EXISTS PROMOTION (
+    PromoID     VARCHAR(30) PRIMARY KEY,
+    PromoName   VARCHAR(100) NOT NULL,
+    ProductID   VARCHAR(30) NOT NULL,
+    Description VARCHAR(255),
+    StartDate   DATE NOT NULL,
+    EndDate     DATE NOT NULL,
+    PromoType   ENUM('percent','fixed') NOT NULL,
+    Value       DECIMAL(12,2) NOT NULL DEFAULT 0,
+    Status      ENUM('Active','Inactive') NOT NULL DEFAULT 'Active',
+
+    CONSTRAINT fk_promotion_product
+        FOREIGN KEY (ProductID)
+        REFERENCES PRODUCT(ProductID)
+        ON UPDATE CASCADE
+        ON DELETE RESTRICT
+) ;
+
+CREATE INDEX idx_promotion_product ON PROMOTION(ProductID);
+CREATE INDEX idx_promotion_status ON PROMOTION(Status);
+CREATE INDEX idx_promotion_date ON PROMOTION(StartDate, EndDate);
+
+--TẠO BẢNG LIÊN KẾT PROMO-PRODUCT
+CREATE TABLE IF NOT EXISTS PROMOTION_PRODUCT (
+    PromoID   VARCHAR(30) NOT NULL,
+    ProductID VARCHAR(30) NOT NULL,
+
+    PRIMARY KEY (PromoID, ProductID),
+
+    -- ❗ đảm bảo 1 product chỉ thuộc 1 promo
+    UNIQUE (ProductID),
+
+    CONSTRAINT fk_pp_promo
+        FOREIGN KEY (PromoID)
+        REFERENCES PROMOTION(PromoID)
+        ON UPDATE CASCADE
+        ON DELETE CASCADE,
+
+    CONSTRAINT fk_pp_product
+        FOREIGN KEY (ProductID)
+        REFERENCES PRODUCT(ProductID)
+        ON UPDATE CASCADE
+        ON DELETE RESTRICT
+);
 
 
+--xóa fk cũ 
+ALTER TABLE PROMOTION DROP FOREIGN KEY fk_promotion_product;
+-- xóa cột productID 
+ALTER TABLE PROMOTION DROP COLUMN ProductID;
+
+INSERT INTO PROMOTION
+(PromoID, PromoName, Description, PromoType, Value, Status)
+VALUES
+('PR01', 'Bread Discount', 'Discount for bread products', 'percent', 10, 'Active'),
+('PR02', 'Cake Special', 'Special discount for cakes', 'fixed', 20.00, 'Active'),
+('PR03', 'Cookie Promo', 'Discount for cookie products', 'percent', 5, 'Inactive');
+
+-- =============================================
+
+INSERT INTO PRODUCT_CATEGORY (CategoryID, CategoryName) VALUES
+('C01', 'Cake'),
+('C02', 'Baked'),
+('C03', 'Cookie');
+
+INSERT INTO PROMOTION_PRODUCT (PromoID, ProductID)
+VALUES
+-- PR02 áp cho nhiều sản phẩm
+('PR002', 'PD01'),  -- strawberry Cake
+('PR002', 'PD02');  -- lemon Cake
+
+
+-------
+INSERT INTO PRODUCT (
+    ProductID, ProductName, CategoryID, Quantity, Unit, Price, Description, Image
+) VALUES
+('PD01', 'Strawberry Short Cake', 'C02', 8, 'slice', 160000, 'Fresh strawberry on top with cream and genoise below', 'strawberryshort.jpg'),
+('PD02', 'Lemon Short Cake', 'C02', 8, 'slice', 120000, 'Lemon curd on top', 'lemonshort.jpg'),
+('PD03', 'Sable', 'C03', 16, 'pack', 48000, '', 'lemonshort.jpg'),
+('PD04', 'Matcha Chiffon', 'C02', 8, 'slice', 160000, 'Fresh strawberry on top with cream and genoise below', ''),
+('PD05', 'Earl Grey Chiffon', 'C02', 8, 'slice', 120000, 'Lemon curd on top', ''),
+('PD06', 'Whole wheat Cookie', 'C03', 16, 'pack', 48000, '', 'lemonshort.jpg'),
+('PD07', 'Nut Cookie', 'C02', 8, 'slice', 160000, 'Fresh strawberry on top with cream and genoise below', ''),
+('PD08', 'Choco Fondue', 'C02', 8, 'slice', 120000, 'Lemon curd on top', 'lemonshort.jpg'),
+('PD09', 'Choco Merigue', 'C03', 16, 'pack', 48000, '', ''),
+('PD10', 'Lemon Cake', 'C02', 8, 'slice', 160000, '', ''),
+('PD11', 'Choco Muffin', 'C02', 8, 'slice', 120000, 'Lemon curd on top', ''),
+('PD12', 'Earl Grey Financier', 'C03', 16, 'pack', 48000, '', '');
