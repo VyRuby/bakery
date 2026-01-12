@@ -20,7 +20,7 @@ import ConnectDB.ConnectDB;
 public class CustomerDao {
     public Customer findPhone(String phone){
         String sql =
-                "Select CustomerID, Phone ,FullName from customer Where Phone =? ";
+                "Select CustomerID, FullName, Phone from customer Where Phone =? ";
 
               
                try(Connection con = ConnectDB.getConnection();
@@ -31,8 +31,8 @@ public class CustomerDao {
                 if(rs.next()){
                     return new Customer(
                     rs.getInt("CustomerID"),
-                            rs.getString("FullName"),
-                            rs.getString("Phone")
+                            rs.getString("Phone"),
+                            rs.getString("FullName")
                             
                     );
                 }

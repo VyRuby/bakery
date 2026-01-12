@@ -42,7 +42,8 @@ import controller.BacktoHomeController;
 import controller.CustomerController;
 import controller.ProductDetailController;
 import java.sql.SQLException;
-
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 /**
  * FXML Controller class
  *
@@ -95,7 +96,16 @@ public class OrderController extends BacktoHomeController implements Initializab
         Price.setCellValueFactory(new PropertyValueFactory<>("price"));
         TotalPrice.setCellValueFactory(new PropertyValueFactory<>("total"));
         
+        phonefind.textProperty().addListener((observable,oldValue,newValue) -> {
+            if(newValue !=null&& newValue.length()>=10){
+                findCustomerByPhone();
+            }
+        });
         
+        LocalDateTime now = LocalDateTime.now();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
+        String formatteDate= now.format(formatter);
+        dateOrder.setText(formatteDate);
 //        listProduct.setOnMouseClicked(e->{
 //            if(e.getClickCount() ==2){
 //                Product product =listProduct.getSelectionModel().getSelectedItem();
@@ -154,6 +164,11 @@ private CustomerDao customerDao = new CustomerDao();
     try{
     String phone= phonefind.getText();
     
+    if(phone.isEmpty()){
+        customer.setText("Visitor");
+        return;
+    }
+    
     Customer c =customerDao.findPhone(phone);
     
     if(c!=null){
@@ -162,7 +177,7 @@ private CustomerDao customerDao = new CustomerDao();
         Customer visitor =customerDao.findByID(3);
             customer.setText(visitor.getName());
             phonefind.setText(visitor.getPhone());
-        
+            
     }
     }catch(Exception e){
         System.out.println("Error! not found phone");
