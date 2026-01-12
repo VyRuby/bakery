@@ -20,12 +20,14 @@ public class CheckInController implements Initializable {
     @FXML private TableColumn<CheckIn, String> colOut;
     @FXML private TableColumn<CheckIn, Boolean> colLate;
 
+    // 👉 đổi ý nghĩa: nhập EMAIL
     @FXML private TextField txtEmployeeId;
 
-    private CheckInDAO dao = new CheckInDAO();
+    private final CheckInDAO dao = new CheckInDAO();
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
+
         colId.setCellValueFactory(new PropertyValueFactory<>("checkInID"));
         colEmpId.setCellValueFactory(new PropertyValueFactory<>("employeeID"));
         colDate.setCellValueFactory(new PropertyValueFactory<>("workDate"));
@@ -42,37 +44,58 @@ public class CheckInController implements Initializable {
         tblCheckIn.setItems(list);
     }
 
- @FXML
-private void handleCheckIn() {
-
-    String empId = txtEmployeeId.getText().trim();
-
-    if (empId.isEmpty()) {
-        alert("Please enter Employee ID!");
-        return;
-    }
-
-    if (dao.isCheckedInToday(empId)) {
-        alert("Employee already checked in today!");
-        return;
-    }
-
-    dao.checkIn(empId);
-    loadData();
-    txtEmployeeId.clear();
-}
-
-
+    // ===============================
+    // CHECK-IN BY EMAIL
+    // ===============================
     @FXML
-    private void handleCheckOut() {
-        CheckIn c = tblCheckIn.getSelectionModel().getSelectedItem();
-        if (c == null) {
-            alert("Select record to checkout!");
+    private void handleCheckIn() {
+
+        String email = txtEmployeeId.getText().trim();
+
+        if (email.isEmpty()) {
+            alert("Please enter email!");
             return;
         }
-        dao.checkOut(c.getCheckInID());
-        loadData();
+
+        try {
+            dao.checkInByEmail(email);
+            loadData();
+            txtEmployeeId.clear();
+        } catch (RuntimeException ex) {
+            alert(ex.getMessage());
+        }
     }
+    
+    // ===============================
+    // CHECK-OUT BY EMAIL
+    // ===============================
+    @FXML
+private void handleCheckOut() {
+
+    String email = txtEmployeeId.getText().trim();
+
+    if (email.isEmpty()) {
+        alert("Please enter email!");
+        return;
+    }
+
+    try {
+        dao.checkOutByEmail(email); // gọi procedure Check-Out
+        loadData();                // reload bảng
+        txtEmployeeId.clear();     // xóa input
+        alertInfo("Check-Out successful!");
+    } catch (RuntimeException ex) {
+        alert(ex.getMessage());
+    }
+}
+
+// Thêm Alert thông báo thành công
+private void alertInfo(String msg) {
+    Alert a = new Alert(Alert.AlertType.INFORMATION);
+    a.setContentText(msg);
+    a.show();
+}
+
 
     private void alert(String msg) {
         Alert a = new Alert(Alert.AlertType.WARNING);

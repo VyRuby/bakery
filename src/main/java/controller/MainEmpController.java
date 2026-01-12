@@ -1,21 +1,26 @@
-package controller;
-
 /*
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/javafx/FXMLController.java to edit this template
  */
+package controller;
 
-import javafx.fxml.FXML;
-import javafx.scene.control.Tab;
-import javafx.scene.control.TabPane;
+import java.net.URL;
+import java.util.ResourceBundle;
+import javafx.fxml.Initializable;
 
-public class MainEmpController {
+/**
+ * FXML Controller class
+ *
+ * @author Admin
+ */
+public class MainEmpController implements Initializable {
 
-    @FXML private TabPane tabPane;
-    @FXML private Tab tabProduct;
-
-    @FXML
-    public void initialize() {
-        tabPane.getSelectionModel().select(tabProduct);
-    }
+    /**
+     * Initializes the controller class.
+     */
+    @Override
+    public void initialize(URL url, ResourceBundle rb) {
+        // TODO
+    }    
+    
 }

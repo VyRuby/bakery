@@ -9,12 +9,14 @@ import java.util.List;
 
 public class CheckInDAO {
 
-    // ===== READ: CHECK-IN HÔM NAY =====
+    // ===============================
+    // READ: CHECK-IN HÔM NAY
+    // ===============================
     public List<CheckIn> getTodayCheckIn() {
+
         List<CheckIn> list = new ArrayList<>();
 
-       String sql = "SELECT * "
-           + "FROM EMPLOYEE_CHECKIN "
+        String sql = "SELECT * FROM EMPLOYEE_CHECKIN "
            + "WHERE WorkDate = CURDATE() "
            + "ORDER BY CheckInTime";
 
@@ -26,9 +28,9 @@ public class CheckInDAO {
                 CheckIn c = new CheckIn(
                         rs.getInt("CheckInID"),
                         rs.getString("EmployeeID"),
-                        rs.getDate("WorkDate"),          // java.sql.Date
-                        rs.getTime("CheckInTime"),       // java.sql.Time
-                        rs.getTime("CheckOutTime"),      // java.sql.Time
+                        rs.getDate("WorkDate"),
+                        rs.getTime("CheckInTime"),
+                        rs.getTime("CheckOutTime"),
                         rs.getBoolean("IsLate")
                 );
                 list.add(c);
@@ -41,64 +43,40 @@ public class CheckInDAO {
         return list;
     }
 
-    // ===== CHECK IN =====
-    public void checkIn(String empId) {
+    // ===============================
+    // CHECK-IN BY EMAIL (CALL PROCEDURE)
+    // ===============================
+    public void checkInByEmail(String email) {
 
-        String sql = "INSERT INTO EMPLOYEE_CHECKIN "
-           + "(EmployeeID, WorkDate, CheckInTime, IsLate) "
-           + "VALUES (?, CURDATE(), CURTIME(), CURTIME() > '08:00:00')";
+        String sql = "{CALL sp_employee_checkin_by_email(?)}";
 
         try (Connection con = ConnectDB.getConnection();
-             PreparedStatement ps = con.prepareStatement(sql)) {
+             CallableStatement cs = con.prepareCall(sql)) {
 
-            ps.setString(1, empId);
-            ps.executeUpdate();
+            cs.setString(1, email);
+            cs.execute();
 
         } catch (SQLException ex) {
-            ex.printStackTrace();
+            // ném lỗi để Controller bắt & show Alert
+            throw new RuntimeException(ex.getMessage());
         }
     }
 
-    // ===== CHECK OUT =====
-    public void checkOut(int checkInId) {
+    // ===============================
+    // CHECK-OUT BY EMAIL (CALL PROCEDURE)
+    // ===============================
+    public void checkOutByEmail(String email) {
 
-        String sql = "UPDATE EMPLOYEE_CHECKIN "
-           + "SET CheckOutTime = CURTIME() "
-           + "WHERE CheckInID = ?";
-
-        try (Connection con = ConnectDB.getConnection();
-             PreparedStatement ps = con.prepareStatement(sql)) {
-
-            ps.setInt(1, checkInId);
-            ps.executeUpdate();
-
-        } catch (SQLException ex) {
-            ex.printStackTrace();
-        }
-    }
-
-    // ===== KIỂM TRA ĐÃ CHECK-IN HÔM NAY CHƯA =====
-    public boolean isCheckedInToday(String empId) {
-
-       String sql = "SELECT COUNT(*) "
-           + "FROM EMPLOYEE_CHECKIN "
-           + "WHERE EmployeeID = ? "
-           + "AND WorkDate = CURDATE()";
+        String sql = "{CALL sp_employee_checkout_by_email(?)}";
 
         try (Connection con = ConnectDB.getConnection();
-             PreparedStatement ps = con.prepareStatement(sql)) {
+             CallableStatement cs = con.prepareCall(sql)) {
 
-            ps.setString(1, empId);
-            ResultSet rs = ps.executeQuery();
-
-            if (rs.next()) {
-                return rs.getInt(1) > 0;
-            }
+            cs.setString(1, email);
+            cs.execute();
 
         } catch (SQLException ex) {
-            ex.printStackTrace();
+            throw new RuntimeException(ex.getMessage());
         }
-
-        return false;
     }
 }

@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
+<?import javafx.scene.layout.*?>
+<TabPane fx:id="tabPane"
+         xmlns="http://javafx.com/javafx/25"
+         xmlns:fx="http://javafx.com/fxml/1"
+         fx:controller="controller.MainEmpController"
+         tabClosingPolicy="UNAVAILABLE"
+         style="
+            -fx-background-color: #EED9C4;
+            -fx-tab-min-width: 150;
+            -fx-tab-min-height: 36;
+            -fx-tab-max-height: 36;
+            -fx-focus-color: transparent;
+            -fx-faint-focus-color: transparent;
+        ">
+
+    <tabs>
+        <Tab text="Employee" style="
+                -fx-font-size: 16px;
+                -fx-font-weight: bold;
+                -fx-background-radius: 12 12 0 0;
+                -fx-border-radius: 12 12 0 0;
+                -fx-border-color: #C19A6B;">
+            <content>
+                 <AnchorPane>
+            <fx:include source="Employee.fxml"
+                        AnchorPane.topAnchor="0"
+                        AnchorPane.bottomAnchor="0"
+                        AnchorPane.leftAnchor="0"
+                        AnchorPane.rightAnchor="0"/>
+        </AnchorPane>
+            </content>
+        </Tab>
+
+        <Tab text="Payroll" style="
+                -fx-font-size: 16px;
+                -fx-font-weight: bold;
+                -fx-background-radius: 12 12 0 0;
+                -fx-border-radius: 12 12 0 0;
+                -fx-border-color: #C19A6B;">
+            <content>
+                 <AnchorPane>
+            <fx:include source="Payroll.fxml"
+                        AnchorPane.topAnchor="0"
+                        AnchorPane.bottomAnchor="0"
+                        AnchorPane.leftAnchor="0"
+                        AnchorPane.rightAnchor="0"/>
+        </AnchorPane>
+            </content>
+        </Tab>
+
+        <Tab text="Check In / Check Out" style="
+                -fx-font-size: 16px;
+                -fx-font-weight: bold;
+                -fx-background-radius: 12 12 0 0;
+                -fx-border-radius: 12 12 0 0;
+                -fx-border-color: #C19A6B;">
+            <content>
+ <AnchorPane>
+            <fx:include source="CheckIn.fxml"
+                        AnchorPane.topAnchor="0"
+                        AnchorPane.bottomAnchor="0"
+                        AnchorPane.leftAnchor="0"
+                        AnchorPane.rightAnchor="0"/>
+        </AnchorPane>
+            </content>
+        </Tab>
+
+    </tabs>
+
+</TabPane>
+
