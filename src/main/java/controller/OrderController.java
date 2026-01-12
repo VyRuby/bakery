@@ -97,7 +97,12 @@ public class OrderController extends BacktoHomeController implements Initializab
         TotalPrice.setCellValueFactory(new PropertyValueFactory<>("total"));
         
         phonefind.textProperty().addListener((observable,oldValue,newValue) -> {
-            if(newValue !=null&& newValue.length()>=10){
+            if(newValue == null||newValue.trim().isEmpty()){
+                customer.setText("Visitor");
+                customer.setStyle("-fx-text-fill: black;");
+            }
+            
+            else if(newValue !=null&& newValue.length()>=10){
                 findCustomerByPhone();
             }
         });
@@ -173,14 +178,17 @@ private CustomerDao customerDao = new CustomerDao();
     
     if(c!=null){
         customer.setText(c.getName());
+        customer.setStyle("-fx-text-fill: black;");
+        
     }else{
-        Customer visitor =customerDao.findByID(3);
-            customer.setText(visitor.getName());
-            phonefind.setText(visitor.getPhone());
+//        Customer visitor =customerDao.findByID(3);
+            customer.setText("Not Found");
+            customer.setStyle("-fx-text-fill: red;");
+//            phonefind.setText(visitor.getPhone());
             
     }
     }catch(Exception e){
-        System.out.println("Error! not found phone");
+        System.out.println("Error!");
     }
     }
     private productDao productDao = new productDao();
@@ -277,6 +285,7 @@ for(Product product : data){
     }
     
     }
+    
     
     private VBox createProductCard(Product product){
         ImageView imageView = new ImageView();
