@@ -77,14 +77,7 @@
                            -fx-background-radius: 12;
                            -fx-padding: 6 16;"/>
 
-            <Button fx:id="btnRefresh"
-                    text="Refresh"
-                    onAction="#handleRefresh"
-                    style="-fx-background-color: #8B5E3C;
-                           -fx-text-fill: white;
-                           -fx-font-weight: bold;
-                           -fx-background-radius: 12;
-                           -fx-padding: 6 16;"/>
+           
         </HBox>
     </VBox>
 </top>

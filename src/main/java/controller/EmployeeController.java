@@ -35,6 +35,8 @@ public class EmployeeController implements Initializable {
     @FXML private TableColumn<Employee, String> colEmail;
     @FXML private TableColumn<Employee, String> colPosition;
     @FXML private TableColumn<Employee, String> colStatus;
+    @FXML private TextField txtSearch;
+
 
     // ===== FILTER =====
     @FXML private ComboBox<String> cbFilterStatus;
@@ -80,6 +82,23 @@ public class EmployeeController implements Initializable {
     private void handleLoad() {
         loadData();
     }
+    
+    @FXML
+private void handleSearch() {
+
+    String key = txtSearch.getText().trim();
+
+    if (key.isEmpty()) {
+        showAlert("Please enter keyword to search!");
+        return;
+    }
+
+    ObservableList<Employee> list =
+        FXCollections.observableArrayList(dao.search(key));
+
+    tblEmployee.setItems(list);
+}
+
 
     // ================= ADD =================
     @FXML

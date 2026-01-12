@@ -38,8 +38,7 @@ public class PayrollController implements Initializable {
 
     @FXML
     private ComboBox<String> cbMonth;
-    @FXML
-    private Button btnRefresh;
+   
     @FXML
     private Button btnCalculate;
 
@@ -149,11 +148,6 @@ public class PayrollController implements Initializable {
         alert.showAndWait();
     }
 
-    // =========================
-    // Tạo hàm xử lý nút Refresh
-    // =========================
-    @FXML private void handleRefresh() {
-        loadData(Integer.parseInt(cbMonth.getValue()));
-    }
+   
 
 }
