@@ -348,19 +348,12 @@ CREATE INDEX idx_import_date ON IMPORT(ImportDate);
 CREATE TABLE IF NOT EXISTS PROMOTION (
     PromoID     VARCHAR(30) PRIMARY KEY,
     PromoName   VARCHAR(100) NOT NULL,
-    ProductID   VARCHAR(30) NOT NULL,
     Description VARCHAR(255),
     StartDate   DATE NOT NULL,
     EndDate     DATE NOT NULL,
     PromoType   ENUM('percent','fixed') NOT NULL,
     Value       DECIMAL(12,2) NOT NULL DEFAULT 0,
     Status      ENUM('Active','Inactive') NOT NULL DEFAULT 'Active',
-
-    CONSTRAINT fk_promotion_product
-        FOREIGN KEY (ProductID)
-        REFERENCES PRODUCT(ProductID)
-        ON UPDATE CASCADE
-        ON DELETE RESTRICT
 ) ;
 
 CREATE INDEX idx_promotion_product ON PROMOTION(ProductID);
@@ -390,12 +383,6 @@ CREATE TABLE IF NOT EXISTS PROMOTION_PRODUCT (
         ON DELETE RESTRICT
 );
 
-
---xóa fk cũ 
-ALTER TABLE PROMOTION DROP FOREIGN KEY fk_promotion_product;
--- xóa cột productID 
-ALTER TABLE PROMOTION DROP COLUMN ProductID;
-
 INSERT INTO PROMOTION
 (PromoID, PromoName, Description, PromoType, Value, Status)
 VALUES
@@ -414,7 +401,7 @@ INSERT INTO PROMOTION_PRODUCT (PromoID, ProductID)
 VALUES
 -- PR02 áp cho nhiều sản phẩm
 ('PR002', 'PD01'),  -- strawberry Cake
-('PR002', 'PD02');  -- lemon Cake
+('PR002', 'PD02');  -- lemon short Cake
 
 
 -------
@@ -423,13 +410,13 @@ INSERT INTO PRODUCT (
 ) VALUES
 ('PD01', 'Strawberry Short Cake', 'C02', 8, 'slice', 160000, 'Fresh strawberry on top with cream and genoise below', 'strawberryshort.jpg'),
 ('PD02', 'Lemon Short Cake', 'C02', 8, 'slice', 120000, 'Lemon curd on top', 'lemonshort.jpg'),
-('PD03', 'Sable', 'C03', 16, 'pack', 48000, '', 'lemonshort.jpg'),
-('PD04', 'Matcha Chiffon', 'C02', 8, 'slice', 160000, 'Fresh strawberry on top with cream and genoise below', ''),
-('PD05', 'Earl Grey Chiffon', 'C02', 8, 'slice', 120000, 'Lemon curd on top', ''),
-('PD06', 'Whole wheat Cookie', 'C03', 16, 'pack', 48000, '', 'lemonshort.jpg'),
-('PD07', 'Nut Cookie', 'C02', 8, 'slice', 160000, 'Fresh strawberry on top with cream and genoise below', ''),
-('PD08', 'Choco Fondue', 'C02', 8, 'slice', 120000, 'Lemon curd on top', 'lemonshort.jpg'),
-('PD09', 'Choco Merigue', 'C03', 16, 'pack', 48000, '', ''),
-('PD10', 'Lemon Cake', 'C02', 8, 'slice', 160000, '', ''),
-('PD11', 'Choco Muffin', 'C02', 8, 'slice', 120000, 'Lemon curd on top', ''),
-('PD12', 'Earl Grey Financier', 'C03', 16, 'pack', 48000, '', '');
+('PD03', 'W Cheesecake', 'C02', 16, 'slice', 135000, '', ''),
+('PD04', 'Matcha Chiffon', 'C02', 8, 'slice', 135000, '', ''),
+('PD05', 'Earl Grey Chiffon', 'C02', 8, 'slice', 100000, '', ''),
+('PD06', 'Whole wheat Cookie', 'C03', 16, 'pack', 38000, '', ''),
+('PD07', 'Nut Cookie', 'C03', 8, 'pack', 38000, '', ''),
+('PD08', 'Choco Fondue', 'C03', 8, 'jar', 120000, '', ''),
+('PD09', 'Choco Merigue', 'C03', 5, 'pack', 45000, '', ''),
+('PD10', 'Lemon Cake', 'C01', 8, 'pack', 70000, '', ''),
+('PD11', 'Choco Muffin', 'C01', 8, 'pack', 75000, '', ''),
+('PD12', 'Earl Grey Financier', 'C01', 16, 'pack', 48000, '', '');

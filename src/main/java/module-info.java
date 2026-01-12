@@ -1,4 +1,3 @@
-
 module app {
     requires javafx.controls;
     requires javafx.fxml;
@@ -9,4 +8,5 @@ module app {
     opens controller to javafx.fxml;
     opens model;
     exports app;
+
 }

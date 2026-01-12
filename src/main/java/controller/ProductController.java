@@ -359,5 +359,4 @@ private void applyFilter() {
     });
 }
 
-
-}
+    }    

@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.ResourceBundle;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
@@ -55,6 +56,8 @@ public class CustomerDataController extends BacktoHomeController implements Init
     private Button cDelete;
     @FXML
     private Button cSave;
+    @FXML
+    private Button btnBack;
 
     /**
      * Initializes the controller class.
@@ -151,6 +154,39 @@ public class CustomerDataController extends BacktoHomeController implements Init
         
         ListCustomer.getSelectionModel().clearSelection();
     }
+
+    @FXML
+    private void handleSaveCus(ActionEvent event) {
+        if(cName.getText().isEmpty()||cPhone.getText().isEmpty()){
+            System.out.println("Phone and Name cant be null!");
+            return ;
+        }
+        Customer c= new Customer(
+        cName.getText(),
+                cPhone.getText(),
+                cGenMale.isSelected() ? Customer.Gender.Male : Customer.Gender.Female,
+                cDOB.getValue(),
+                cEmail.getText(),
+                cAddress.getText(),
+                0
+        );
+        boolean savecus =customerDao.insert(c);
+        
+        if(savecus){
+            System.out.println("Done !");
+            
+            allCustomers.add(c);
+            ListCustomer.setItems(allCustomers);
+            
+            clearCustomerForm();
+            
+        }else{
+            System.out.println("Error !");
+        }
+        
+        
+    }
+
     
     
     

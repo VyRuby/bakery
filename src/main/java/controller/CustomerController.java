@@ -54,25 +54,57 @@ public class CustomerController implements Initializable {
      */
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        // TODO
+        cusSave.setOnAction(e -> saveCustomer());
+       cusBack.setOnAction(e -> closeWindow()); 
+        
     }    
  
-    public void setcustomer(Customer c){
-        if(c == null) return;
-        cusID.setText(String.valueOf(c.getId()));
-        cusName.setText(c.getName());
-        cusPhone.setText(c.getPhone());
-        cusEmail.setText(c.getEmail());
-        cusAddress.setText(c.getAddress());
-        cusDOB.setValue(c.getDob());
-        
-        if(c.getGender()== Customer.Gender.Male ){
-            genderMale.setSelected(true);
-        }else if(c.getGender() == Customer.Gender.Female){
-            genderFemale.setSelected(true);
+//    public void setcustomer(Customer c){
+//        if(c == null) return;
+//        cusID.setText(String.valueOf(c.getId()));
+//        cusName.setText(c.getName());
+//        cusPhone.setText(c.getPhone());
+//        cusEmail.setText(c.getEmail());
+//        cusAddress.setText(c.getAddress());
+//        cusDOB.setValue(c.getDob());
+//        
+//        if(c.getGender()== Customer.Gender.Male ){
+//            genderMale.setSelected(true);
+//        }else if(c.getGender() == Customer.Gender.Female){
+//            genderFemale.setSelected(true);
+//        }
+//    }
+//      
+    private Customer saveCustomer;
+    
+    private void saveCustomer(){
+        if(cusName.getText().isEmpty() || cusPhone.getText().isEmpty()){
+            return ;
         }
+        saveCustomer = new Customer(
+        cusName.getText(),
+        cusPhone.getText(),
+          genderMale.isSelected() ? Customer.Gender.Male : Customer.Gender.Female,      
+        cusDOB.getValue(),
+                cusEmail.getText(),
+                
+        cusAddress.getText(),
+                0
+        );
+        closeWindow();
     }
-      
+    
+    public Customer getSaveCustomer(){
+        return saveCustomer;
+    }
+    
+    private void closeWindow(){
+        cusBack.getScene().getWindow().hide();
+    }
+    
+    
+    
+    
     
     
 }

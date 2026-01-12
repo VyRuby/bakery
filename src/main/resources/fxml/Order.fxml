@@ -1,220 +1,99 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
+<?import javafx.scene.control.CheckBox?>
 <?import javafx.scene.control.Label?>
-<?import javafx.scene.control.ListView?>
-<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.control.TextField?>
-<?import javafx.scene.control.ToggleButton?>
-<?import javafx.scene.image.Image?>
-<?import javafx.scene.image.ImageView?>
-<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
-<?import javafx.scene.layout.HBox?>
-<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
 
-<BorderPane prefHeight="700.0" prefWidth="1100.0"
-            style="-fx-background-color: #F6F7FB;"
-            xmlns="http://javafx.com/javafx/13"
-            xmlns:fx="http://javafx.com/fxml/1"
-            fx:controller="controller.OrderController">
-
-    <!-- TOP BAR (giống Home/Product) -->
-    <top>
-        <HBox alignment="CENTER_LEFT" prefHeight="78.0" spacing="14.0"
-              style="-fx-background-color: white; -fx-border-color: #E6E8EF; -fx-border-width: 0 0 1 0;">
-            <padding>
-                <Insets top="14" right="18" bottom="14" left="18"/>
-            </padding>
-
-            <!-- Logo -->
-            <HBox alignment="CENTER_LEFT" spacing="10">
-                <ImageView fitHeight="42.0" fitWidth="42.0" preserveRatio="true">
-                    <image>
-                        <Image url="@image/logo.png"/>
-                    </image>
-                </ImageView>
-
-                <VBox alignment="CENTER_LEFT" spacing="2">
-                    <Label text="GATEAUET"
-                           style="-fx-font-size: 18px; -fx-font-weight: 800; -fx-text-fill: #1F2A37;"/>
-                    <Label text="Order Management"
-                           style="-fx-font-size: 12px; -fx-text-fill: #6B7280;"/>
-                </VBox>
-            </HBox>
-
-            <Region HBox.hgrow="ALWAYS"/>
-
-            <!-- Banner (optional) -->
-            <ImageView fitHeight="38.0" fitWidth="140.0" opacity="0.92" preserveRatio="true">
-                <image>
-                    <Image url="@image/top-banner.png"/>
-                </image>
-            </ImageView>
-
-            <Region HBox.hgrow="ALWAYS"/>
-
-            <!-- User / login (UI giống Home) -->
-            <HBox alignment="CENTER_RIGHT" spacing="10">
-                <ImageView fitHeight="36.0" fitWidth="36.0" preserveRatio="true">
-                    <image>
-                        <Image url="@image/user.png"/>
-                    </image>
-                </ImageView>
-
-                <VBox alignment="CENTER_LEFT" spacing="2">
-                    <Label text="Staff"
-                           style="-fx-font-size: 13px; -fx-font-weight: 600; -fx-text-fill: #111827;"/>
-                    <Label text="Not logged in"
-                           style="-fx-font-size: 11px; -fx-text-fill: #6B7280;"/>
-                </VBox>
-
-                <Button text="Login"
-                        prefHeight="34" prefWidth="92"
-                        style="-fx-background-color: #8B5E3C; -fx-text-fill: white; -fx-font-weight: 700; -fx-background-radius: 10;"/>
-                <Button text="Logout"
-                        prefHeight="34" prefWidth="92"
-                        style="-fx-background-color: #EEF2FF; -fx-text-fill: #8B5E3C; -fx-font-weight: 700; -fx-background-radius: 10;"/>
-            </HBox>
-        </HBox>
-    </top>
-
-    <!-- CENTER: Left list + Right info/table -->
-    <center>
-        <HBox spacing="14" style="-fx-background-color: #F6F7FB;">
-            <padding>
-                <Insets top="18" right="18" bottom="18" left="18"/>
-            </padding>
-
-            <!-- LEFT: Product list card -->
-            <VBox prefWidth="520" spacing="10"
-                  style="-fx-background-color: white; -fx-background-radius: 18; -fx-border-radius: 18; -fx-border-color: #E6E8EF;">
-                <padding>
-                    <Insets top="14" right="14" bottom="14" left="14"/>
-                </padding>
-
-                <HBox alignment="CENTER_LEFT">
-                    <Label text="Products"
-                           style="-fx-font-size: 18px; -fx-font-weight: 900; -fx-text-fill: #111827;"/>
-                    <Region HBox.hgrow="ALWAYS"/>
-                    <Label text="Click item to add"
-                           style="-fx-font-size: 11px; -fx-text-fill: #6B7280;"/>
-                </HBox>
-
-                <ListView fx:id="listProduct" prefHeight="560"/>
-            </VBox>
-
-            <!-- RIGHT: Order info + details card -->
-            <VBox prefWidth="530" spacing="12">
-
-                <!-- Order info card -->
-                <VBox spacing="10"
-                      style="-fx-background-color: white; -fx-background-radius: 18; -fx-border-radius: 18; -fx-border-color: #E6E8EF;">
-                    <padding>
-                        <Insets top="14" right="14" bottom="14" left="14"/>
-                    </padding>
-
-                    <HBox alignment="CENTER_LEFT" spacing="10">
-                        <Label text="Order"
-                               style="-fx-font-size: 18px; -fx-font-weight: 900; -fx-text-fill: #111827;"/>
-                        <Region HBox.hgrow="ALWAYS"/>
-                        <!-- Back button chung -->
-                        <Button fx:id="btnBack"
-                                text="← Back to Home"
-                                onAction="#goBack"
-                                prefHeight="36"
-                                style="-fx-background-color: #8B5E3C; -fx-text-fill: white; -fx-font-weight: 800; -fx-background-radius: 12;"/>
-                    </HBox>
-
-                    <Separator/>
-
-                    <GridPane hgap="12" vgap="10">
-                        <Label text="Series:" GridPane.rowIndex="0" GridPane.columnIndex="0"
-                               style="-fx-font-weight: 700; -fx-text-fill: #374151;"/>
-                        <!-- label series cũ không có fx:id nên để trống đúng 'cốt lõi' -->
-                        <Label text="-" GridPane.rowIndex="0" GridPane.columnIndex="1"
-                               style="-fx-text-fill: #111827;"/>
-
-                        <Label text="Date:" GridPane.rowIndex="1" GridPane.columnIndex="0"
-                               style="-fx-font-weight: 700; -fx-text-fill: #374151;"/>
-                        <Label fx:id="dateOrder" text="Date" GridPane.rowIndex="1" GridPane.columnIndex="1"
-                               style="-fx-text-fill: #111827; -fx-font-weight: 800;"/>
-
-                        <Label text="Customer:" GridPane.rowIndex="2" GridPane.columnIndex="0"
-                               style="-fx-font-weight: 700; -fx-text-fill: #374151;"/>
-                        <Label fx:id="customer" text="Visitor" GridPane.rowIndex="2" GridPane.columnIndex="1"
-                               style="-fx-text-fill: #111827; -fx-font-weight: 800;"/>
-
-                        <Label text="Phone:" GridPane.rowIndex="3" GridPane.columnIndex="0"
-                               style="-fx-font-weight: 700; -fx-text-fill: #374151;"/>
-                        <TextField fx:id="phonefind" GridPane.rowIndex="3" GridPane.columnIndex="1"
-                                   promptText="Find customer by phone..."
-                                   style="-fx-background-radius: 10; -fx-border-radius: 10; -fx-border-color: #E6E8EF;"/>
-                    </GridPane>
-
-                    <HBox spacing="10" alignment="CENTER_LEFT">
-                        <ToggleButton text="Transfer"
-                                      prefHeight="36"
-                                      style="-fx-background-radius: 12; -fx-font-weight: 800;"/>
-
-                        <Region HBox.hgrow="ALWAYS"/>
-
-                        <Button fx:id="addcus" text="+ Add New"
-                                prefHeight="36" prefWidth="110"
-                                style="-fx-background-color: #8B5E3C; -fx-text-fill: white; -fx-font-weight: 900; -fx-background-radius: 12;"/>
-                    </HBox>
-                </VBox>
-
-                <!-- Order details table card -->
-                <VBox spacing="10"
-                      style="-fx-background-color: white; -fx-background-radius: 18; -fx-border-radius: 18; -fx-border-color: #E6E8EF;">
-                    <padding>
-                        <Insets top="14" right="14" bottom="14" left="14"/>
-                    </padding>
-
-                    <Label text="Order Details"
-                           style="-fx-font-size: 16px; -fx-font-weight: 900; -fx-text-fill: #111827;"/>
-
-                    <TableView fx:id="orderDetail" prefHeight="360" style="-fx-background-radius: 14; -fx-border-radius: 14;">
-                        <columns>
-                            <TableColumn fx:id="ProductName" text="Product" prefWidth="150"/>
-                            <TableColumn fx:id="Number" text="Number" prefWidth="80"/>
-                            <TableColumn fx:id="Price" text="Price" prefWidth="120"/>
-                            <TableColumn fx:id="TotalPrice" text="Total Price" prefWidth="150"/>
-                        </columns>
-                    </TableView>
-
-                    <Separator/>
-
-                    <HBox alignment="CENTER_RIGHT" spacing="12">
-                        <Label text="Total:"
-                               style="-fx-font-size: 14px; -fx-font-weight: 900; -fx-text-fill: #111827;"/>
-                        <Label fx:id="totalOrder" text="Total"
-                               style="-fx-font-size: 18px; -fx-font-weight: 900; -fx-text-fill: #111827;"/>
-
-                        <Button fx:id="buttonOrder" text="Order"
-                                prefHeight="38" prefWidth="110"
-                                style="-fx-background-color: #8B5E3C; -fx-text-fill: white; -fx-font-weight: 900; -fx-background-radius: 12;"/>
-                    </HBox>
-                </VBox>
-
-            </VBox>
-        </HBox>
-    </center>
-
-    <!-- BOTTOM BAR -->
-    <bottom>
-        <HBox alignment="CENTER" prefHeight="50"
-              style="-fx-background-color: white; -fx-border-color: #E6E8EF; -fx-border-width: 1 0 0 0;">
-            <padding>
-                <Insets top="10" right="18" bottom="10" left="18"/>
-            </padding>
-            <Label text=" "/>
-        </HBox>
-    </bottom>
-
-</BorderPane>
+<AnchorPane id="AnchorPane" prefHeight="688.0" prefWidth="929.0" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.OrderController">
+   <children>
+      <Label layoutX="439.0" layoutY="14.0" text="Order">
+         <font>
+            <Font size="23.0" />
+         </font>
+      </Label>
+      <Label layoutX="360.0" layoutY="88.0" prefHeight="18.0" prefWidth="59.0" />
+      <TableView fx:id="orderDetail" layoutX="535.0" layoutY="256.0" prefHeight="322.0" prefWidth="378.0">
+        <columns>
+          <TableColumn fx:id="ProductName" prefWidth="114.4000244140625" text="Product" />
+          <TableColumn fx:id="Number" prefWidth="46.4000244140625" text="Number" />
+            <TableColumn fx:id="Price" prefWidth="101.599853515625" text="Price" />
+            <TableColumn fx:id="TotalPrice" prefWidth="111.199951171875" text="Total Price" />
+        </columns>
+      </TableView>
+      <Label fx:id="totalOrder" layoutX="662.0" layoutY="584.0" text="Total">
+         <font>
+            <Font size="23.0" />
+         </font>
+      </Label>
+      <Button fx:id="buttonOrder" layoutX="819.0" layoutY="631.0" mnemonicParsing="false" onAction="#handleOrder" text="Order" />
+      <VBox layoutX="572.0" layoutY="44.0" prefHeight="212.0" prefWidth="266.0">
+         <children>
+            <AnchorPane prefHeight="43.0" prefWidth="266.0">
+               <children>
+                  <Label layoutX="7.0" layoutY="11.0" prefHeight="18.0" prefWidth="59.0" text="series:" />
+               </children>
+            </AnchorPane>
+            <AnchorPane layoutX="10.0" layoutY="10.0" prefHeight="43.0" prefWidth="266.0">
+               <children>
+                  <Label layoutX="7.0" layoutY="11.0" prefHeight="18.0" prefWidth="59.0" text="Date:" />
+                  <Label fx:id="dateOrder" layoutX="86.0" layoutY="13.0" text="Date" />
+               </children>
+            </AnchorPane>
+            <AnchorPane layoutX="10.0" layoutY="10.0" prefHeight="43.0" prefWidth="266.0">
+               <children>
+                  <Label layoutX="7.0" layoutY="11.0" prefHeight="18.0" prefWidth="59.0" text="Customer :" />
+                  <Label fx:id="customer" layoutX="88.0" layoutY="11.0" prefHeight="18.0" prefWidth="164.0" text="Visitor" />
+               </children>
+            </AnchorPane>
+            <AnchorPane layoutX="10.0" layoutY="53.0" prefHeight="43.0" prefWidth="266.0">
+               <children>
+                  <Label layoutX="7.0" layoutY="11.0" prefHeight="18.0" prefWidth="59.0" text="Phone :" />
+                  <TextField fx:id="phonefind" layoutX="80.0" layoutY="8.0" />
+               </children>
+            </AnchorPane>
+            <AnchorPane layoutX="10.0" layoutY="96.0" prefHeight="43.0" prefWidth="266.0">
+               <children>
+                  <Button fx:id="addcus" layoutX="161.0" layoutY="8.0" mnemonicParsing="false" onAction="#addcus" text="Add New" />
+                  <CheckBox fx:id="Transfer" layoutX="35.0" layoutY="12.0" mnemonicParsing="false" text="Transfer" />
+               </children>
+            </AnchorPane>
+         </children>
+      </VBox>
+      <AnchorPane layoutX="34.0" layoutY="67.0" prefHeight="575.0" prefWidth="490.0">
+         <children>
+            <ScrollPane prefHeight="575.0" prefWidth="490.0">
+              <content>
+                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="566.0" prefWidth="479.0">
+                     <children>
+                        <GridPane fx:id="productGrid" layoutY="7.0" prefHeight="550.0" prefWidth="472.0">
+                          <columnConstraints>
+                            <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                            <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                          </columnConstraints>
+                          <rowConstraints>
+                            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                          </rowConstraints>
+                        </GridPane>
+                     </children>
+                  </AnchorPane>
+              </content>
+            </ScrollPane>
+         </children>
+      </AnchorPane>
+       <!-- Back button chung -->
+            <Button fx:id="btnBack" maxWidth="1.7976931348623157E308" onAction="#goBack" prefHeight="40" style="-fx-background-color: #8B5E3C; -fx-text-fill: white; -fx-font-weight: 800; -fx-background-radius: 12;" text="← Back to Home" />
+   </children>
+   
+</AnchorPane>

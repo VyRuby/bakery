@@ -1,3 +1,4 @@
+
 package controller;
 
 import DAO_Product.PromotionDAO;
@@ -298,5 +299,4 @@ private void onEdit(ActionEvent event) {
         return null;
     }
 }
-
-}
+    }    
