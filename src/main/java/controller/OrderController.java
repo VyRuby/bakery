@@ -97,6 +97,11 @@ public class OrderController extends BacktoHomeController implements Initializab
         TotalPrice.setCellValueFactory(new PropertyValueFactory<>("total"));
         
         phonefind.textProperty().addListener((observable,oldValue,newValue) -> {
+            
+            if(!newValue.matches("\\d*")){
+                phonefind.setText(oldValue);
+            }
+            
             if(newValue == null||newValue.trim().isEmpty()){
                 customer.setText("Visitor");
                 customer.setStyle("-fx-text-fill: black;");
