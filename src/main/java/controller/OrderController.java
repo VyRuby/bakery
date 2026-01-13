@@ -44,6 +44,10 @@ import controller.ProductDetailController;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import com.itextpdf.text.*;
+import com.itextpdf.text.pdf.*;
+import java.io.FileOutputStream;
+import java.io.File;
 /**
  * FXML Controller class
  *
