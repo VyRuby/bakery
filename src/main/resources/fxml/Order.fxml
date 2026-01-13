@@ -14,7 +14,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane id="AnchorPane" prefHeight="688.0" prefWidth="929.0" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.OrderController">
+<AnchorPane id="AnchorPane" prefHeight="696.0" prefWidth="1019.0" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.OrderController">
    <children>
       <Label layoutX="439.0" layoutY="14.0" text="Order">
          <font>
@@ -22,12 +22,13 @@
          </font>
       </Label>
       <Label layoutX="360.0" layoutY="88.0" prefHeight="18.0" prefWidth="59.0" />
-      <TableView fx:id="orderDetail" layoutX="535.0" layoutY="256.0" prefHeight="322.0" prefWidth="378.0">
+      <TableView fx:id="orderDetail" layoutX="535.0" layoutY="256.0" prefHeight="322.0" prefWidth="443.0">
         <columns>
           <TableColumn fx:id="ProductName" prefWidth="114.4000244140625" text="Product" />
           <TableColumn fx:id="Number" prefWidth="46.4000244140625" text="Number" />
             <TableColumn fx:id="Price" prefWidth="101.599853515625" text="Price" />
             <TableColumn fx:id="TotalPrice" prefWidth="111.199951171875" text="Total Price" />
+            <TableColumn fx:id="DelColum" prefWidth="64.0" text="Delete" />
         </columns>
       </TableView>
       <Label fx:id="totalOrder" layoutX="662.0" layoutY="584.0" text="Total">

@@ -81,6 +81,8 @@ public class OrderController extends BacktoHomeController implements Initializab
     private Button btnBack;
     @FXML
     private GridPane productGrid;
+    @FXML
+    private TableColumn<OrderDetailItem, Void> DelColum;
     
     
     
@@ -95,6 +97,34 @@ public class OrderController extends BacktoHomeController implements Initializab
         Number.setCellValueFactory( new PropertyValueFactory<>("quantity"));
         Price.setCellValueFactory(new PropertyValueFactory<>("price"));
         TotalPrice.setCellValueFactory(new PropertyValueFactory<>("total"));
+        DelColum.setCellFactory(param -> new javafx.scene.control.TableCell<OrderDetailItem, Void>(){
+            private final Button btn = new Button ("Del");
+            {
+                btn.setStyle("-fx-background-color: #ff4444; -fx-text-fill: white;");
+                btn.setOnAction(event -> {
+                    OrderDetailItem item = getTableView().getItems().get(getIndex());
+                orderList.remove(item);
+                calculateTotal();
+                orderDetail.refresh();
+                });            
+            }
+            @Override
+                protected void updateItem(Void item, boolean empty){
+        super.updateItem(item, empty);
+        if(empty){
+            setGraphic(null);
+        }else{
+            setGraphic(btn);
+        }
+    }
+            
+        });
+        
+        
+        
+        
+        
+        
         
         phonefind.textProperty().addListener((observable,oldValue,newValue) -> {
             
@@ -379,7 +409,6 @@ for(Product product : data){
 
 //    @FXML
 //    private void goBack(ActionEvent event) {
-//        
 //    }
 
     
