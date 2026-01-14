@@ -119,6 +119,14 @@
                 <Region HBox.hgrow="ALWAYS" />
 
                 <!-- CRUD buttons -->
+                <Button fx:id="btnRestock" onAction="#onRestock"
+        prefHeight="34" prefWidth="110"
+        style=" -fx-background-color: #FCD34D;
+            -fx-text-fill: #78350F;
+                -fx-font-weight: 800; 
+                -fx-background-radius: 10;"
+        text="Restock" />
+
                 <Button fx:id="btnAdd" onAction="#onAdd" prefHeight="34" prefWidth="90" style="-fx-background-color: #8B5E3C; -fx-text-fill: white; -fx-font-weight: 800; -fx-background-radius: 10;" text="+ Add" />
 
                 <Button fx:id="btnEdit" onAction="#onEdit" prefHeight="34" prefWidth="90" style="-fx-background-color: #F6E8D5; -fx-text-fill: Brown; -fx-font-weight: 800; -fx-background-radius: 10;" text="Edit" />

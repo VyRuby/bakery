@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.Spinner?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox spacing="12" style="-fx-background-color: #FFFFFF;" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.RestockPopupController">
+
+    <padding>
+        <Insets bottom="16" left="16" right="16" top="16" />
+    </padding>
+
+    <!-- Header -->
+    <HBox alignment="CENTER_LEFT" spacing="10">
+        <Label style="-fx-font-size: 18px; -fx-font-weight: 900; -fx-text-fill: #3b2f2f;" text="Restock Product" />
+        <Region HBox.hgrow="ALWAYS" />
+        <Label style="-fx-font-size: 12px; -fx-font-weight: 800; -fx-text-fill: #6B8E23;" text="IMPORT" />
+    </HBox>
+
+    <Separator />
+
+    <!-- Select product -->
+    <GridPane hgap="10" vgap="10">
+        <columnConstraints>
+            <ColumnConstraints prefWidth="90" />
+            <ColumnConstraints hgrow="ALWAYS" />
+        </columnConstraints>
+
+        <Label text="Product" />
+        <ComboBox fx:id="cbProduct" prefHeight="25.0" prefWidth="199.0" promptText="Choose a product..." GridPane.columnIndex="1" />
+
+        <Label text="Quantity" GridPane.rowIndex="1" />
+        <Spinner fx:id="spQty" prefWidth="200" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+      <rowConstraints>
+         <RowConstraints />
+         <RowConstraints />
+      </rowConstraints>
+    </GridPane>
+
+    <Label fx:id="lblMsg" style="-fx-text-fill: #B91C1C; -fx-font-weight: 700;" />
+
+    <!-- Buttons -->
+    <HBox alignment="CENTER_RIGHT" spacing="10">
+        <Button fx:id="btnClose" onAction="#onClose" prefHeight="25.0" prefWidth="59.0" style="-fx-background-color: #F3F4F6; -fx-text-fill: #111827; -fx-font-weight: 800; -fx-background-radius: 10;" text="Close" />
+        <Button fx:id="btnEdit" onAction="#onEdit" prefHeight="25.0" prefWidth="51.0" style="-fx-background-color: #F6E8D5; -fx-text-fill: #8B5E3C; -fx-font-weight: 900; -fx-background-radius: 10;" text="Edit" />
+
+        <Button fx:id="btnImport" onAction="#onImport" style="-fx-background-color: #6B8E23; -fx-text-fill: white; -fx-font-weight: 900; -fx-background-radius: 10;" text="Import" />
+    </HBox>
+
+    <Separator />
+
+    <!-- Log imported items -->
+<Label style="-fx-font-size: 13px; -fx-font-weight: 800; -fx-text-fill: #3b2f2f;" text="Restock List" />
+    <ListView fx:id="lvProducts" prefHeight="220" />
+
+
+</VBox>

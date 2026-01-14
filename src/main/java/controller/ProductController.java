@@ -47,8 +47,6 @@ public class ProductController extends BacktoHomeController implements Initializ
    
     
     @FXML
-    private ToggleGroup categoryGroup;
-    @FXML
     private Label lblUser;
     @FXML
     private Label lblStatus;
@@ -99,6 +97,10 @@ public class ProductController extends BacktoHomeController implements Initializ
     "C02", "Cake",
     "C03", "Cookie"
 );
+    @FXML
+    private Button btnBack;
+    @FXML
+    private Button btnRestock;
     
     /**
      * Initializes the controller class.
@@ -342,7 +344,7 @@ private void applyFilter() {
         // ===== CATEGORY =====
         boolean matchCategory =
         (!cat1 && !cat2 && !cat3) // không tick cái nào → lấy tất cả
-        || (cat1 && "Bread".equalsIgnoreCase(catName))
+        || (cat1 && "Baked".equalsIgnoreCase(catName))
         || (cat2 && "Cake".equalsIgnoreCase(catName))
         || (cat3 && "Cookie".equalsIgnoreCase(catName));
 
@@ -358,5 +360,10 @@ private void applyFilter() {
         return matchSearch && matchCategory && matchFilter;
     });
 }
+
+
+    @FXML
+    private void onRestock(ActionEvent event) {
+    }
 
     }    

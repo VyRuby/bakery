@@ -42,7 +42,13 @@ import controller.BacktoHomeController;
 import controller.CustomerController;
 import controller.ProductDetailController;
 import java.sql.SQLException;
-
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import com.itextpdf.text.*;
+import com.itextpdf.text.pdf.*;
+import java.io.FileOutputStream;
+import java.io.File;
+import org.w3c.dom.Document;
 /**
  * FXML Controller class
  *
@@ -80,6 +86,8 @@ public class OrderController extends BacktoHomeController implements Initializab
     private Button btnBack;
     @FXML
     private GridPane productGrid;
+    @FXML
+    private TableColumn<OrderDetailItem, Void> DelColum;
     
     
     
@@ -94,8 +102,55 @@ public class OrderController extends BacktoHomeController implements Initializab
         Number.setCellValueFactory( new PropertyValueFactory<>("quantity"));
         Price.setCellValueFactory(new PropertyValueFactory<>("price"));
         TotalPrice.setCellValueFactory(new PropertyValueFactory<>("total"));
+        DelColum.setCellFactory(param -> new javafx.scene.control.TableCell<OrderDetailItem, Void>(){
+            private final Button btn = new Button ("Del");
+            {
+                btn.setStyle("-fx-background-color: #ff4444; -fx-text-fill: white;");
+                btn.setOnAction(event -> {
+                    OrderDetailItem item = getTableView().getItems().get(getIndex());
+                orderList.remove(item);
+                calculateTotal();
+                orderDetail.refresh();
+                });            
+            }
+            @Override
+                protected void updateItem(Void item, boolean empty){
+        super.updateItem(item, empty);
+        if(empty){
+            setGraphic(null);
+        }else{
+            setGraphic(btn);
+        }
+    }
+            
+        });
         
         
+        
+        
+        
+        
+        
+        phonefind.textProperty().addListener((observable,oldValue,newValue) -> {
+            
+            if(!newValue.matches("\\d*")){
+                phonefind.setText(oldValue);
+            }
+            
+            if(newValue == null||newValue.trim().isEmpty()){
+                customer.setText("Visitor");
+                customer.setStyle("-fx-text-fill: black;");
+            }
+            
+            else if(newValue !=null&& newValue.length()>=10){
+                findCustomerByPhone();
+            }
+        });
+        
+        LocalDateTime now = LocalDateTime.now();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
+        String formatteDate= now.format(formatter);
+        dateOrder.setText(formatteDate);
 //        listProduct.setOnMouseClicked(e->{
 //            if(e.getClickCount() ==2){
 //                Product product =listProduct.getSelectionModel().getSelectedItem();
@@ -154,18 +209,26 @@ private CustomerDao customerDao = new CustomerDao();
     try{
     String phone= phonefind.getText();
     
+    if(phone.isEmpty()){
+        customer.setText("Visitor");
+        return;
+    }
+    
     Customer c =customerDao.findPhone(phone);
     
     if(c!=null){
         customer.setText(c.getName());
-    }else{
-        Customer visitor =customerDao.findByID(3);
-            customer.setText(visitor.getName());
-            phonefind.setText(visitor.getPhone());
+        customer.setStyle("-fx-text-fill: black;");
         
+    }else{
+//        Customer visitor =customerDao.findByID(3);
+            customer.setText("Not Found");
+            customer.setStyle("-fx-text-fill: red;");
+//            phonefind.setText(visitor.getPhone());
+            
     }
     }catch(Exception e){
-        System.out.println("Error! not found phone");
+        System.out.println("Error!");
     }
     }
     private productDao productDao = new productDao();
@@ -263,6 +326,7 @@ for(Product product : data){
     
     }
     
+    
     private VBox createProductCard(Product product){
         ImageView imageView = new ImageView();
         imageView.setFitWidth(120);
@@ -350,8 +414,58 @@ for(Product product : data){
 
 //    @FXML
 //    private void goBack(ActionEvent event) {
-//        
 //    }
+    
+    private void exportToPDF(int orderId, String customerName, String paymentMethod, float total){
+        Document document = new Document() {};
+        try{
+            String fileName= "Invoid_Order" + orderId + ".pdf";
+            PdfWriter.getInstance(document, new FileOutputStream(fileName));
+            document.open();
+            
+            com.itextpdf.text.Font titleFont = new com.itextpdf.text.Font(com.itextpdf.text.Font.FontFamily.HELVETICA,18 ,com.itextpdf.text.Font.BOLD);
+            com.itextpdf.text.Font  boldFont= new com.itextpdf.text.Font(com.itextpdf.text.Font.FontFamily.HELVETICA, 12 , com.itextpdf.text.Font.BOLD);
+            
+            Paragraph title= new Paragraph("Invoice", titleFont);
+            title.setAlignment(Element.ALIGN_CENTER);
+            document.add(title);
+            document.add(new Paragraph("*****************"));
+            
+            document.add(new Paragraph("Order ID: " + orderId));
+            document.add(new Paragraph("Customer: " + customerName));
+            document.add(new Paragraph("Date: " + dateOrder.getText()));
+            document.add(new Paragraph("Payment Method: " + paymentMethod));
+            document.add(new Paragraph(" "));
+            
+            
+            PdfPTable table = new PdfPTable(4);
+            table.setWidthPercentage(100);
+            table.setSpacingBefore(10f);
+            table.setSpacingAfter(10f);
+            
+            table.addCell(new Paragraph("Product Name", boldFont));
+            table.addCell(new Paragraph("Quantity", boldFont));
+            table.addCell(new Paragraph("Price", boldFont));
+            table.addCell(new Paragraph("Total", boldFont ));
+            
+            
+            for(OrderDetailItem item : orderList){
+            table.addCell(item.getProduct().getProductName());
+            table.addCell(String.valueOf(item.getQuantity()));
+            table.addCell(item.getPrice() + "USD");
+            table.addCell(item.getTotal() + "USD");
+            
+            }
+            document.add(table);
+            
+            
+            
+            
+        }catch(Exception e){
+            System.out.println("Error Print PDF!" + e);
+            e.printStackTrace();
+        }
+    }
 
     
     
