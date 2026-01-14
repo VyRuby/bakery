@@ -121,8 +121,8 @@
                 <!-- CRUD buttons -->
                 <Button fx:id="btnRestock" onAction="#onRestock"
         prefHeight="34" prefWidth="110"
-        style=" -fx-background-color: #FCD34D;
-            -fx-text-fill: #78350F;
+        style=" -fx-background-color: #6B8E23;
+            -fx-text-fill: white;
                 -fx-font-weight: 800; 
                 -fx-background-radius: 10;"
         text="Restock" />
@@ -146,11 +146,12 @@
                     <columns>
                         <!-- Bạn đổi tên cột theo ERD của bạn -->
                         <TableColumn fx:id="colId" prefWidth="70" text="ID" />
-                        <TableColumn fx:id="colName" prefWidth="177.3333511352539" text="Name" />
-                        <TableColumn fx:id="colCategory" prefWidth="92.66661071777344" text="Category" />
-                        <TableColumn fx:id="colPrice" prefWidth="173.33340454101562" text="Price" />
-                        <TableColumn fx:id="colQuantity" prefWidth="116.00006103515625" text="Quantity" />
-                        <TableColumn fx:id="colUnit" prefWidth="93.333251953125" text="Unit" />
+                        <TableColumn fx:id="colName" prefWidth="177" text="Name" />
+                        <TableColumn fx:id="colCategory" prefWidth="92" text="Category" />
+                        <TableColumn fx:id="colCostPrice" prefWidth="92" text="CostPrice" />
+                        <TableColumn fx:id="colPrice" prefWidth="92" text="Price" />
+                        <TableColumn fx:id="colQuantity" prefWidth="90" text="Quantity" />
+                        <TableColumn fx:id="colUnit" prefWidth="100" text="Unit" />
                     </columns>
                 </TableView>
 

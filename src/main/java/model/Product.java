@@ -13,14 +13,16 @@ public class Product {
     private String productId, productName , categoryId, unit,description,image ;
     private int quantity;
     private float price;
+    private float costPrice;
 
 //    =======constructor============
-    public Product(String productId, String productName, String categoryId, int quantity, String unit, float price, String description, String image ) {
+    public Product(String productId, String productName, String categoryId, int quantity, String unit, float costPrice, float price, String description, String image ) {
         this.productId = productId;
         this.productName = productName;
         this.categoryId = categoryId;
         this.quantity = quantity;
         this.unit = unit;
+        this.costPrice = costPrice;
         this.price = price;
         this.description = description;
         this.image = image;
@@ -61,6 +63,13 @@ public class Product {
     public float getPrice() {
         return price;
     }
+    
+    public float getCostPrice() {   
+        return costPrice;
+    }
+
+    
+
 
     @Override
     public String toString() {
@@ -99,6 +108,10 @@ public class Product {
 
     public void setPrice(float price) {
         this.price = price;
+    }
+    
+    public void setCostPrice(float costPrice) {
+        this.costPrice = costPrice;
     }
 
     public Object getCategory() {

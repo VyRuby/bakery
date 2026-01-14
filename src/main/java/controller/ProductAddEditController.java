@@ -44,6 +44,8 @@ public class ProductAddEditController implements Initializable {
     private ComboBox<String> cbCategory;
     @FXML
     private TextField txtUnit;
+//    @FXML
+//    private TextField txtCostPrice;
     @FXML
     private TextField txtPrice;
     @FXML
@@ -119,11 +121,17 @@ private void handleSave(ActionEvent event) {
         }
 
         float price = Float.parseFloat(txtPrice.getText().trim());
+//        float costPrice = Float.parseFloat(txtCostPrice.getText());
+        // KHÔNG lấy từ TextField nữa
+        float costPrice = (editingProduct != null)
+                ? editingProduct.getCostPrice()   // Edit → giữ nguyên
+                : 0f;                             // Add → mặc định 0
+
 
         // quantity không chỉnh: giữ nguyên nếu Edit, còn Add thì = 0
         int quantity = (editingProduct != null) ? editingProduct.getQuantity() : 0;
 
-       Product p = new Product(id, name, categoryId, quantity, unit, price, desc, image);
+       Product p = new Product(id, name, categoryId, quantity, unit, costPrice, price, desc, image);
         result = p;
 
         ((Stage) btnSave.getScene().getWindow()).close();

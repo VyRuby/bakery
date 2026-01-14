@@ -12,6 +12,10 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import app.ConnectDB;
+import java.time.LocalDate;
+import model.RestockItem;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 /**
  *
  * @author Admin
@@ -35,6 +39,7 @@ public class productDao {
            rs.getString("CategoryID"),
            rs.getInt("Quantity"),
            rs.getString("Unit"),
+           rs.getFloat("CostPrice"),
            rs.getFloat("Price"),
            rs.getString("Description"),
            rs.getString("Image")
@@ -70,6 +75,7 @@ public class productDao {
                         rs.getString("CategoryID"),
                         rs.getInt("Quantity"),
                         rs.getString("Unit"),
+                        rs.getFloat("CostPrice"),
                         rs.getFloat("Price"),
                         rs.getString("Description"),
                         rs.getString("Image")
@@ -98,7 +104,7 @@ public class productDao {
         }
         return false;
     }
-
+    // ================= INSERT =================
     public void insert(Product p) {
           String sql = "INSERT INTO product "
                + "(ProductID, ProductName, CategoryID, Quantity, Unit, Price, Description, Image) "
@@ -112,6 +118,7 @@ public class productDao {
             ps.setString(3, p.getCategoryId());
             ps.setInt(4, p.getQuantity());
             ps.setString(5, p.getUnit());
+            ps.setFloat(6, p.getCostPrice());
             ps.setFloat(6, p.getPrice());
             ps.setString(7, p.getDescription());
             ps.setString(8, p.getImage());
@@ -123,7 +130,7 @@ public class productDao {
             throw new RuntimeException("Insert product failed");
         }
     }
-
+    // ================= UPDATE =================
     public void update(Product p) {
 
         String sql = "UPDATE product SET "
@@ -151,7 +158,7 @@ public class productDao {
         }
     }
 
-
+    // ================= DELETE =================
      public void delete(String productId) {
 
         String sql = "DELETE FROM product WHERE ProductID = ?";
@@ -172,8 +179,172 @@ public class productDao {
         List<Product> list = findAll();
         return list.toArray(new Product[0]);
     }
-   
     
-   
-    
+
+    // Tạo ImportID dạng IM202601150438
+    public String genImportId() {
+        String ts = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss"));
+        return "IM" + ts;
+    }
+
+    // =======================
+    // Create IMPORT header (chỉ gọi 1 lần khi mở popup)
+    // =======================
+    public void createImportHeader(String importId) {
+        String sql = "INSERT IGNORE INTO IMPORT(ImportID, Note) VALUES(?, ?)";
+
+        try (Connection con = ConnectDB.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+
+            ps.setString(1, importId);
+            ps.setString(2, "Restock from UI");
+            ps.executeUpdate();
+
+        } catch (Exception e) {
+            throw new RuntimeException("Create IMPORT failed: " + e.getMessage());
+        }
+    }
+
+    // =======================
+    // Insert hoặc Update IMPORT_DETAIL (cùng ImportID)
+    // =======================
+    public void upsertImportDetail(
+            String importId,
+            String productId,
+            int qty,
+            double costPrice
+    ) {
+        String sql =
+        "INSERT INTO IMPORT_DETAIL(ImportID, ProductID, Quantity, CostPrice) " +
+        "VALUES(?, ?, ?, ?) " +
+        "ON DUPLICATE KEY UPDATE " +
+        "Quantity = VALUES(Quantity), " +
+        "CostPrice = VALUES(CostPrice)";
+
+
+        try (Connection con = ConnectDB.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+
+            ps.setString(1, importId);
+            ps.setString(2, productId);
+            ps.setInt(3, qty);
+            ps.setDouble(4, costPrice);
+            ps.executeUpdate();
+
+        } catch (Exception e) {
+            throw new RuntimeException("Upsert IMPORT_DETAIL failed: " + e.getMessage());
+        }
+    }
+
+    // =======================
+    // Update PRODUCT (SET quantity, không cộng)
+    // =======================
+    public void updateProductSetQuantity(
+            String productId,
+            int qty,
+            double costPrice
+    ) {
+        String sql = "UPDATE PRODUCT SET Quantity = ?, CostPrice = ? WHERE ProductID = ?";
+
+        try (Connection con = ConnectDB.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+
+            ps.setInt(1, qty);
+            ps.setDouble(2, costPrice);
+            ps.setString(3, productId);
+            ps.executeUpdate();
+
+        } catch (Exception e) {
+            throw new RuntimeException("Update PRODUCT failed: " + e.getMessage());
+        }
+    }
+
+    // =======================
+    // Lấy ProductName (phục vụ ListView)
+    // =======================
+    public String getProductName(String productId) {
+        String sql = "SELECT ProductName FROM PRODUCT WHERE ProductID = ?";
+
+        try (Connection con = ConnectDB.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+
+            ps.setString(1, productId);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) return rs.getString("ProductName");
+            }
+
+        } catch (Exception e) {
+            throw new RuntimeException(e.getMessage());
+        }
+        return "";
+    }
+
+        public void resetQuantityIfNewDay() {
+            String lockSql = "SELECT ConfigValue FROM SYSTEM_CONFIG WHERE ConfigKey = 'LAST_RESET_DATE' FOR UPDATE";
+            String updateProductSql = "UPDATE PRODUCT SET Quantity = 0";
+            String updateConfigSql = "UPDATE SYSTEM_CONFIG SET ConfigValue = ? WHERE ConfigKey = 'LAST_RESET_DATE'";
+
+            try (Connection con = ConnectDB.getConnection()) {
+                con.setAutoCommit(false);
+
+                LocalDate today = LocalDate.now();
+                String lastReset;
+
+                try (PreparedStatement psLock = con.prepareStatement(lockSql);
+                     ResultSet rs = psLock.executeQuery()) {
+
+                    if (!rs.next()) {
+                        // nếu thiếu key (trường hợp DB chưa insert)
+                        throw new RuntimeException("SYSTEM_CONFIG missing key LAST_RESET_DATE");
+                    }
+                    lastReset = rs.getString(1);
+                }
+
+                LocalDate last = LocalDate.parse(lastReset); // format yyyy-MM-dd
+
+                if (!last.equals(today)) {
+                    try (PreparedStatement ps1 = con.prepareStatement(updateProductSql);
+                         PreparedStatement ps2 = con.prepareStatement(updateConfigSql)) {
+
+                        ps1.executeUpdate();
+
+                        ps2.setString(1, today.toString());
+                        ps2.executeUpdate();
+                    }
+                }
+
+                con.commit();
+                con.setAutoCommit(true);
+
+            } catch (Exception e) {
+                e.printStackTrace();
+                // rollback an toàn
+                // (try-catch riêng vì con đã đóng nếu lỗi ở try-with-resources)
+                throw new RuntimeException("Daily reset failed: " + e.getMessage());
+            }
+        }
+        
+        //DELETE mã import rỗng
+                public void deleteImportIfEmpty(String importId) {
+            String sql =
+                "DELETE FROM IMPORT " +
+                "WHERE ImportID = ? " +
+                "AND NOT EXISTS ( " +
+                "    SELECT 1 FROM IMPORT_DETAIL WHERE ImportID = ? " +
+                ")";
+
+            try (Connection con = ConnectDB.getConnection();
+                 PreparedStatement ps = con.prepareStatement(sql)) {
+
+                ps.setString(1, importId);
+                ps.setString(2, importId);
+                ps.executeUpdate();
+
+            } catch (Exception e) {
+                e.printStackTrace();
+                throw new RuntimeException("Delete empty IMPORT failed: " + e.getMessage());
+            }
+        }
+
+
        }

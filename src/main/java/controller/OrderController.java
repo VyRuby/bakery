@@ -412,62 +412,60 @@ for(Product product : data){
         
     }
 
-//    @FXML
-//    private void goBack(ActionEvent event) {
-//    }
-    
-    private void exportToPDF(int orderId, String customerName, String paymentMethod, float total){
-        Document document = new Document() {};
-        try{
-            String fileName= "Invoid_Order" + orderId + ".pdf";
-            PdfWriter.getInstance(document, new FileOutputStream(fileName));
-            document.open();
-            
-            com.itextpdf.text.Font titleFont = new com.itextpdf.text.Font(com.itextpdf.text.Font.FontFamily.HELVETICA,18 ,com.itextpdf.text.Font.BOLD);
-            com.itextpdf.text.Font  boldFont= new com.itextpdf.text.Font(com.itextpdf.text.Font.FontFamily.HELVETICA, 12 , com.itextpdf.text.Font.BOLD);
-            
-            Paragraph title= new Paragraph("Invoice", titleFont);
-            title.setAlignment(Element.ALIGN_CENTER);
-            document.add(title);
-            document.add(new Paragraph("*****************"));
-            
-            document.add(new Paragraph("Order ID: " + orderId));
-            document.add(new Paragraph("Customer: " + customerName));
-            document.add(new Paragraph("Date: " + dateOrder.getText()));
-            document.add(new Paragraph("Payment Method: " + paymentMethod));
-            document.add(new Paragraph(" "));
-            
-            
-            PdfPTable table = new PdfPTable(4);
-            table.setWidthPercentage(100);
-            table.setSpacingBefore(10f);
-            table.setSpacingAfter(10f);
-            
-            table.addCell(new Paragraph("Product Name", boldFont));
-            table.addCell(new Paragraph("Quantity", boldFont));
-            table.addCell(new Paragraph("Price", boldFont));
-            table.addCell(new Paragraph("Total", boldFont ));
-            
-            
-            for(OrderDetailItem item : orderList){
-            table.addCell(item.getProduct().getProductName());
-            table.addCell(String.valueOf(item.getQuantity()));
-            table.addCell(item.getPrice() + "USD");
-            table.addCell(item.getTotal() + "USD");
-            
-            }
-            document.add(table);
-            
-            
-            
-            
-        }catch(Exception e){
-            System.out.println("Error Print PDF!" + e);
-            e.printStackTrace();
-        }
-    }
 
     
+//    private void exportToPDF(int orderId, String customerName, String paymentMethod, float total){
+//        Document document = new Document() {};
+//        try{
+//            String fileName= "Invoid_Order" + orderId + ".pdf";
+//            PdfWriter.getInstance(document, new FileOutputStream(fileName));
+//            document.open();
+//            
+//            com.itextpdf.text.Font titleFont = new com.itextpdf.text.Font(com.itextpdf.text.Font.FontFamily.HELVETICA,18 ,com.itextpdf.text.Font.BOLD);
+//            com.itextpdf.text.Font  boldFont= new com.itextpdf.text.Font(com.itextpdf.text.Font.FontFamily.HELVETICA, 12 , com.itextpdf.text.Font.BOLD);
+//            
+//            Paragraph title= new Paragraph("Invoice", titleFont);
+//            title.setAlignment(Element.ALIGN_CENTER);
+//            document.add(title);
+//            document.add(new Paragraph("*****************"));
+//            
+//            document.add(new Paragraph("Order ID: " + orderId));
+//            document.add(new Paragraph("Customer: " + customerName));
+//            document.add(new Paragraph("Date: " + dateOrder.getText()));
+//            document.add(new Paragraph("Payment Method: " + paymentMethod));
+//            document.add(new Paragraph(" "));
+//            
+//            
+//            PdfPTable table = new PdfPTable(4);
+//            table.setWidthPercentage(100);
+//            table.setSpacingBefore(10f);
+//            table.setSpacingAfter(10f);
+//            
+//            table.addCell(new Paragraph("Product Name", boldFont));
+//            table.addCell(new Paragraph("Quantity", boldFont));
+//            table.addCell(new Paragraph("Price", boldFont));
+//            table.addCell(new Paragraph("Total", boldFont ));
+//            
+//            
+//            for(OrderDetailItem item : orderList){
+//            table.addCell(item.getProduct().getProductName());
+//            table.addCell(String.valueOf(item.getQuantity()));
+//            table.addCell(item.getPrice() + "USD");
+//            table.addCell(item.getTotal() + "USD");
+//            
+//            }
+//            document.add(table);
+//            
+//            
+//            
+//            
+//        }catch(Exception e){
+//            System.out.println("Error Print PDF!" + e);
+//            e.printStackTrace();
+//        }
+//    }
+//
+//    
     
     
 }

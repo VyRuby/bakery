@@ -64,7 +64,8 @@ public class ProductController extends BacktoHomeController implements Initializ
     private TextField txtSearch;
     @FXML
     private ComboBox<String> cbFilter;
-  
+    @FXML
+    private Button btnRestock;
     @FXML
     private Button btnAdd;
     @FXML
@@ -79,6 +80,7 @@ public class ProductController extends BacktoHomeController implements Initializ
     @FXML private TableColumn<Product, String> colId;
     @FXML private TableColumn<Product, String> colName;
     @FXML private TableColumn<Product, String> colCategory;
+    @FXML private TableColumn<Product, Double> colCostPrice;
     @FXML private TableColumn<Product, Double> colPrice;
     @FXML private TableColumn<Product, Integer> colQuantity;
     @FXML private TableColumn<Product, String> colUnit;
@@ -97,16 +99,15 @@ public class ProductController extends BacktoHomeController implements Initializ
     "C02", "Cake",
     "C03", "Cookie"
 );
-    @FXML
-    private Button btnBack;
-    @FXML
-    private Button btnRestock;
     
     /**
      * Initializes the controller class.
      */
     @Override
     public void initialize(URL url, ResourceBundle rb) {
+        //RESET số lượng sản phẩm 
+        productDao.resetQuantityIfNewDay();
+    
         colId.setCellValueFactory(new PropertyValueFactory<>("productId"));
         colName.setCellValueFactory(new PropertyValueFactory<>("productName"));
         //Show cat name từ catID
@@ -117,6 +118,7 @@ public class ProductController extends BacktoHomeController implements Initializ
         });
         
         colQuantity.setCellValueFactory(new PropertyValueFactory<>("quantity"));
+        colCostPrice.setCellValueFactory(new PropertyValueFactory<>("costPrice"));
         colPrice.setCellValueFactory(new PropertyValueFactory<>("price"));
         colUnit.setCellValueFactory(new PropertyValueFactory<>("unit"));
 
@@ -364,6 +366,30 @@ private void applyFilter() {
 
     @FXML
     private void onRestock(ActionEvent event) {
+       
+    try {
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/Restock.fxml")); 
+      
+
+        Parent root = loader.load();
+
+
+        Stage stage = new Stage();
+        stage.initModality(Modality.APPLICATION_MODAL); // popup chặn màn hình chính
+        stage.setTitle("Restock Product");
+        stage.setScene(new Scene(root));
+        stage.setResizable(false);
+        stage.showAndWait();
+
+        // Sau khi đóng popup -> refresh bảng
+        viewTable();          // hoặc gọi lại hàm fill table của bạn
+        tblProducts.refresh();
+
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
+}
+
     }
 
-    }    
+    
