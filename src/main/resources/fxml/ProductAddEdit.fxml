@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.control.CheckBox?>
+
+
+<BorderPane xmlns="http://javafx.com/javafx/13"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="controller.ProductAddEditController"
+            prefWidth="780" prefHeight="520"
+            style="-fx-background-color: #FAF3E0;">
+
+    <!-- ===== HEADER ===== -->
+    <top>
+        <HBox spacing="12" alignment="CENTER_LEFT"
+              style="-fx-background-color: white; -fx-border-color: #E6E8EF; -fx-border-width: 0 0 1 0;">
+            <padding>
+                <Insets top="14" right="18" bottom="14" left="18"/>
+            </padding>
+
+            <Label fx:id="lblTitle" text="Product Detail"
+                   style="-fx-font-size: 18px; -fx-font-weight: 800; -fx-text-fill: #1F2A37;"/>
+
+            <Label text=""
+                   style="-fx-font-size: 12px; -fx-text-fill: #6B7280;"/>
+            <Region HBox.hgrow="ALWAYS"/>
+
+            <Label fx:id="lblMode" text="EDIT"
+                   style="-fx-background-color: #EEF2FF; -fx-text-fill: #8B5E3C; -fx-font-weight: 700; -fx-padding: 6 10; -fx-background-radius: 10;"/>
+        </HBox>
+    </top>
+
+    <!-- ===== CONTENT ===== -->
+    <center>
+        <HBox spacing="18">
+            <padding>
+                <Insets top="18" right="18" bottom="18" left="18"/>
+            </padding>
+
+            <!-- LEFT: FORM -->
+            <VBox spacing="12" HBox.hgrow="ALWAYS">
+                <GridPane hgap="12" vgap="10">
+                    <columnConstraints>
+                        <ColumnConstraints percentWidth="28"/>
+                        <ColumnConstraints percentWidth="72"/>
+                    </columnConstraints>
+
+                    <Label text="Product ID:" GridPane.rowIndex="0" GridPane.columnIndex="0"
+                           style="-fx-text-fill: #374151; -fx-font-weight: 700;"/>
+                    <TextField fx:id="txtId" GridPane.rowIndex="0" GridPane.columnIndex="1"
+                               promptText="e.g. P01"
+                               style="-fx-background-color: white; -fx-background-radius: 10; -fx-border-radius: 10; -fx-border-color: #E5E7EB;"/>
+
+                    <Label text="Name:" GridPane.rowIndex="1" GridPane.columnIndex="0"
+                           style="-fx-text-fill: #374151; -fx-font-weight: 700;"/>
+                    <TextField fx:id="txtName" GridPane.rowIndex="1" GridPane.columnIndex="1"
+                               promptText="Product name"
+                               style="-fx-background-color: white; -fx-background-radius: 10; -fx-border-radius: 10; -fx-border-color: #E5E7EB;"/>
+
+                    <Label text="Category:" GridPane.rowIndex="2" GridPane.columnIndex="0"
+                           style="-fx-text-fill: #374151; -fx-font-weight: 700;"/>
+                    <ComboBox fx:id="cbCategory" GridPane.rowIndex="2" GridPane.columnIndex="1"
+                              promptText="Select category"
+                              style="-fx-background-color: white; -fx-background-radius: 10; -fx-border-radius: 10; -fx-border-color: #E5E7EB;"/>
+
+                    <Label text="Unit:" GridPane.rowIndex="3" GridPane.columnIndex="0"
+                           style="-fx-text-fill: #374151; -fx-font-weight: 700;"/>
+                    <TextField fx:id="txtUnit" GridPane.rowIndex="3" GridPane.columnIndex="1"
+                               promptText="piece / box / cup..."
+                               style="-fx-background-color: white; -fx-background-radius: 10; -fx-border-radius: 10; -fx-border-color: #E5E7EB;"/>
+
+                    <Label text="Price:" GridPane.rowIndex="4" GridPane.columnIndex="0"
+                           style="-fx-text-fill: #374151; -fx-font-weight: 700;"/>
+                    <TextField fx:id="txtPrice" GridPane.rowIndex="4" GridPane.columnIndex="1"
+                               promptText="e.g. 150000"
+                               style="-fx-background-color: white; -fx-background-radius: 10; -fx-border-radius: 10; -fx-border-color: #E5E7EB;"/>
+
+                    <!-- Quantity: DISPLAY ONLY -->
+                    <Label text="Quantity:" GridPane.rowIndex="5" GridPane.columnIndex="0"
+                           style="-fx-text-fill: #374151; -fx-font-weight: 700;"/>
+                    <HBox spacing="10" alignment="CENTER_LEFT" GridPane.rowIndex="5" GridPane.columnIndex="1">
+                        <Label fx:id="lblQuantity" text="0"
+                               style="-fx-background-color: #F3F4F6; -fx-text-fill: #111827; -fx-padding: 6 10; -fx-background-radius: 10; -fx-font-weight: 700;"/>
+                        <Label text="(Quantity is managed in Import screen)"
+                               style="-fx-text-fill: #6B7280; -fx-font-size: 11px;"/>
+                        <!-- Nếu muốn có nút chuyển qua Import -->
+                        <!-- <Button fx:id="btnImportStock" text="Import Stock..." onAction="#onImportStock"
+                                style="-fx-background-color:#EEF2FF; -fx-text-fill:#8B5E3C; -fx-font-weight:700; -fx-background-radius:10;"/> -->
+                    </HBox>
+
+                    <Label text="Image path:" GridPane.rowIndex="6" GridPane.columnIndex="0"
+                           style="-fx-text-fill: #374151; -fx-font-weight: 700;"/>
+                    <HBox spacing="10" GridPane.rowIndex="6" GridPane.columnIndex="1">
+                        <TextField fx:id="txtImage" promptText="image/chocolate.jpg"
+                                   HBox.hgrow="ALWAYS"
+                                   style="-fx-background-color: white; -fx-background-radius: 10; -fx-border-radius: 10; -fx-border-color: #E5E7EB;"/>
+                        <Button fx:id="btnBrowse" text="Browse"
+                                onAction="#onBrowseImage"
+                                style="-fx-background-color: #EEF2FF; -fx-text-fill: #8B5E3C; -fx-font-weight: 700; -fx-background-radius: 10;"/>
+                    </HBox>
+                </GridPane>
+
+                <Label text="Description:" style="-fx-text-fill: #374151; -fx-font-weight: 700;"/>
+                <TextArea fx:id="txtDescription" prefRowCount="5" wrapText="true"
+                          promptText="Write something about this product..."
+                          style="-fx-background-color: white; -fx-background-radius: 10; -fx-border-radius: 10; -fx-border-color: #E5E7EB;"/>
+
+                <Label fx:id="lblMsg" text=""
+                       style="-fx-text-fill: #B91C1C; -fx-font-size: 12px;"/>
+            </VBox>
+
+            <!-- RIGHT: IMAGE PREVIEW -->
+            <VBox spacing="10" alignment="TOP_CENTER" prefWidth="260"
+                  style="-fx-background-color: rgba(255,255,255,0.65); -fx-background-radius: 14; -fx-border-color: #E5E7EB; -fx-border-radius: 14;">
+                <padding>
+                    <Insets top="12" right="12" bottom="12" left="12"/>
+                </padding>
+
+                <Label text="Preview"
+                       style="-fx-font-size: 14px; -fx-font-weight: 800; -fx-text-fill: #111827;"/>
+
+                <ImageView fx:id="imgProduct"
+                           fitWidth="220" fitHeight="220"
+                           preserveRatio="true" smooth="true"
+                           style="-fx-background-color: #F3F4F6; -fx-background-radius: 14;"/>
+
+                <Label fx:id="lblPreviewName" text="(name)"
+                       style="-fx-font-weight: 700; -fx-text-fill: #1F2A37;"/>
+
+                <Label fx:id="lblPreviewPrice" text="(price)"
+                       style="-fx-text-fill: #6B7280;"/>
+            </VBox>
+        </HBox>
+    </center>
+
+    <!-- ===== FOOTER BUTTONS ===== -->
+    <bottom>
+        <HBox spacing="10" alignment="CENTER_RIGHT"
+              style="-fx-background-color: #FAF3E0;">
+            <padding>
+                <Insets top="10" right="18" bottom="16" left="18"/>
+            </padding>
+
+            <Button text="Cancel" fx:id="btnCancel" onAction="#onCancel"
+                    style="-fx-background-color: white; -fx-text-fill: #374151; -fx-font-weight: 700; -fx-background-radius: 10; -fx-border-color: #E5E7EB; -fx-border-radius: 10;"/>
+
+            <Button text="Save" fx:id="btnSave" onAction="#handleSave"
+                    style="-fx-background-color: #8B5E3C; -fx-text-fill: white; -fx-font-weight: 800; -fx-background-radius: 10;"/>
+        </HBox>
+    </bottom>
+
+</BorderPane>

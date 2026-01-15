@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.VBox?>
+
+<BorderPane style="-fx-background-color: #EED9C4;" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.PayrollController">
+
+    <!-- ================= TOP ================= -->
+    <!-- ================= TOP ================= -->
+<top>
+    <VBox spacing="12" style="-fx-background-color: #EED9C4;">
+        <padding>
+            <Insets bottom="12" left="16" right="16" top="12" />
+        </padding>
+
+        <!-- ===== HEADER: LOGO + TITLE ===== -->
+<HBox alignment="CENTER_LEFT" prefHeight="65.0" prefWidth="834.0" spacing="12" style="-fx-padding: 10; -fx-background-color: white; -fx-background-radius: 16; -fx-border-color: #C19A6B; -fx-border-radius: 16; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.15), 10, 0, 0, 3);">
+
+    <!-- LOGO -->
+    <ImageView fitHeight="80" fitWidth="120" preserveRatio="false">
+        <image>
+            <Image url="@../image/logo.jpeg" />
+        </image>
+    </ImageView>
+
+    <!-- Spacer trái -->
+    <Region HBox.hgrow="ALWAYS" />
+
+    <!-- TITLE ở giữa -->
+    <Label style="-fx-font-size: 22px;                   -fx-font-weight: bold;                   -fx-text-fill: #3E2723;" text="PAYROLL MANAGEMENT" />
+
+    <!-- Spacer phải -->
+    <Region HBox.hgrow="ALWAYS" />
+
+</HBox>
+
+        <!-- FILTER BAR -->
+        <HBox alignment="CENTER_LEFT" spacing="12" style="-fx-padding: 10;                      -fx-background-color: #FAEBD7;                      -fx-background-radius: 14;                      -fx-border-color: #C19A6B;                      -fx-border-radius: 14;">
+
+            <Label style="-fx-text-fill: #3E2723;                           -fx-font-weight: bold;" text="Month:" />
+
+            <ComboBox fx:id="cbMonth" prefWidth="110" style="-fx-background-color: #FFFDF8;                              -fx-border-color: #C19A6B;                              -fx-border-radius: 10;                              -fx-background-radius: 10;" />
+
+            <Button fx:id="btnCalculate" onAction="#handleCalculate" style="-fx-background-color: #8B5E3C;                            -fx-text-fill: white;                            -fx-font-weight: bold;                            -fx-background-radius: 12;                            -fx-padding: 6 16;" text="Calculate Salary" />
+
+            <Button fx:id="btnRefresh" onAction="#handleRefresh" style="-fx-background-color: #8B5E3C;                            -fx-text-fill: white;                            -fx-font-weight: bold;                            -fx-background-radius: 12;                            -fx-padding: 6 16;" text="Refresh" />
+        </HBox>
+    </VBox>
+</top>
+
+
+    <!-- ================= CENTER ================= -->
+    <center>
+        <VBox style="-fx-background-color: #EED9C4;">
+            <padding>
+                <Insets bottom="10" left="16" right="16" top="0" />
+            </padding>
+
+            <TableView fx:id="tblPayroll" style="-fx-background-color: #FAEBD7;                            -fx-border-color: #C19A6B;                            -fx-border-radius: 14;                            -fx-background-radius: 14;">
+
+                <columns>
+                    <TableColumn fx:id="colEmpId" prefWidth="110" text="Employee ID" />
+                    <TableColumn fx:id="colName" prefWidth="160" text="Full Name" />
+                    <TableColumn fx:id="colMonth" prefWidth="70" text="Month" />
+                    <TableColumn fx:id="colBaseSalary" prefWidth="130" text="Base Salary" />
+                    <TableColumn fx:id="colBonus" prefWidth="110" text="Bonus" />
+                    <TableColumn fx:id="colPenalty" prefWidth="110" text="Penalty" />
+                    <TableColumn fx:id="colTotalSalary" prefWidth="140" text="Total Salary" />
+                </columns>
+            </TableView>
+        </VBox>
+    </center>
+
+    <!-- ================= BOTTOM ================= -->
+    <bottom>
+        <HBox alignment="CENTER_RIGHT" style="-fx-background-color: #EED9C4;">
+            <padding>
+                <Insets bottom="10" left="16" right="16" top="6" />
+            </padding>
+
+            <Label style="-fx-text-fill: #6D4C41;                            -fx-font-style: italic;" text="Employee can view only | Manager has full control" />
+        </HBox>
+    </bottom>
+
+</BorderPane>

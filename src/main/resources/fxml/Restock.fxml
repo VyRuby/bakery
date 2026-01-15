@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.Spinner?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox spacing="12" style="-fx-background-color: #FFFFFF;" xmlns="http://javafx.com/javafx/13" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.RestockController">
+
+    <padding>
+        <Insets bottom="16" left="16" right="16" top="16" />
+    </padding>
+
+    <!-- Header -->
+    <HBox alignment="CENTER_LEFT" spacing="10">
+        <Label style="-fx-font-size: 18px; -fx-font-weight: 900; -fx-text-fill: #3b2f2f;" text="Restock Product" />
+        <Region HBox.hgrow="ALWAYS" />
+        <Label style="-fx-font-size: 12px; -fx-font-weight: 800; -fx-text-fill: #6B8E23;" text="IMPORT" />
+    </HBox>
+
+    <Separator />
+
+    <!-- Select product -->
+   <GridPane hgap="10" vgap="10">
+    <columnConstraints>
+        <ColumnConstraints prefWidth="90" />
+        <ColumnConstraints hgrow="ALWAYS" prefWidth="220" />
+    </columnConstraints>
+
+    <rowConstraints>
+        <RowConstraints />
+        <RowConstraints />
+        <RowConstraints />
+    </rowConstraints>
+
+    <Label text="Product" GridPane.columnIndex="0" GridPane.rowIndex="0" />
+    <ComboBox fx:id="cbProduct" prefHeight="25.0" prefWidth="221.0" promptText="Choose a product..." GridPane.columnIndex="1" GridPane.rowIndex="0" />
+
+    <Label text="Quantity" GridPane.columnIndex="0" GridPane.rowIndex="1" />
+    <Spinner fx:id="spQty" prefHeight="25.0" prefWidth="220.0" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+
+    <Label text="Cost Price" GridPane.columnIndex="0" GridPane.rowIndex="2" />
+    <TextField fx:id="txtCostPrice" prefHeight="25.0" prefWidth="187.0" promptText="Enter cost price" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+</GridPane>
+
+
+    <Label fx:id="lblMsg" style="-fx-text-fill: #B91C1C; -fx-font-weight: 700;" />
+
+    <!-- Buttons -->
+    <HBox alignment="CENTER_RIGHT" spacing="10">
+        <Button fx:id="btnClose" onAction="#onClose" prefHeight="25.0" prefWidth="59.0" style="-fx-background-color: #F3F4F6; -fx-text-fill: #111827; -fx-font-weight: 800; -fx-background-radius: 10;" text="Close" />
+        <Button fx:id="btnUpdate" onAction="#onUpdate" style="-fx-background-color: #6B8E23; -fx-text-fill: white; -fx-font-weight: 900; -fx-background-radius: 10;" text="Update" />
+    </HBox>
+
+    <Separator />
+
+   
+<Label style="-fx-font-size: 13px; -fx-font-weight: 800; -fx-text-fill: #3b2f2f;" text="Restock List" />
+    <ListView fx:id="lvProducts" prefHeight="220" />
+
+
+</VBox>

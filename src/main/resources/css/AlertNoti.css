@@ -1,0 +1,136 @@
+/* ===============================
+   BASE DIALOG
+================================ */
+.dialog-pane {
+    -fx-font-family: "Segoe UI";
+    -fx-font-size: 14px;
+    -fx-background-color: #f7f2ea;
+    -fx-border-color: #d6c3a5;
+    -fx-border-width: 1;
+
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.18), 24, 0.25, 0, 6);
+}
+
+/* ===============================
+   HEADER
+================================ */
+.dialog-pane .header-panel {
+    -fx-background-color: linear-gradient(
+        to bottom,
+        #e9dcc6,
+        #d6c3a5
+    );
+    -fx-background-radius: 16 16 0 0;
+    -fx-padding: 14 20 14 20;
+}
+
+.dialog-pane .header-panel .label {
+    -fx-text-fill: #5a3e2b;
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+}
+
+/* ===============================
+   CONTENT
+================================ */
+.dialog-pane .content {
+    -fx-padding: 18 24 18 24;
+}
+
+.dialog-pane .content.label {
+    -fx-text-fill: #4b3a2f;
+    -fx-font-size: 14px;
+    -fx-alignment: center;
+}
+
+/* ===============================
+   BUTTON BAR
+================================ */
+.dialog-pane .button-bar {
+    -fx-padding: 16 20 20 20;
+    -fx-background-color: transparent;
+}
+
+/* ===============================
+   BUTTONS
+================================ */
+.dialog-pane .button {
+    -fx-background-radius: 12;
+    -fx-padding: 8 28 8 28;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-cursor: hand;
+    -fx-border-width: 0;
+}
+
+/* OK / DEFAULT */
+.dialog-pane .button:default {
+    -fx-background-color: linear-gradient(
+        to bottom,
+        #9c6b3f,
+        #7b4f2a
+    );
+    -fx-text-fill: white;
+}
+
+.dialog-pane .button:default:hover {
+    -fx-background-color: linear-gradient(
+        to bottom,
+        #a87444,
+        #85572f
+    );
+}
+
+/* CANCEL */
+.dialog-pane .button:cancel {
+    -fx-background-color: #efe6d8;
+    -fx-text-fill: #5a3e2b;
+}
+
+.dialog-pane .button:cancel:hover {
+    -fx-background-color: #e4d7c4;
+}
+
+/* ===============================
+   ALERT TYPE COLORS
+================================ */
+
+/* INFORMATION */
+.dialog-pane.information .header-panel {
+    -fx-background-color: linear-gradient(
+        to bottom,
+        #efe2c8,
+        #e1cfad
+    );
+}
+
+/* CONFIRMATION */
+.dialog-pane.confirmation .header-panel {
+    -fx-background-color: linear-gradient(
+        to bottom,
+        #e9dcc6,
+        #d6c3a5
+    );
+}
+
+/* WARNING */
+.dialog-pane.warning .header-panel {
+    -fx-background-color: linear-gradient(
+        to bottom,
+        #f4e2c4,
+        #e6cfa7
+    );
+}
+
+/* ERROR */
+.dialog-pane.error .header-panel {
+    -fx-background-color: linear-gradient(
+        to bottom,
+        #d59a7c,
+        #b86a4f
+    );
+}
+
+.dialog-pane.error .header-panel .label {
+    -fx-text-fill: white;
+}
