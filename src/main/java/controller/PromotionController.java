@@ -1,20 +1,27 @@
-
 package controller;
 
 import DAO_Product.PromotionDAO;
 import java.net.URL;
-import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.Optional;
 import java.util.ResourceBundle;
+
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
+
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
 import javafx.collections.transformation.SortedList;
+
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.ComboBox;
@@ -22,15 +29,14 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
-import javafx.scene.input.KeyEvent;
-import model.Promotion;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
+
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.input.KeyEvent;
+
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
+import model.Promotion;
 
 public class PromotionController extends BacktoHomeController implements Initializable {
 
@@ -44,12 +50,14 @@ public class PromotionController extends BacktoHomeController implements Initial
     @FXML private TableColumn<Promotion, String> colId;
     @FXML private TableColumn<Promotion, String> colName;
     @FXML private TableColumn<Promotion, String> colDiscount;
-    @FXML private TableColumn<Promotion, LocalDate> colStartDate;
-    @FXML private TableColumn<Promotion, LocalDate> colEndDate;
+
+    // GIỮ fx:id colStartDate/colEndDate (đúng FXML), nhưng đổi kiểu sang LocalTime
+    @FXML private TableColumn<Promotion, LocalTime> colStartTime;
+    @FXML private TableColumn<Promotion, LocalTime> colEndTime;
+
     @FXML private TableColumn<Promotion, String> colType;
     @FXML private TableColumn<Promotion, Number> colValue;
     @FXML private TableColumn<Promotion, String> colStatus;
-
 
     @FXML private Label lblHint;
 
@@ -63,11 +71,10 @@ public class PromotionController extends BacktoHomeController implements Initial
     public void initialize(URL url, ResourceBundle rb) {
         System.out.println("PromotionController initialize()");
 
+        colId.setCellValueFactory(new PropertyValueFactory<>("promoId"));
+        colName.setCellValueFactory(new PropertyValueFactory<>("promoName"));
 
-        colId.setCellValueFactory(new javafx.scene.control.cell.PropertyValueFactory<>("promoId"));
-        colName.setCellValueFactory(new javafx.scene.control.cell.PropertyValueFactory<>("promoName"));
-
-        // Discount hiển thị dạng: "10%" hoặc "50000 (fixed)"
+        
         colDiscount.setCellValueFactory(cd -> {
             Promotion p = cd.getValue();
             if (p == null) return new SimpleStringProperty("");
@@ -77,13 +84,14 @@ public class PromotionController extends BacktoHomeController implements Initial
             return new SimpleStringProperty(String.format("%.0f (fixed)", p.getValue()));
         });
 
-        colStartDate.setCellValueFactory(cd -> new SimpleObjectProperty<>(cd.getValue().getStartDate()));
-        colEndDate.setCellValueFactory(cd -> new SimpleObjectProperty<>(cd.getValue().getEndDate()));
+   
+        colStartTime.setCellValueFactory(cd -> new SimpleObjectProperty<>(cd.getValue().getStartTime()));
+        colEndTime.setCellValueFactory(cd -> new SimpleObjectProperty<>(cd.getValue().getEndTime()));
+
         colType.setCellValueFactory(new PropertyValueFactory<>("promoType"));
         colValue.setCellValueFactory(new PropertyValueFactory<>("value"));
         colStatus.setCellValueFactory(new PropertyValueFactory<>("status"));
 
-        // load data
         viewTable();
 
         filteredList = new FilteredList<>(promoList, x -> true);
@@ -92,9 +100,11 @@ public class PromotionController extends BacktoHomeController implements Initial
         sortedList.comparatorProperty().bind(tblPromotions.comparatorProperty());
         tblPromotions.setItems(sortedList);
 
-        // filter options
+   
         cbFilter.getItems().setAll("All", "Active", "Inactive", "Upcoming", "Expired");
         cbFilter.setValue("All");
+
+        applyFilter();
     }
 
     private void viewTable() {
@@ -111,29 +121,76 @@ public class PromotionController extends BacktoHomeController implements Initial
         applyFilter();
     }
 
+    /**
+     * Với TIME-only:
+     * - Active: Status=Active và NOW nằm trong [StartTime, EndTime]
+     * - Inactive: Status=Inactive
+     * - Upcoming: NOW trước StartTime (nếu promo không qua đêm)
+     * - Expired: NOW sau EndTime (nếu promo không qua đêm)
+     
+     */
     private void applyFilter() {
         String keyword = (txtSearch.getText() == null) ? "" : txtSearch.getText().toLowerCase().trim();
         String filter = cbFilter.getValue();
-        LocalDate today = LocalDate.now();
+        LocalTime now = LocalTime.now();
 
         filteredList.setPredicate(p -> {
+            if (p == null) return false;
+
             // SEARCH: theo PromoID hoặc PromoName
             boolean matchSearch = keyword.isEmpty()
-                    || p.getPromoId().toLowerCase().contains(keyword)
-                    || p.getPromoName().toLowerCase().contains(keyword);
+                    || (p.getPromoId() != null && p.getPromoId().toLowerCase().contains(keyword))
+                    || (p.getPromoName() != null && p.getPromoName().toLowerCase().contains(keyword));
 
             // FILTER:
             boolean matchFilter = true;
+
             if ("Active".equals(filter)) {
                 matchFilter = "Active".equalsIgnoreCase(p.getStatus())
-                        && !today.isBefore(p.getStartDate())
-                        && !today.isAfter(p.getEndDate());
+                        && isNowWithinTimeWindow(now, p.getStartTime(), p.getEndTime());
+
             } else if ("Inactive".equals(filter)) {
                 matchFilter = "Inactive".equalsIgnoreCase(p.getStatus());
-            } 
+
+            } else if ("Upcoming".equals(filter)) {
+                // Upcoming theo giờ trong ngày (chỉ hợp lý nếu không qua đêm)
+                matchFilter = "Active".equalsIgnoreCase(p.getStatus())
+                        && isUpcoming(now, p.getStartTime(), p.getEndTime());
+
+            } else if ("Expired".equals(filter)) {
+                // Expired theo giờ trong ngày (chỉ hợp lý nếu không qua đêm)
+                matchFilter = "Active".equalsIgnoreCase(p.getStatus())
+                        && isExpired(now, p.getStartTime(), p.getEndTime());
+            }
 
             return matchSearch && matchFilter;
         });
+    }
+
+    // NOW 
+    private boolean isNowWithinTimeWindow(LocalTime now, LocalTime start, LocalTime end) {
+        if (start == null || end == null) return false;
+
+        // start <= end
+        if (!end.isBefore(start)) {
+            return !now.isBefore(start) && !now.isAfter(end);
+        }
+
+        return !now.isBefore(start) || !now.isAfter(end);
+    }
+
+    private boolean isUpcoming(LocalTime now, LocalTime start, LocalTime end) {
+        if (start == null || end == null) return false;
+        if (end.isBefore(start)) return false;
+
+        return now.isBefore(start);
+    }
+
+    private boolean isExpired(LocalTime now, LocalTime start, LocalTime end) {
+        if (start == null || end == null) return false;
+        if (end.isBefore(start)) return false;
+
+        return now.isAfter(end);
     }
 
     @FXML
@@ -151,61 +208,58 @@ public class PromotionController extends BacktoHomeController implements Initial
 
     // ===== CRUD =====
     @FXML
-private void onAdd(ActionEvent event) {
-    Promotion p = showPromotionPopup(null);
-    if (p == null) return;
+    private void onAdd(ActionEvent event) {
+        Promotion p = showPromotionPopup(null);
+        if (p == null) return;
 
-    try {
-        if (promotionDao.existsId(p.getPromoId())) {
-            showWarning("Warning", "Promo ID already exists.");
+        try {
+            if (promotionDao.existsId(p.getPromoId())) {
+                showWarning("Warning", "Promo ID already exists.");
+                return;
+            }
+
+            promotionDao.insert(p);
+
+            viewTable();
+            applyFilter();
+
+            showInfo("Success", "Promotion added successfully.");
+        } catch (java.sql.SQLIntegrityConstraintViolationException ex) {
+            // thường do UNIQUE(ProductID): product đã thuộc promo khác
+            showError("Error", "Constraint Violation",
+                    "Some selected products are already applied to another promotion.");
+        } catch (Exception e) {
+            e.printStackTrace();
+            showError("Error", "Add Failed", "Unable to add promotion.");
+        }
+    }
+
+    @FXML
+    private void onEdit(ActionEvent event) {
+        Promotion selected = tblPromotions.getSelectionModel().getSelectedItem();
+        if (selected == null) {
+            showWarning("Warning", "Please select a promotion to edit.");
             return;
         }
 
-        promotionDao.insert(p);
+        Promotion updated = showPromotionPopup(selected);
+        if (updated == null) return;
 
-        // reload list (an toàn, đúng dữ liệu + mapping)
-        viewTable();
-        applyFilter();
+        try {
+            promotionDao.update(updated);
 
-        showInfo("Success", "Promotion added successfully.");
-    } catch (java.sql.SQLIntegrityConstraintViolationException ex) {
-        // thường do UNIQUE(ProductID): product đã thuộc promo khác
-        showError("Error", "Constraint Violation",
-                "Some selected products are already applied to another promotion.");
-    } catch (Exception e) {
-        e.printStackTrace();
-        showError("Error", "Add Failed", "Unable to add promotion.");
+            viewTable();
+            applyFilter();
+
+            showInfo("Success", "Promotion updated successfully.");
+        } catch (java.sql.SQLIntegrityConstraintViolationException ex) {
+            showError("Error", "Constraint Violation",
+                    "Some selected products are already applied to another promotion.");
+        } catch (Exception e) {
+            e.printStackTrace();
+            showError("Error", "Update Failed", "Unable to update promotion.");
+        }
     }
-}
-
-
-    @FXML
-private void onEdit(ActionEvent event) {
-    Promotion selected = tblPromotions.getSelectionModel().getSelectedItem();
-    if (selected == null) {
-        showWarning("Warning", "Please select a promotion to edit.");
-        return;
-    }
-
-    Promotion updated = showPromotionPopup(selected);
-    if (updated == null) return;
-
-    try {
-        promotionDao.update(updated);
-
-        viewTable();
-        applyFilter();
-
-        showInfo("Success", "Promotion updated successfully.");
-    } catch (java.sql.SQLIntegrityConstraintViolationException ex) {
-        showError("Error", "Constraint Violation",
-                "Some selected products are already applied to another promotion.");
-    } catch (Exception e) {
-        e.printStackTrace();
-        showError("Error", "Update Failed", "Unable to update promotion.");
-    }
-}
-
 
     @FXML
     private void onDelete(ActionEvent event) {
@@ -219,7 +273,7 @@ private void onEdit(ActionEvent event) {
                 "Confirm Deletion",
                 "Are you sure you want to delete this promotion?",
                 "Promotion ID: " + selected.getPromoId() + "\n"
-                + "Promotion Name: " + selected.getPromoName()
+                        + "Promotion Name: " + selected.getPromoName()
         );
 
         if (!ok) return;
@@ -277,26 +331,26 @@ private void onEdit(ActionEvent event) {
         Optional<ButtonType> res = a.showAndWait();
         return res.isPresent() && res.get() == ButtonType.OK;
     }
-    
+
     private Promotion showPromotionPopup(Promotion existing) {
-    try {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/PromoAddEdit.fxml"));
-        Parent root = loader.load();
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/PromoAddEdit.fxml"));
+            Parent root = loader.load();
 
-        PromoAddEditController ctrl = loader.getController();
-        ctrl.setMode(existing); // null = add, != null = edit
+            PromoAddEditController ctrl = loader.getController();
+            ctrl.setMode(existing); // null = add, != null = edit
 
-        Stage stage = new Stage();
-        stage.initModality(Modality.APPLICATION_MODAL);
-        stage.setTitle(existing == null ? "Add Promotion" : "Edit Promotion");
-        stage.setScene(new Scene(root));
-        stage.showAndWait();
+            Stage stage = new Stage();
+            stage.initModality(Modality.APPLICATION_MODAL);
+            stage.setTitle(existing == null ? "Add Promotion" : "Edit Promotion");
+            stage.setScene(new Scene(root));
+            stage.showAndWait();
 
-        return ctrl.getResult();
-    } catch (Exception e) {
-        e.printStackTrace();
-        showError("Error", "Popup Failed", "Unable to open promotion popup.");
-        return null;
+            return ctrl.getResult();
+        } catch (Exception e) {
+            e.printStackTrace();
+            showError("Error", "Popup Failed", "Unable to open promotion popup.");
+            return null;
+        }
     }
 }
-    }    

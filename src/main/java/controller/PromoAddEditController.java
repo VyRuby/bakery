@@ -1,281 +1,308 @@
 package controller;
 
-import DAO_Product.PromotionDAO;
 import DAO_Customer_Order.productDao;
-import app.ConnectDB;
+import DAO_Product.PromotionDAO;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
-import javafx.event.ActionEvent;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableMap;
 import javafx.fxml.FXML;
-import javafx.fxml.Initializable;
 import javafx.scene.control.*;
-import javafx.scene.control.cell.CheckBoxListCell;
 import javafx.stage.Stage;
+import javafx.util.StringConverter;
+import javafx.scene.control.cell.CheckBoxListCell;
+
 import model.Product;
 import model.Promotion;
 
-import java.net.URL;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.time.LocalDate;
-import java.util.*;
-import java.util.stream.Collectors;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
-public class PromoAddEditController implements Initializable {
+public class PromoAddEditController {
 
-    @FXML private Label lblTitle;
-    @FXML private Label lblMode;
+    @FXML private TextField txtPromoId;
+    @FXML private TextField txtPromoName;
+    @FXML private TextArea txtDescription;
 
-    @FXML private TextField txtId;
-    @FXML private TextField txtName;
-    @FXML private ComboBox<String> cbType;
+    @FXML private TextField txtStartTime;
+    @FXML private TextField txtEndTime;
+
+    @FXML private ComboBox<String> cbPromoType;
     @FXML private TextField txtValue;
-    @FXML private DatePicker dpStart;
-    @FXML private DatePicker dpEnd;
     @FXML private ComboBox<String> cbStatus;
 
-    @FXML private TextArea txtDescription;
     @FXML private ListView<Product> lvProducts;
-    @FXML private Label lblMsg;
 
-    @FXML private Button btnSave;
-    @FXML private Button btnCancel;
     @FXML private Button btnRemoveFromProducts;
+    @FXML private Label lblMsg;
+    @FXML private Button btnSave;
+    @FXML private Button btnClose;
 
-    private final productDao productDao = new productDao();
-    private final PromotionDAO promotionDao = new PromotionDAO();
+    private final productDao productDAO = new productDao();
+    private final PromotionDAO promotionDAO = new PromotionDAO();
 
-    private Promotion editing; // null = add
-    private Promotion result;
+    private Promotion result = null;
+    private boolean editMode = false;
 
-    // checkbox state
-    private final Map<String, BooleanProperty> checkedMap = new HashMap<>();
-    private Set<String> currentPromoProductIds = new HashSet<>();
-    private Set<String> productIdsUsedByOtherPromos = new HashSet<>();
+    // ✅ map để quản lý checkbox theo Product
+    private final ObservableMap<Product, BooleanProperty> checkedMap = FXCollections.observableHashMap();
+    
+    // ProductID -> PromoID
+    private Map<String, String> productPromoMap;
 
+    @FXML
+    public void initialize() {
+        cbPromoType.setItems(FXCollections.observableArrayList("percent", "fixed"));
+        cbStatus.setItems(FXCollections.observableArrayList("Active", "Inactive"));
+        cbPromoType.getSelectionModel().select("percent");
+        cbStatus.getSelectionModel().select("Active");
+
+        txtStartTime.setText("00:00:00");
+        txtEndTime.setText("23:59:59");
+
+        // load products
+        var products = FXCollections.observableArrayList(productDAO.findAll());
+        lvProducts.setItems(products);
+
+        // init checked map
+        checkedMap.clear();
+        for (Product p : products) {
+            checkedMap.put(p, new SimpleBooleanProperty(false));
+        }
+        
+        productPromoMap = promotionDAO.getProductPromoMap();
+
+        // ✅ ListView hiển thị checkbox
+        lvProducts.setCellFactory(lv -> new CheckBoxListCell<>(
+        item -> checkedMap.get(item)
+) {
     @Override
-    public void initialize(URL url, ResourceBundle rb) {
-        cbType.getItems().setAll("percent", "fixed");
-        cbStatus.getItems().setAll("Active", "Inactive");
-        cbType.setValue("percent");
-        cbStatus.setValue("Inactive"); //  Add mặc định Inactive
+    public void updateItem(Product item, boolean empty) {
+        super.updateItem(item, empty);
+
+        if (empty || item == null) {
+            setText(null);
+            setDisable(false);
+            return;
+        }
+
+        setText(item.getProductId() + " - " + item.getProductName());
+
+        String productId = item.getProductId();
+        String promoOfProduct = productPromoMap.get(productId);
+
+        // ADD mode: disable nếu product đã có promo
+        if (!editMode) {
+            if (promoOfProduct != null) {
+                setDisable(true);
+                checkedMap.get(item).set(false);
+            } else {
+                setDisable(false);
+            }
+            return;
+        }
+
+        // EDIT mode:
+        // - cho phép nếu product thuộc promo hiện tại
+        // - disable nếu thuộc promo khác
+        if (promoOfProduct == null || promoOfProduct.equals(txtPromoId.getText())) {
+            setDisable(false);
+        } else {
+            setDisable(true);
+            checkedMap.get(item).set(false);
+        }
+    }
+});
+
+        
+        
+
     }
 
     public void setMode(Promotion promo) {
-        this.editing = promo;
-        this.result = null;
         lblMsg.setText("");
 
+        // clear ticks trước
+        checkedMap.forEach((k, v) -> v.set(false));
+
         if (promo == null) {
-            lblTitle.setText("Add Promotion");
-            lblMode.setText("ADD MODE");
+            editMode = false;
 
-            txtId.clear();
-            txtId.setDisable(false);
-
-            txtName.clear();
+            txtPromoId.setDisable(false);
+            txtPromoId.clear();
+            txtPromoName.clear();
             txtDescription.clear();
 
-            cbType.setValue("percent");
-            txtValue.clear();
+            txtValue.setText("0");
+            txtStartTime.setText("00:00:00");
+            txtEndTime.setText("23:59:59");
+            cbPromoType.getSelectionModel().select("percent");
+            cbStatus.getSelectionModel().select("Active");
 
-            dpStart.setValue(LocalDate.now());
-            dpEnd.setValue(LocalDate.now().plusDays(7));
-
-            cbStatus.setValue("Inactive");
-
-        } else {
-            lblTitle.setText("Edit Promotion");
-            lblMode.setText("EDIT MODE");
-
-            txtId.setText(promo.getPromoId());
-            txtId.setDisable(true);
-
-            txtName.setText(promo.getPromoName());
-            txtDescription.setText(promo.getDescription());
-
-            cbType.setValue(promo.getPromoType());
-            txtValue.setText(String.valueOf(promo.getValue()));
-
-            dpStart.setValue(promo.getStartDate());
-            dpEnd.setValue(promo.getEndDate());
-
-            cbStatus.setValue(promo.getStatus());
+            btnRemoveFromProducts.setDisable(false);
+            return;
         }
 
-        // chỉ Edit mới có nút remove
-        btnRemoveFromProducts.setVisible(editing != null);
-        btnRemoveFromProducts.setManaged(editing != null);
+        editMode = true;
 
-        loadProductsWithCheckbox();
-    }
+        txtPromoId.setText(promo.getPromoId());
+        txtPromoId.setDisable(true);
 
-    public Promotion getResult() {
-        return result;
-    }
+        txtPromoName.setText(promo.getPromoName());
+        txtDescription.setText(promo.getDescription() == null ? "" : promo.getDescription());
 
-    // all product qty>0, tick sản phẩm thuộc promo hiện tại, disable sản phẩm thuộc promo khác
-    private void loadProductsWithCheckbox() {
-        try {
-            List<Product> all = productDao.findAll().stream()
-                    .filter(p -> p.getQuantity() > 0)
-                    .collect(Collectors.toList());
+        txtStartTime.setText(promo.getStartTime() == null ? "00:00:00" : promo.getStartTime().toString());
+        txtEndTime.setText(promo.getEndTime() == null ? "23:59:59" : promo.getEndTime().toString());
 
-            currentPromoProductIds = (editing != null && editing.getProductIds() != null)
-                    ? new HashSet<>(editing.getProductIds())
-                    : new HashSet<>();
+        cbPromoType.getSelectionModel().select(promo.getPromoType());
+        txtValue.setText(String.valueOf(promo.getValue()));
+        cbStatus.getSelectionModel().select(promo.getStatus());
 
-            productIdsUsedByOtherPromos = getProductIdsAssignedToOtherPromos(editing == null ? null : editing.getPromoId());
-
-            lvProducts.getItems().setAll(all);
-
-            checkedMap.clear();
-            for (Product p : all) {
-                boolean checked = currentPromoProductIds.contains(p.getProductId());
-                checkedMap.put(p.getProductId(), new SimpleBooleanProperty(checked));
-            }
-
-            lvProducts.setCellFactory(list -> new CheckBoxListCell<>(item -> checkedMap.get(item.getProductId())) {
-                @Override
-                public void updateItem(Product item, boolean empty) {
-                    super.updateItem(item, empty);
-                    if (empty || item == null) {
-                        setText(null);
-                        setDisable(false);
-                        return;
-                    }
-
-                    setText(item.getProductId() + " - " + item.getProductName() + " (Qty: " + item.getQuantity() + ")");
-
-                    boolean usedByOther = productIdsUsedByOtherPromos.contains(item.getProductId());
-                    boolean isCurrent = currentPromoProductIds.contains(item.getProductId());
-
-                    // disable nếu thuộc promo khác và không phải promo hiện tại
-                    setDisable(usedByOther && !isCurrent);
+        // ✅ tick checkbox theo productIds của promo
+        if (promo.getProductIds() != null) {
+            for (Product pr : lvProducts.getItems()) {
+                if (promo.getProductIds().contains(pr.getProductId())) {
+                    BooleanProperty bp = checkedMap.get(pr);
+                    if (bp != null) bp.set(true);
                 }
-            });
+            }
+        }
 
-        } catch (Exception e) {
-            e.printStackTrace();
-            lvProducts.getItems().clear();
-            lblMsg.setText("Unable to load products.");
+        btnRemoveFromProducts.setDisable(false);
+        
+        lvProducts.refresh();
+
+    }
+
+    private LocalTime parseTime(String s) {
+        if (s == null) return null;
+        s = s.trim();
+        if (s.isEmpty()) return null;
+
+        try {
+            if (s.matches("\\d{2}:\\d{2}$")) {
+                return LocalTime.parse(s, DateTimeFormatter.ofPattern("HH:mm"));
+            }
+            return LocalTime.parse(s, DateTimeFormatter.ofPattern("HH:mm:ss"));
+        } catch (DateTimeParseException e) {
+            return null;
         }
     }
 
-    private Set<String> getProductIdsAssignedToOtherPromos(String currentPromoId) throws Exception {
-        Set<String> ids = new HashSet<>();
-
-        String sql = (currentPromoId == null)
-                ? "SELECT ProductID FROM PROMOTION_PRODUCT"
-                : "SELECT ProductID FROM PROMOTION_PRODUCT WHERE PromoID <> ?";
-
-        try (Connection con = ConnectDB.getConnection();
-             PreparedStatement ps = con.prepareStatement(sql)) {
-
-            if (currentPromoId != null) ps.setString(1, currentPromoId);
-
-            try (ResultSet rs = ps.executeQuery()) {
-                while (rs.next()) ids.add(rs.getString("ProductID"));
+    // ✅ lấy list productIds đang tick
+    private List<String> getCheckedProductIds() {
+        List<String> ids = new ArrayList<>();
+        for (Product pr : lvProducts.getItems()) {
+            BooleanProperty bp = checkedMap.get(pr);
+            if (bp != null && bp.get()) {
+                ids.add(pr.getProductId());
             }
         }
         return ids;
     }
 
     @FXML
-    private void onSave(ActionEvent event) {
+    private void onRemoveFromProducts() {
         lblMsg.setText("");
 
+        List<String> ids = getCheckedProductIds();
+        if (ids.isEmpty()) {
+            lblMsg.setText("Please tick product(s) to remove promotion.");
+            return;
+        }
+
         try {
-            String id = txtId.getText().trim();
-            String name = txtName.getText().trim();
-            String desc = txtDescription.getText().trim();
-            String type = cbType.getValue();
-            String status = cbStatus.getValue();
+            // xóa mapping theo ProductID
+            promotionDAO.removePromotionFromProducts(ids);
 
-            if (id.isEmpty()) { lblMsg.setText("Please enter Promo ID."); return; }
-            if (name.isEmpty()) { lblMsg.setText("Please enter Promo Name."); return; }
-            if (type == null || type.isBlank()) { lblMsg.setText("Please select Promo Type."); return; }
-            if (status == null || status.isBlank()) { lblMsg.setText("Please select Status."); return; }
-
-            LocalDate start = dpStart.getValue();
-            LocalDate end = dpEnd.getValue();
-            if (start == null || end == null) { lblMsg.setText("Please select Start/End date."); return; }
-            if (end.isBefore(start)) { lblMsg.setText("End Date must be after Start Date."); return; }
-
-            double value;
-            try {
-                value = Double.parseDouble(txtValue.getText().trim());
-            } catch (NumberFormatException e) {
-                lblMsg.setText("Value must be a valid number.");
-                return;
-            }
-            if (value < 0) { lblMsg.setText("Value must be >= 0."); return; }
-
-            // ✅ không bắt buộc chọn product
-            List<String> productIds = new ArrayList<>();
+            // bỏ tick sau khi remove
             for (Product pr : lvProducts.getItems()) {
-                BooleanProperty bp = checkedMap.get(pr.getProductId());
-                if (bp != null && bp.get()) {
-                    productIds.add(pr.getProductId());
+                if (ids.contains(pr.getProductId())) {
+                    BooleanProperty bp = checkedMap.get(pr);
+                    if (bp != null) bp.set(false);
                 }
             }
 
-            Promotion p = new Promotion(id, name, desc, start, end, type, value, status);
-            p.setProductIds(productIds);
-
-            result = p;
-            ((Stage) btnSave.getScene().getWindow()).close();
-
+            lblMsg.setText("Removed promotion from " + ids.size() + " product(s).");
         } catch (Exception e) {
             e.printStackTrace();
-            lblMsg.setText("Unexpected error.");
+            lblMsg.setText("Error remove: " + e.getMessage());
         }
     }
 
     @FXML
-    private void onRemoveFromProducts(ActionEvent event) {
-        if (editing == null) return;
+    private void onSave() {
+        lblMsg.setText("");
 
-        try {
-            // remove = trước đây thuộc promo này nhưng user bỏ tick
-            List<String> remove = new ArrayList<>();
+        String promoId = txtPromoId.getText().trim();
+        String promoName = txtPromoName.getText().trim();
 
-            for (Product pr : lvProducts.getItems()) {
-                boolean wasCurrent = currentPromoProductIds.contains(pr.getProductId());
-                BooleanProperty bp = checkedMap.get(pr.getProductId());
-                boolean checked = bp != null && bp.get();
-
-                if (wasCurrent && !checked) {
-                    remove.add(pr.getProductId());
-                }
-            }
-
-            if (remove.isEmpty()) {
-                lblMsg.setText("No product removed.");
-                return;
-            }
-
-            promotionDao.removeProductsFromPromo(editing.getPromoId(), remove);
-
-            // cập nhật lại state local
-            currentPromoProductIds.removeAll(remove);
-            for (String pid : remove) {
-                BooleanProperty bp = checkedMap.get(pid);
-                if (bp != null) bp.set(false);
-            }
-
-            lblMsg.setText("Removed from " + remove.size() + " product(s).");
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            lblMsg.setText("Remove failed.");
+        if (promoId.isEmpty() || promoName.isEmpty()) {
+            lblMsg.setText("Promo ID & Name are required.");
+            return;
         }
+
+        LocalTime start = parseTime(txtStartTime.getText());
+        LocalTime end = parseTime(txtEndTime.getText());
+        if (start == null || end == null) {
+            lblMsg.setText("Start/End time must be HH:mm or HH:mm:ss");
+            return;
+        }
+        if (!end.isAfter(start)) {
+            lblMsg.setText("EndTime must be after StartTime.");
+            return;
+        }
+
+        String type = cbPromoType.getValue();
+        if (type == null || (!type.equals("percent") && !type.equals("fixed"))) {
+            lblMsg.setText("PromoType must be percent or fixed.");
+            return;
+        }
+
+        double value;
+        try {
+            value = Double.parseDouble(txtValue.getText().trim());
+        } catch (Exception e) {
+            lblMsg.setText("Value must be numeric.");
+            return;
+        }
+        if (value < 0) { lblMsg.setText("Value must be >= 0"); return; }
+        if ("percent".equals(type) && value > 100) { lblMsg.setText("Percent must be <= 100"); return; }
+
+        String status = cbStatus.getValue();
+        if (status == null) status = "Active";
+
+        // ✅ lấy product tick checkbox
+        List<String> productIds = getCheckedProductIds();
+
+        Promotion p = new Promotion();
+        p.setPromoId(promoId);
+        p.setPromoName(promoName);
+        p.setDescription(txtDescription.getText());
+
+        p.setStartTime(start);
+        p.setEndTime(end);
+
+        p.setPromoType(type);
+        p.setValue(value);
+        p.setStatus(status);
+        p.setProductIds(productIds);
+
+        result = p;
+        ((Stage) btnSave.getScene().getWindow()).close();
     }
 
     @FXML
-    private void onCancel(ActionEvent event) {
+    private void onClose() {
         result = null;
-        ((Stage) btnCancel.getScene().getWindow()).close();
+        ((Stage) btnClose.getScene().getWindow()).close();
+    }
+
+    public Promotion getResult() {
+        return result;
     }
 }

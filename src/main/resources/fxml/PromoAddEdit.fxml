@@ -16,7 +16,7 @@
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox prefHeight="626.0" prefWidth="511.0" spacing="12" style="-fx-background-color: #FFFFFF;" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.PromoAddEditController">
+<VBox prefHeight="626.0" prefWidth="511.0" spacing="12" style="-fx-background-color: #FFFFFF;" xmlns="http://javafx.com/javafx/13" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.PromoAddEditController">
 
     <padding>
         <Insets bottom="16" left="16" right="16" top="16" />
@@ -39,22 +39,27 @@
         </columnConstraints>
 
         <Label text="Promo ID" />
-        <TextField fx:id="txtId" promptText="e.g. PR001" GridPane.columnIndex="1" />
+        <TextField fx:id="txtPromoId" promptText="e.g. PR001" GridPane.columnIndex="1" />
 
         <Label text="Name" GridPane.rowIndex="1" />
-        <TextField fx:id="txtName" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+        <TextField fx:id="txtPromoName" GridPane.columnIndex="1" GridPane.rowIndex="1" />
 
         <Label text="Type" GridPane.rowIndex="2" />
-        <ComboBox fx:id="cbType" promptText="percent / fixed" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+        <ComboBox fx:id="cbPromoType" promptText="percent / fixed" GridPane.columnIndex="1" GridPane.rowIndex="2" />
 
         <Label text="Value" GridPane.rowIndex="3" />
         <TextField fx:id="txtValue" promptText="e.g. 10 or 2.00" GridPane.columnIndex="1" GridPane.rowIndex="3" />
 
-        <Label text="Start Date" GridPane.rowIndex="4" />
-        <DatePicker fx:id="dpStart" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+        <Label text="Start Time" GridPane.rowIndex="4" />
+        <TextField fx:id="txtStartTime"
+           promptText="HH:mm:ss"
+           GridPane.columnIndex="1" GridPane.rowIndex="4" />
 
-        <Label text="End Date" GridPane.rowIndex="5" />
-        <DatePicker fx:id="dpEnd" GridPane.columnIndex="1" GridPane.rowIndex="5" />
+        <Label text="End Time" GridPane.rowIndex="5" />
+        <TextField fx:id="txtEndTime"
+           promptText="HH:mm:ss"
+           GridPane.columnIndex="1" GridPane.rowIndex="5" />
+
 
         <Label text="Status" GridPane.rowIndex="6" />
         <ComboBox fx:id="cbStatus" promptText="Active / Inactive" GridPane.columnIndex="1" GridPane.rowIndex="6" />
@@ -86,7 +91,7 @@
     <Label fx:id="lblMsg" style="-fx-text-fill: #B91C1C; -fx-font-weight: 700;" />
 
     <HBox alignment="CENTER_RIGHT" spacing="10">
-        <Button fx:id="btnCancel" onAction="#onCancel" style="-fx-background-color: #F3F4F6; -fx-text-fill: #111827; -fx-font-weight: 800; -fx-background-radius: 10;" text="Cancel" />
+        <Button fx:id="btnClose" onAction="#onClose" style="-fx-background-color: #F3F4F6; -fx-text-fill: #111827; -fx-font-weight: 800; -fx-background-radius: 10;" text="Close" />
         <Button fx:id="btnSave" onAction="#onSave" style="-fx-background-color: #8B5E3C; -fx-text-fill: white; -fx-font-weight: 900; -fx-background-radius: 10;" text="Save" />
     </HBox>
 

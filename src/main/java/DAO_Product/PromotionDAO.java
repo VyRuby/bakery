@@ -4,24 +4,25 @@ import app.ConnectDB;
 import model.Promotion;
 
 import java.sql.Connection;
-import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Time;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class PromotionDAO {
 
     /* ===================== FIND ALL ===================== */
     public List<Promotion> findAll() {
-//        System.out.println("PROMO LOADED = " + list.size());
 
         List<Promotion> list = new ArrayList<>();
 
         String sqlPromo =
                 "SELECT PromoID, PromoName, Description, " +
-                "StartDate, EndDate, PromoType, Value, Status " +
+                "StartTime, EndTime, PromoType, Value, Status " +
                 "FROM PROMOTION";
 
         try (Connection con = ConnectDB.getConnection();
@@ -33,14 +34,14 @@ public class PromotionDAO {
                         rs.getString("PromoID"),
                         rs.getString("PromoName"),
                         rs.getString("Description"),
-                        rs.getDate("StartDate").toLocalDate(),
-                        rs.getDate("EndDate").toLocalDate(),
+                        rs.getTime("StartTime").toLocalTime(),
+                        rs.getTime("EndTime").toLocalTime(),
                         rs.getString("PromoType"),
                         rs.getDouble("Value"),
                         rs.getString("Status")
                 );
 
-                // load productIds cho promotion
+                // load productIds theo promo
                 p.setProductIds(getProductIdsByPromo(p.getPromoId(), con));
                 list.add(p);
             }
@@ -57,7 +58,7 @@ public class PromotionDAO {
 
         String sqlPromo =
                 "INSERT INTO PROMOTION " +
-                "(PromoID, PromoName, Description, StartDate, EndDate, PromoType, Value, Status) " +
+                "(PromoID, PromoName, Description, StartTime, EndTime, PromoType, Value, Status) " +
                 "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
 
         try (Connection con = ConnectDB.getConnection()) {
@@ -67,8 +68,8 @@ public class PromotionDAO {
                 ps.setString(1, p.getPromoId());
                 ps.setString(2, p.getPromoName());
                 ps.setString(3, p.getDescription());
-                ps.setDate(4, Date.valueOf(p.getStartDate()));
-                ps.setDate(5, Date.valueOf(p.getEndDate()));
+                ps.setTime(4, Time.valueOf(p.getStartTime()));
+                ps.setTime(5, Time.valueOf(p.getEndTime()));
                 ps.setString(6, p.getPromoType());
                 ps.setDouble(7, p.getValue());
                 ps.setString(8, p.getStatus());
@@ -87,8 +88,8 @@ public class PromotionDAO {
                 "UPDATE PROMOTION SET " +
                 "PromoName = ?, " +
                 "Description = ?, " +
-                "StartDate = ?, " +
-                "EndDate = ?, " +
+                "StartTime = ?, " +
+                "EndTime = ?, " +
                 "PromoType = ?, " +
                 "Value = ?, " +
                 "Status = ? " +
@@ -100,8 +101,8 @@ public class PromotionDAO {
             try (PreparedStatement ps = con.prepareStatement(sqlPromo)) {
                 ps.setString(1, p.getPromoName());
                 ps.setString(2, p.getDescription());
-                ps.setDate(3, Date.valueOf(p.getStartDate()));
-                ps.setDate(4, Date.valueOf(p.getEndDate()));
+                ps.setTime(3, Time.valueOf(p.getStartTime()));
+                ps.setTime(4, Time.valueOf(p.getEndTime()));
                 ps.setString(5, p.getPromoType());
                 ps.setDouble(6, p.getValue());
                 ps.setString(7, p.getStatus());
@@ -109,10 +110,10 @@ public class PromotionDAO {
                 ps.executeUpdate();
             }
 
-            // xóa mapping cũ
+            // xóa mapping cũ theo PromoID
             deletePromoProducts(p.getPromoId(), con);
 
-            // insert mapping mới
+            // insert mapping mới (có xử lý UNIQUE(ProductID))
             insertPromoProducts(p, con);
 
             con.commit();
@@ -139,103 +140,110 @@ public class PromotionDAO {
 
     /* ===================== EXISTS ===================== */
     public boolean existsId(String promoId) {
-        String sql = "SELECT 1 FROM PROMOTION WHERE PromoID = ?";
-
+        String sql = "SELECT 1 FROM PROMOTION WHERE PromoID = ? LIMIT 1";
         try (Connection con = ConnectDB.getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
-
-            ps.setString(1, promoId);
-            return ps.executeQuery().next();
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return false;
-    }
-
-    
-
-    private List<String> getProductIdsByPromo(String promoId, Connection con) throws SQLException {
-        List<String> list = new ArrayList<>();
-
-        String sql =
-                "SELECT ProductID " +
-                "FROM PROMOTION_PRODUCT " +
-                "WHERE PromoID = ?";
-
-        try (PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setString(1, promoId);
             try (ResultSet rs = ps.executeQuery()) {
-                while (rs.next()) {
-                    list.add(rs.getString("ProductID"));
-                }
+                return rs.next();
             }
+        } catch (Exception e) {
+            return false;
         }
-        return list;
     }
 
+    // ===================== PROMOTION_PRODUCT (SQL mới UNIQUE(ProductID)) =====================
     private void insertPromoProducts(Promotion p, Connection con) throws SQLException {
         if (p.getProductIds() == null || p.getProductIds().isEmpty()) return;
 
-        String sql =
+        // UNIQUE(ProductID) => trước khi insert, phải remove product khỏi promo khác (nếu có)
+        String sqlDeleteByProduct = "DELETE FROM PROMOTION_PRODUCT WHERE ProductID = ?";
+        String sqlInsert =
                 "INSERT INTO PROMOTION_PRODUCT (PromoID, ProductID) " +
                 "VALUES (?, ?)";
 
-        try (PreparedStatement ps = con.prepareStatement(sql)) {
+        try (PreparedStatement psDel = con.prepareStatement(sqlDeleteByProduct);
+             PreparedStatement psIns = con.prepareStatement(sqlInsert)) {
+
             for (String pid : p.getProductIds()) {
-                ps.setString(1, p.getPromoId());
-                ps.setString(2, pid);
-                ps.addBatch();
+
+                psDel.setString(1, pid);
+                psDel.executeUpdate();
+
+                psIns.setString(1, p.getPromoId());
+                psIns.setString(2, pid);
+                psIns.executeUpdate();
             }
-            ps.executeBatch();
         }
     }
 
     private void deletePromoProducts(String promoId, Connection con) throws SQLException {
         String sql = "DELETE FROM PROMOTION_PRODUCT WHERE PromoID = ?";
-
         try (PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setString(1, promoId);
             ps.executeUpdate();
         }
     }
 
-    // load product chưa có promotion (quantity > 0)
-    public List<String> findAvailableProductIds(Connection con) throws SQLException {
+    private List<String> getProductIdsByPromo(String promoId, Connection con) throws SQLException {
         List<String> list = new ArrayList<>();
-
-        String sql =
-                "SELECT p.ProductID " +
-                "FROM PRODUCT p " +
-                "LEFT JOIN PROMOTION_PRODUCT pp ON p.ProductID = pp.ProductID " +
-                "WHERE p.Quantity > 0 " +
-                "AND pp.ProductID IS NULL";
-
-        try (PreparedStatement ps = con.prepareStatement(sql);
-             ResultSet rs = ps.executeQuery()) {
-
-            while (rs.next()) {
-                list.add(rs.getString("ProductID"));
+        String sql = "SELECT ProductID FROM PROMOTION_PRODUCT WHERE PromoID = ?";
+        try (PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setString(1, promoId);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) list.add(rs.getString("ProductID"));
             }
         }
         return list;
     }
     
-    public void removeProductsFromPromo(String promoId, List<String> productIds) throws SQLException {
-    if (productIds == null || productIds.isEmpty()) return;
-
-    String sql = "DELETE FROM PROMOTION_PRODUCT WHERE PromoID = ? AND ProductID = ?";
-
+    // Xóa promotion khỏi 1 product (xóa mapping theo ProductID)
+public void removePromotionFromProduct(String productId) {
+    String sql = "DELETE FROM PROMOTION_PRODUCT WHERE ProductID = ?";
     try (Connection con = ConnectDB.getConnection();
          PreparedStatement ps = con.prepareStatement(sql)) {
+        ps.setString(1, productId);
+        ps.executeUpdate();
+    } catch (Exception e) {
+        e.printStackTrace();
+        throw new RuntimeException("Remove promotion failed: " + e.getMessage());
+    }
+}
 
+// Xóa promotion khỏi nhiều product (batch)
+public void removePromotionFromProducts(List<String> productIds) {
+    if (productIds == null || productIds.isEmpty()) return;
+
+    String sql = "DELETE FROM PROMOTION_PRODUCT WHERE ProductID = ?";
+    try (Connection con = ConnectDB.getConnection();
+         PreparedStatement ps = con.prepareStatement(sql)) {
         for (String pid : productIds) {
-            ps.setString(1, promoId);
-            ps.setString(2, pid);
+            ps.setString(1, pid);
             ps.addBatch();
         }
         ps.executeBatch();
+    } catch (Exception e) {
+        e.printStackTrace();
+        throw new RuntimeException("Remove promotion batch failed: " + e.getMessage());
     }
+}
+
+// trả về map ProductID -> PromoID (promo hiện tại của product)
+public Map<String, String> getProductPromoMap() {
+    String sql = "SELECT ProductID, PromoID FROM PROMOTION_PRODUCT";
+    Map<String, String> map = new HashMap<>();
+
+    try (Connection con = ConnectDB.getConnection();
+         PreparedStatement ps = con.prepareStatement(sql);
+         ResultSet rs = ps.executeQuery()) {
+
+        while (rs.next()) {
+            map.put(rs.getString("ProductID"), rs.getString("PromoID"));
+        }
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
+    return map;
 }
 
 }
