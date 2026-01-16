@@ -14,20 +14,48 @@ public class OrderDetailItem {
     private Product product;
     private int quantity;
     private float price;
+    private String promoID;
+    private float discountAmount;
         
 
     public OrderDetailItem(Product product, int quantity) {
         this.product = product;
         this.quantity = quantity;
         this.price = product.getPrice();
+        this.promoID=null;
+        this.discountAmount=0;
+        
+        
     }
 
+    public String getPromoID() {
+        return promoID;
+    }
+
+    public float getDiscountAmount() {
+        return discountAmount;
+    }
+
+    public void setPromoID(String promoID) {
+        this.promoID = promoID;
+    }
+
+    public void setDiscountAmount(float discountAmount) {
+        this.discountAmount = discountAmount;
+    }
+
+    
+            
     public Product getProduct() {
         return product;
     }
     
     public String getProductName(){
         return product.getProductName();
+    }
+
+    public void setPrice(float price) {
+        this.price = price;
     }
 
     public int getQuantity() {

@@ -141,14 +141,7 @@ public class ProductController extends BacktoHomeController implements Initializ
     }
     
     
-    @FXML
-    private void onLogin(ActionEvent event) {
-    }
-
-    @FXML
-    private void onLogout(ActionEvent event) {
-    }
-
+    
     @FXML
     private void onCategoryChanged(ActionEvent event) {
         applyFilter();

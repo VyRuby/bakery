@@ -100,20 +100,12 @@
                         <Insets bottom="14" left="14" right="14" top="14" />
                     </padding>
                     <HBox alignment="CENTER_LEFT" spacing="10">
-                <Label text="Order Info"
-                style="-fx-font-size: 16px; -fx-font-weight: 900; -fx-text-fill: #111827;"/>
+                <Label style="-fx-font-size: 16px; -fx-font-weight: 900; -fx-text-fill: #111827;" text="Order Info" />
 
                         <Region HBox.hgrow="ALWAYS" />
 
                         <!-- Back button chung -->
-                        <Button fx:id="btnBack"
-                                text="← Back to Home"
-                                onAction="#goBack"
-                                prefHeight="36"
-                                style="-fx-background-color: #8B5E3C;
-                                       -fx-text-fill: white;
-                                       -fx-font-weight: 800;
-                                       -fx-background-radius: 12;" />
+                        <Button fx:id="btnBack" onAction="#goBack" prefHeight="36" style="-fx-background-color: #8B5E3C;                                        -fx-text-fill: white;                                        -fx-font-weight: 800;                                        -fx-background-radius: 12;" text="← Back to Home" />
                     </HBox>
 
                 
@@ -152,19 +144,20 @@
                 </VBox>
 
                 <!-- ORDER DETAIL TABLE -->
-                <VBox spacing="10" style="-fx-background-color: white;                              -fx-background-radius: 18;                              -fx-border-radius: 18;                              -fx-border-color: #E6E8EF;">
+                <VBox prefHeight="361.0" prefWidth="538.0" spacing="10" style="-fx-background-color: white;                              -fx-background-radius: 18;                              -fx-border-radius: 18;                              -fx-border-color: #E6E8EF;">
                     <padding>
                         <Insets bottom="14" left="14" right="14" top="14" />
                     </padding>
 
                     <Label style="-fx-font-size: 16px; -fx-font-weight: 900;" text="Order Details" />
 
-                    <TableView fx:id="orderDetail" prefHeight="280">
+                    <TableView fx:id="orderDetail" prefHeight="272.0" prefWidth="490.0">
                         <columns>
-                            <TableColumn fx:id="ProductName" prefWidth="160" text="Product" />
-                            <TableColumn fx:id="Number" prefWidth="70" text="Qty" />
-                            <TableColumn fx:id="Price" prefWidth="120" text="Price" />
-                            <TableColumn fx:id="TotalPrice" prefWidth="130" text="Total" />
+                            <TableColumn fx:id="ProductName" prefWidth="160.0" text="Product" />
+                            <TableColumn fx:id="Number" prefWidth="49.5999755859375" text="Qty" />
+                            <TableColumn fx:id="Price" text="Price" />
+                            <TableColumn fx:id="TotalPrice" prefWidth="134.40008544921875" text="Total" />
+                     <TableColumn fx:id="DelColum" prefWidth="64.0" text="Del" />
                         </columns>
                     </TableView>
 

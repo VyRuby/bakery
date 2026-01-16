@@ -1092,3 +1092,40 @@ SET
     p.CostPrice = d.CostPrice
 WHERE d.ImportID = 'IM001';
 
+-- Huy
+CREATE TABLE `orders` (
+  `OrderID` int(11) NOT NULL,
+  `OrderDate` datetime NOT NULL DEFAULT current_timestamp(),
+  `CustomerID` int(11) NOT NULL,
+  `Total` decimal(12,2) NOT NULL,
+  `PaymentMethod` enum('Transfer','Cash') NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+
+CREATE TABLE `orderdetail` (
+  `OrderDetailID` int(11) NOT NULL,
+  `OrderID` int(11) NOT NULL,
+  `ProductID` varchar(30) NOT NULL,
+  `Quantity` int(11) NOT NULL,
+  `UnitPrice` decimal(12,2) NOT NULL,
+  `CostPrice` decimal(12,2) NOT NULL,
+  `PromoID` varchar(30) DEFAULT NULL,
+  `DiscountAmount` decimal(12,2) DEFAULT 0.00
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+
+
+CREATE TABLE `customer` (
+  `CustomerID` int(10) NOT NULL,
+  `FullName` varchar(100) NOT NULL,
+  `Phone` varchar(20) NOT NULL,
+  `Gender` enum('Male','Female') NOT NULL,
+  `DOB` date NOT NULL,
+  `Email` varchar(100) DEFAULT NULL,
+  `Address` varchar(255) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+INSERT INTO `customer` (`CustomerID`, `FullName`, `Phone`, `Gender`, `DOB`, `Email`, `Address`) VALUES
+(1, 'Huy', '0967923921', 'Male', '2015-01-06', NULL, NULL),
+(2, 'Ngoc', '0911223344', 'Female', '2015-12-02', NULL, NULL),
+(3, 'Visitor', '000000', 'Male', '0000-00-00', NULL, NULL);

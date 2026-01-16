@@ -122,7 +122,7 @@ private void handleSave(ActionEvent event) {
 
         float price = Float.parseFloat(txtPrice.getText().trim());
 //        float costPrice = Float.parseFloat(txtCostPrice.getText());
-        // KHÔNG lấy từ TextField nữa
+    
         float costPrice = (editingProduct != null)
                 ? editingProduct.getCostPrice()   // Edit → giữ nguyên
                 : 0f;                             // Add → mặc định 0

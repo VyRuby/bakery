@@ -33,10 +33,7 @@
 
                 <Region HBox.hgrow="ALWAYS" />
 
-                <Label style="-fx-font-size: 20px;
-                               -fx-font-weight: 900;
-                               -fx-text-fill: #3E2723;" 
-                       text="EMPLOYEE MANAGEMENT" />
+                <Label style="-fx-font-size: 20px;                                -fx-font-weight: 900;                                -fx-text-fill: #3E2723;" text="EMPLOYEE MANAGEMENT" />
 
                 <Region HBox.hgrow="ALWAYS" />
             </HBox>
@@ -44,8 +41,7 @@
             <!-- ===== FILTER ===== -->
             <HBox alignment="CENTER_LEFT" spacing="12" style="-fx-padding: 10 14;                          -fx-background-color: #FAEBD7;                          -fx-background-radius: 12;                          -fx-border-color: #C19A6B;                          -fx-border-radius: 12;">
 
-                <Label style="-fx-text-fill: #3E2723;
-                               -fx-font-weight: 800;" text="Status:" />
+                <Label style="-fx-text-fill: #3E2723;                                -fx-font-weight: 800;" text="Status:" />
 
                 <ComboBox fx:id="cbFilterStatus" prefHeight="28.0" prefWidth="399.0" style="-fx-background-color: #FFFDF8;                                  -fx-border-color: #C19A6B;                                  -fx-border-radius: 8;                                  -fx-background-radius: 8;" />
 
@@ -74,14 +70,14 @@
 
     <!-- ================= BOTTOM : ACTION BUTTONS ================= -->
     <bottom>
-        <HBox alignment="CENTER_RIGHT" spacing="14" style="-fx-padding: 12 16;
-                      -fx-background-color: #EED9C4;">
+        <HBox alignment="CENTER_RIGHT" spacing="14" style="-fx-padding: 12 16;                       -fx-background-color: #EED9C4;">
 
-            <Button onAction="#handleAdd" prefHeight="36" style="-fx-background-color: #8B5E3C;                            -fx-text-fill: white;                            -fx-background-radius: 10;                            -fx-font-weight: 800;" text="Add" />
+            <Button onAction="#handleAdd" prefHeight="36" prefWidth="79.0" style="-fx-background-color: #8B5E3C;                            -fx-text-fill: white;                            -fx-background-radius: 10;                            -fx-font-weight: 800;" text="Add" />
 
-            <Button onAction="#handleUpdate" prefHeight="36" style="-fx-background-color: #8B5E3C;                            -fx-text-fill: white;                            -fx-background-radius: 10;                            -fx-font-weight: 800;" text="Update" />
+            <Button onAction="#handleUpdate" prefHeight="36" prefWidth="78.0" style="-fx-background-color: #8B5E3C;                            -fx-text-fill: white;                            -fx-background-radius: 10;                            -fx-font-weight: 800;" text="Update" />
 
             <Button onAction="#handleDeactivate" prefHeight="36" style="-fx-background-color: #5D3A24;                            -fx-text-fill: white;                            -fx-background-radius: 10;                            -fx-font-weight: 800;" text="Deactivate" />
+         <Button fx:id="btnBacktoHome" onAction="#goBack" prefHeight="36" prefWidth="142.0" style="-fx-background-color: #8B5E3C;                            -fx-text-fill: white;                            -fx-background-radius: 10;                            -fx-font-weight: 800;" text="Back to Home" />
         </HBox>
     </bottom>
 

@@ -65,7 +65,12 @@ public class PromoAddEditController {
         txtEndTime.setText("23:59:59");
 
         // load products
-        var products = FXCollections.observableArrayList(productDAO.findAll());
+        var products = FXCollections.observableArrayList(
+        productDAO.findAll()
+                .stream()
+                .filter(p -> p.getQuantity() > 0)
+                .collect(java.util.stream.Collectors.toList())
+        );
         lvProducts.setItems(products);
 
         // init checked map

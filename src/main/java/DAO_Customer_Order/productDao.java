@@ -345,6 +345,28 @@ public class productDao {
                 throw new RuntimeException("Delete empty IMPORT failed: " + e.getMessage());
             }
         }
+//Xuat danh sach sp quantity>0
+                public List<Product> findAllWithStock() {
+    String sql = "SELECT * FROM PRODUCT WHERE Quantity > 0";
+    List<Product> list = new ArrayList<>();
+
+    try (Connection con = ConnectDB.getConnection();
+         PreparedStatement ps = con.prepareStatement(sql);
+         ResultSet rs = ps.executeQuery()) {
+
+        while (rs.next()) {
+            Product p = new Product();
+            p.setProductId(rs.getString("ProductID"));
+            p.setProductName(rs.getString("ProductName"));
+            p.setQuantity(rs.getInt("Quantity"));
+            // set các field khác nếu có
+            list.add(p);
+        }
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
+    return list;
+}
 
 
        }

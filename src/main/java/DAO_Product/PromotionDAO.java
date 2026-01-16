@@ -246,4 +246,37 @@ public Map<String, String> getProductPromoMap() {
     return map;
 }
 
+// Huy them vao 
+
+public Promotion getActivePromoByProduct(String productId){
+    String sql="SELECT p.* FROM PROMOTION p " +
+            "JOIN PROMOTION_PRODUCT pp ON p.PromoID = pp.PromoID " +
+            "WHERE pp.ProductID = ? AND p.Status = 'ACTIVE' " +
+            "AND CURTIME() BETWEEN p.StartTime AND p.EndTime " +
+            "LIMIT 1";
+    
+    try(Connection con = ConnectDB.getConnection();
+    PreparedStatement ps= con.prepareStatement(sql)){
+        ps.setString(1, productId);
+        try(ResultSet rs= ps.executeQuery()){
+            if(rs.next()){
+                return new Promotion(
+                rs.getString("PromoID"),
+                        rs.getString("PromoName"),
+                        rs.getString("Description"),
+                        rs.getTime("StartTime").toLocalTime(),
+                        rs.getTime("EndTime").toLocalTime(),
+                        rs.getString("PromoType"),
+                        rs.getDouble("Value"),
+                        rs.getString("Status")
+                );
+            }
+        }
+    }catch(Exception e){
+        e.printStackTrace();
+        
+    }
+    return null;
+}
+
 }

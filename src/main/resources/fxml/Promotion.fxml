@@ -114,6 +114,9 @@
                 <Button fx:id="btnDelete" onAction="#onDelete" prefHeight="34" prefWidth="90" style="-fx-background-color: #FEE2E2; -fx-text-fill: #B91C1C; -fx-font-weight: 800; -fx-background-radius: 10;" text="Delete" />
 
             </HBox>
+            
+            
+
 
             <!-- Table -->
             <VBox spacing="10" style="-fx-background-color: white; -fx-background-radius: 18; -fx-border-radius: 18; -fx-border-color: #E6E8EF;">

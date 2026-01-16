@@ -49,6 +49,8 @@ import com.itextpdf.text.pdf.*;
 import java.io.FileOutputStream;
 import java.io.File;
 import org.w3c.dom.Document;
+import model.Promotion;
+import DAO_Product.PromotionDAO;
 /**
  * FXML Controller class
  *
@@ -91,6 +93,8 @@ public class OrderController extends BacktoHomeController implements Initializab
     
     
     
+    
+    
     /**
      * Initializes the controller class.
      */
@@ -124,11 +128,6 @@ public class OrderController extends BacktoHomeController implements Initializab
     }
             
         });
-        
-        
-        
-        
-        
         
         
         phonefind.textProperty().addListener((observable,oldValue,newValue) -> {
@@ -204,6 +203,8 @@ public class OrderController extends BacktoHomeController implements Initializab
     }    
     
 private CustomerDao customerDao = new CustomerDao();
+private PromotionDAO promotionDAO = new PromotionDAO();
+
 
     private void findCustomerByPhone(){
     try{
@@ -240,7 +241,7 @@ private CustomerDao customerDao = new CustomerDao();
 productGrid.getChildren().clear();
 int column =0;
 int row =0;
-int MAX_COLUMN=2;
+int MAX_COLUMN=3;
 
 for(Product product : data){
     VBox productCard = createProductCard(product);
@@ -260,6 +261,26 @@ for(Product product : data){
     private ObservableList<OrderDetailItem> orderList = FXCollections.observableArrayList();
     
     private void addOrder(Product product, int quantity){
+        float originalPrice =product.getPrice();
+        float unitPrice = originalPrice;
+        float discountAmount = 0;
+        String promoId = null;
+        
+        Promotion activePromo = promotionDAO.getActivePromoByProduct(product.getProductId());
+        if(activePromo !=null){
+            promoId= activePromo.getPromoId();
+            if("Percent".equalsIgnoreCase(activePromo.getPromoType())){
+                discountAmount =(float) (originalPrice * (activePromo.getValue()/100));
+            }else{
+                discountAmount = (float)activePromo.getValue();
+                
+            }
+            unitPrice = originalPrice - discountAmount;
+            
+        }
+        
+        
+        
         for(OrderDetailItem item : orderList){
             if (item.getProduct().getProductId().equals(product.getProductId())){
                 item.addQuantity(quantity);
@@ -268,7 +289,15 @@ for(Product product : data){
                 return;
             }
         }
-        orderList.add(new OrderDetailItem(product,quantity));
+        
+        OrderDetailItem newItem= new OrderDetailItem(product,quantity);
+        
+        newItem.setPrice(unitPrice);
+        newItem.setPromoID(promoId);
+        newItem.setDiscountAmount(discountAmount);
+        
+        orderList.add(newItem);
+        
         calculateTotal();    
     }
     
@@ -358,11 +387,6 @@ for(Product product : data){
         return box;
     }
     
-//    @FXML
-//    private void goBack(ActionEvent event) {
-//    }
-//    
-    
     private OrderDao orderDao = new OrderDao();
     private OrderDetailDao orderDetailDao = new OrderDetailDao();
 
@@ -414,58 +438,62 @@ for(Product product : data){
 
 
     
-//    private void exportToPDF(int orderId, String customerName, String paymentMethod, float total){
-//        Document document = new Document() {};
-//        try{
-//            String fileName= "Invoid_Order" + orderId + ".pdf";
-//            PdfWriter.getInstance(document, new FileOutputStream(fileName));
-//            document.open();
-//            
-//            com.itextpdf.text.Font titleFont = new com.itextpdf.text.Font(com.itextpdf.text.Font.FontFamily.HELVETICA,18 ,com.itextpdf.text.Font.BOLD);
-//            com.itextpdf.text.Font  boldFont= new com.itextpdf.text.Font(com.itextpdf.text.Font.FontFamily.HELVETICA, 12 , com.itextpdf.text.Font.BOLD);
-//            
-//            Paragraph title= new Paragraph("Invoice", titleFont);
-//            title.setAlignment(Element.ALIGN_CENTER);
-//            document.add(title);
-//            document.add(new Paragraph("*****************"));
-//            
-//            document.add(new Paragraph("Order ID: " + orderId));
-//            document.add(new Paragraph("Customer: " + customerName));
-//            document.add(new Paragraph("Date: " + dateOrder.getText()));
-//            document.add(new Paragraph("Payment Method: " + paymentMethod));
-//            document.add(new Paragraph(" "));
-//            
-//            
-//            PdfPTable table = new PdfPTable(4);
-//            table.setWidthPercentage(100);
-//            table.setSpacingBefore(10f);
-//            table.setSpacingAfter(10f);
-//            
-//            table.addCell(new Paragraph("Product Name", boldFont));
-//            table.addCell(new Paragraph("Quantity", boldFont));
-//            table.addCell(new Paragraph("Price", boldFont));
-//            table.addCell(new Paragraph("Total", boldFont ));
-//            
-//            
-//            for(OrderDetailItem item : orderList){
-//            table.addCell(item.getProduct().getProductName());
-//            table.addCell(String.valueOf(item.getQuantity()));
-//            table.addCell(item.getPrice() + "USD");
-//            table.addCell(item.getTotal() + "USD");
-//            
-//            }
-//            document.add(table);
-//            
-//            
-//            
-//            
-//        }catch(Exception e){
-//            System.out.println("Error Print PDF!" + e);
-//            e.printStackTrace();
-//        }
-//    }
-//
-//    
+    private void exportToPDF(int orderId, String customerName, String paymentMethod, float total){
+        com.itextpdf.text.Document document = new com.itextpdf.text.Document() {};
+        try{
+            String fileName= "Invoid_Order" + orderId + ".pdf";
+            PdfWriter.getInstance(document, new FileOutputStream(fileName));
+            document.open();
+            
+            com.itextpdf.text.Font titleFont = new com.itextpdf.text.Font(com.itextpdf.text.Font.FontFamily.HELVETICA,18 ,com.itextpdf.text.Font.BOLD);
+            com.itextpdf.text.Font  boldFont= new com.itextpdf.text.Font(com.itextpdf.text.Font.FontFamily.HELVETICA, 12 , com.itextpdf.text.Font.BOLD);
+            
+            Paragraph title= new Paragraph("Invoice", titleFont);
+            title.setAlignment(Element.ALIGN_CENTER);
+            document.add(title);
+            document.add(new Paragraph("*****************"));
+            
+            document.add(new Paragraph("Order ID: " + orderId));
+            document.add(new Paragraph("Customer: " + customerName));
+            document.add(new Paragraph("Date: " + dateOrder.getText()));
+            document.add(new Paragraph("Payment Method: " + paymentMethod));
+            document.add(new Paragraph(" "));
+            
+            
+            PdfPTable table = new PdfPTable(4);
+            table.setWidthPercentage(100);
+            table.setSpacingBefore(10f);
+            table.setSpacingAfter(10f);
+            
+            table.addCell(new Paragraph("Product Name", boldFont));
+            table.addCell(new Paragraph("Quantity", boldFont));
+            table.addCell(new Paragraph("Price", boldFont));
+            table.addCell(new Paragraph("Total", boldFont ));
+            
+            
+            for(OrderDetailItem item : orderList){
+                String pName= item.getProduct().getProductName();
+            
+            if(item.getPromoID() != null){ 
+                pName +="\n(Promo: "+ item.getPromoID()+")";}
+            table.addCell(new Phrase(pName));
+            table.addCell(String.valueOf(item.getQuantity()));
+            table.addCell(item.getPrice() + "USD");
+            table.addCell(item.getTotal() + "USD");
+            
+            }
+            document.add(table);
+            
+            
+            
+            
+        }catch(Exception e){
+            System.out.println("Error Print PDF!" + e);
+            e.printStackTrace();
+        }
+    }
+
     
+
     
 }

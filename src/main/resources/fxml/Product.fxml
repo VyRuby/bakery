@@ -32,7 +32,7 @@
             <HBox alignment="CENTER_LEFT" spacing="10">
                 <ImageView fitHeight="42.0" fitWidth="42.0" preserveRatio="true">
                     <image>
-                        <Image url="@image/logo.png" />
+                        <Image url="@image/logo.jpeg" />
                     </image>
                 </ImageView>
 
@@ -47,7 +47,7 @@
             <!-- Banner (optional) -->
             <ImageView fitHeight="38.0" fitWidth="140.0" opacity="0.92" preserveRatio="true">
                 <image>
-                    <Image url="@image/top-banner.png" />
+                    <Image url="@image/banner.jpeg" />
                 </image>
             </ImageView>
 
@@ -66,9 +66,7 @@
                     <Label fx:id="lblStatus" style="-fx-font-size: 11px; -fx-text-fill: #6B7280;" text="Not logged in" />
                 </VBox>
 
-                <Button fx:id="btnLogin" onAction="#onLogin" prefHeight="34" prefWidth="92" style="-fx-background-color: #8B5E3C; -fx-text-fill: white; -fx-font-weight: 700; -fx-background-radius: 10;" text="Login" />
-
-                <Button fx:id="btnLogout" onAction="#onLogout" prefHeight="34" prefWidth="92" style="-fx-background-color: #EEF2FF; -fx-text-fill: #8B5E3C; -fx-font-weight: 700; -fx-background-radius: 10;" text="Logout" />
+                
             </HBox>
         </HBox>
     </top>
