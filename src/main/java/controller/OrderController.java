@@ -369,10 +369,50 @@ for(Product product : data){
             }catch(Exception e){
                 imageView.setImage(null);
         }
-        Label name = new Label(product.getProductName());
-        Label price = new Label(product.getPrice() +"USD");
+        VBox priceBox= new VBox(2);
+        priceBox.setAlignment(javafx.geometry.Pos.CENTER);
         
-        VBox box = new VBox(10, imageView, name, price );
+        
+        
+        
+        Promotion activePromo = promotionDAO.getActivePromoByProduct(product.getProductId());
+        
+        Label currentPriceLabel = new Label();
+        
+        if(activePromo !=null){
+            float originalPrice = product.getPrice();
+            float discount = ("Percent".equalsIgnoreCase(activePromo.getPromoType()))
+                    ? (float)(originalPrice * (activePromo.getValue()/100))
+                    : (float) activePromo.getValue();
+            float promotionPrice= originalPrice - discount;
+            
+            Label oldPriceLabel= new Label(originalPrice + "USD");
+            oldPriceLabel.setStyle("-fx-text-fill: gray;-fx-strike-through: true ;-fx-font-size: 10px;");
+        
+           currentPriceLabel.setText(promotionPrice + "USD");
+           currentPriceLabel.setStyle("-fx-text-fill: red ;-fx-font-weight: bold;");
+           
+           priceBox.getChildren().addAll(oldPriceLabel, currentPriceLabel);
+           
+        
+        }else{
+            currentPriceLabel.setText(product.getPrice() + "USD");
+            priceBox.getChildren().add(currentPriceLabel);
+        }
+        
+        
+        Label name = new Label(product.getProductName());
+        boolean isOutOfStock = product.getQuantity() <=0;
+        if(isOutOfStock){
+            Label outOfStockLabel = new Label("Out of Stock");
+            priceBox.getChildren().add(outOfStockLabel);
+            imageView.setOpacity(0.4);
+        }
+        
+        
+//        Label price = new Label(product.getPrice() +"USD");
+//        
+        VBox box = new VBox(10, imageView, name, priceBox );
         box.setAlignment(javafx.geometry.Pos.CENTER);
         box.setStyle("-fx-border-color: #ccc; -fx-padding: 3;-fx-cursor: hand;");
         
