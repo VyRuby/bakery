@@ -199,8 +199,55 @@ public class OrderController extends BacktoHomeController implements Initializab
                 
                 ;
      orderDetail.setItems(orderList);
+     orderDetail.setOnMouseClicked(e -> {
+         if(e.getClickCount() ==2 
+                 && orderDetail.getSelectionModel().getSelectedItem() != null){
+             OrderDetailItem selectedItem = orderDetail.getSelectionModel().getSelectedItem();
+             handleEditQuantity(selectedItem);
+             
+         }
+     });
         
     }    
+    
+    
+    private void handleEditQuantity(OrderDetailItem Item){
+        try{
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/ProductDetail.fxml"));
+            
+            Parent root =loader.load();
+            
+            ProductDetailController controller = loader.getController();
+            
+            controller.setProduct(Item.getProduct());
+            controller.setQuantity(Item.getQuantity());
+            
+            Stage stage = new Stage();
+            stage.setScene(new Scene(root));
+            stage.setTitle("Edit Quantity: " + Item.getProductName());
+            stage.showAndWait();
+            
+            int newQty= controller.getSelectedQuantity();
+            
+            if(newQty>0){
+                Item.setQuantity(newQty);
+               
+            }
+            
+            orderDetail.refresh();
+            calculateTotal();
+            
+            
+        }catch(Exception e){
+            System.out.println("Error !"+e);
+            e.printStackTrace();
+            
+        }
+        
+        
+    }
+    
+    
     
 private CustomerDao customerDao = new CustomerDao();
 private PromotionDAO promotionDAO = new PromotionDAO();
@@ -279,8 +326,6 @@ for(Product product : data){
             
         }
         
-        
-        
         for(OrderDetailItem item : orderList){
             if (item.getProduct().getProductId().equals(product.getProductId())){
                 item.addQuantity(quantity);
@@ -289,7 +334,7 @@ for(Product product : data){
                 return;
             }
         }
-        
+     
         OrderDetailItem newItem= new OrderDetailItem(product,quantity);
         
         newItem.setPrice(unitPrice);
@@ -299,6 +344,16 @@ for(Product product : data){
         orderList.add(newItem);
         
         calculateTotal();    
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
     }
     
     private void calculateTotal(){
@@ -335,7 +390,7 @@ for(Product product : data){
     private void addcus(ActionEvent event) {
     try{
         FXMLLoader loader = new FXMLLoader(
-        getClass().getResource("fxml/Customer.fxml")
+        getClass().getResource("/fxml/Customer.fxml")
         );
         
         Parent root = loader.load();
@@ -350,6 +405,7 @@ for(Product product : data){
         
     }catch(Exception e){
         System.out.println("Error !");
+        e.printStackTrace();
         
     }
     
@@ -476,8 +532,7 @@ for(Product product : data){
         orderList.clear();
         orderDetail.refresh();
         totalOrder.setText("0 USD");
-        
-        
+     
         
     }
 
@@ -486,8 +541,10 @@ for(Product product : data){
     private void exportToPDF(int orderId, String customerName, String paymentMethod, float total){
         com.itextpdf.text.Document document = new com.itextpdf.text.Document() {};
         try{
+            
+            String folderPath = "D:/datacode/dataproject/";
             String fileName= "Invoid_Order" + orderId + ".pdf";
-            PdfWriter.getInstance(document, new FileOutputStream(fileName));
+            PdfWriter.getInstance(document, new FileOutputStream(folderPath + fileName));
             document.open();
             
             com.itextpdf.text.Font titleFont = new com.itextpdf.text.Font(com.itextpdf.text.Font.FontFamily.HELVETICA,18 ,com.itextpdf.text.Font.BOLD);
@@ -528,7 +585,7 @@ for(Product product : data){
             
             }
             document.add(table);
-            
+            document.close();
             
             
             
