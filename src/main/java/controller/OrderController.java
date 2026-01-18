@@ -51,6 +51,7 @@ import java.io.File;
 import org.w3c.dom.Document;
 import model.Promotion;
 import DAO_Product.PromotionDAO;
+import javafx.scene.control.TextField;
 /**
  * FXML Controller class
  *
@@ -90,6 +91,14 @@ public class OrderController extends BacktoHomeController implements Initializab
     private GridPane productGrid;
     @FXML
     private TableColumn<OrderDetailItem, Void> DelColum;
+    @FXML
+    private CheckBox ctBaked;
+    @FXML
+    private CheckBox ctCake;
+    @FXML
+    private CheckBox ctCookie;
+    @FXML
+    private TextField findProduct;
     
     
     
@@ -207,6 +216,12 @@ public class OrderController extends BacktoHomeController implements Initializab
              
          }
      });
+     
+     findProduct.textProperty().addListener((obs, oldVal,newVal) -> applyFilter());
+     
+     ctBaked.setOnAction(e -> applyFilter());
+     ctCake.setOnAction(e -> applyFilter());
+     ctCookie.setOnAction(e -> applyFilter());
         
     }    
     
@@ -281,29 +296,29 @@ private PromotionDAO promotionDAO = new PromotionDAO();
     }
     private productDao productDao = new productDao();
     
-    private void loadProducts(){
-        ObservableList<Product> data =
-        FXCollections.observableArrayList(productDao.findAll());
-//        listProduct.setItems(data);
-productGrid.getChildren().clear();
-int column =0;
-int row =0;
-int MAX_COLUMN=3;
-
-for(Product product : data){
-    VBox productCard = createProductCard(product);
-    
-    productGrid.add(productCard, column, row);
-    
-    column++;
-    if(column == MAX_COLUMN){
-        column = 0;
-        row++;
-    }
-}
-          
-
-    }
+//    private void loadProducts(){
+//        ObservableList<Product> data =
+//        FXCollections.observableArrayList(productDao.findAll());
+////        listProduct.setItems(data);
+//productGrid.getChildren().clear();
+//int column =0;
+//int row =0;
+//int MAX_COLUMN=3;
+//
+//for(Product product : data){
+//    VBox productCard = createProductCard(product);
+//    
+//    productGrid.add(productCard, column, row);
+//    
+//    column++;
+//    if(column == MAX_COLUMN){
+//        column = 0;
+//        row++;
+//    }
+//}
+//          
+//
+//    }
     
     private ObservableList<OrderDetailItem> orderList = FXCollections.observableArrayList();
     
@@ -344,14 +359,6 @@ for(Product product : data){
         orderList.add(newItem);
         
         calculateTotal();    
-        
-        
-        
-        
-        
-        
-        
-        
         
         
     }
@@ -595,6 +602,58 @@ for(Product product : data){
         }
     }
 
+    private final java.util.Map<String, String>categoryMap = java.util.Map.of(
+    "C01","Baked",
+            "C02","Cake",
+            "C03","Cookie"
+    );
+
+    private ObservableList<Product> allProducts =FXCollections.observableArrayList();
+    
+    private void loadProducts(){
+        allProducts.setAll(productDao.findAll());
+        applyFilter();
+    }
+    
+    private void applyFilter(){
+        productGrid.getChildren().clear();
+        int column = 0 ;
+        int row = 0;
+        int MAX_COLUMN=3;
+        
+        String keyword = (findProduct.getText() == null)? "" :findProduct.getText().toLowerCase().trim();
+        boolean cat1 =ctBaked.isSelected();
+        boolean cat2=ctCake.isSelected();
+        boolean cat3=ctCookie.isSelected();
+        
+        for (Product product : allProducts){
+            String catID = product.getCategoryId();
+            String catName = categoryMap.getOrDefault(catID, catID);
+            
+            boolean matchSearch = keyword.isEmpty()|| product.getProductName().toLowerCase().contains(keyword);
+            
+            
+            boolean matchCategory = (!cat1 && !cat2 && !cat3)
+                    ||(cat1 && "Baked".equalsIgnoreCase(catName))
+                    ||(cat2 && "Cake".equalsIgnoreCase(catName))
+                    ||(cat3 && "Cookie".equalsIgnoreCase(catName));
+            
+            if(matchSearch && matchCategory){
+                VBox productCard = createProductCard(product);
+                productGrid.add(productCard, column, row);
+            
+            column ++;
+            if(column == MAX_COLUMN){
+                column=0;
+                row ++;
+            }
+                
+            }
+        }
+        
+
+        
+    }
     
 
     
