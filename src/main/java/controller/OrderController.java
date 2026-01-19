@@ -297,29 +297,6 @@ private PromotionDAO promotionDAO = new PromotionDAO();
     }
     private productDao productDao = new productDao();
     
-//    private void loadProducts(){
-//        ObservableList<Product> data =
-//        FXCollections.observableArrayList(productDao.findAll());
-////        listProduct.setItems(data);
-//productGrid.getChildren().clear();
-//int column =0;
-//int row =0;
-//int MAX_COLUMN=3;
-//
-//for(Product product : data){
-//    VBox productCard = createProductCard(product);
-//    
-//    productGrid.add(productCard, column, row);
-//    
-//    column++;
-//    if(column == MAX_COLUMN){
-//        column = 0;
-//        row++;
-//    }
-//}
-//          
-//
-//    }
     
     private ObservableList<OrderDetailItem> orderList = FXCollections.observableArrayList();
     
