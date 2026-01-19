@@ -10,7 +10,7 @@ import model.CheckIn;
 import java.net.URL;
 import java.util.ResourceBundle;
 
-public class CheckInController implements Initializable {
+public class CheckInController extends BacktoHomeController  implements Initializable {
 
     @FXML private TableView<CheckIn> tblCheckIn;
     @FXML private TableColumn<CheckIn, Integer> colId;

@@ -15,7 +15,7 @@ import java.math.BigDecimal;
 import java.net.URL;
 import java.util.ResourceBundle;
 
-public class PayrollController implements Initializable {
+public class PayrollController extends BacktoHomeController  implements Initializable {
 
     @FXML
     private TableView<Payroll> tblPayroll;
@@ -38,8 +38,7 @@ public class PayrollController implements Initializable {
 
     @FXML
     private ComboBox<String> cbMonth;
-    @FXML
-    private Button btnRefresh;
+   
     @FXML
     private Button btnCalculate;
 
@@ -149,11 +148,6 @@ public class PayrollController implements Initializable {
         alert.showAndWait();
     }
 
-    // =========================
-    // Tạo hàm xử lý nút Refresh
-    // =========================
-    @FXML private void handleRefresh() {
-        loadData(Integer.parseInt(cbMonth.getValue()));
-    }
+   
 
 }

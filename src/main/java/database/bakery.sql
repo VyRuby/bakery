@@ -11,7 +11,7 @@ CREATE TABLE EMPLOYEE (
     EmployeeID VARCHAR(30) PRIMARY KEY,
     FullName VARCHAR(100),
     DOB DATE,
-    Gender ENUM('male','female'),
+    Gender ENUM('Male','Female'),
     Phone VARCHAR(30),
     Email VARCHAR(100),
     Address VARCHAR(255),
@@ -325,16 +325,16 @@ DELIMITER ;
 -- INSERT EMPLOYEE DATA
 -- =========================
 INSERT INTO EMPLOYEE VALUES
-('E01','Nguyen Hong Ngoc','1998-01-10','female','0901','a@gmail.com','HN','2001-01-01','Manager','Active'),
-('E02','Tran Van Huy','1997-02-11','male','0902','b@gmail.com','HCM','2020-05-12','Staff','Active'),
-('E03','Pham Quoc Anh','2001-03-12','male','0903','c@gmail.com','DN','2019-06-15','Staff','Active'),
-('E04','Pham Thi D','1999-04-13','female','0904','d@gmail.com','HN','2022-02-10','Staff','Active'),
-('E05','Hoang Van E','1995-05-14','male','0905','e@gmail.com','HCM','2018-03-20','Staff','Inactive'),
-('E06','Nguyen Tu Quyen','2004-05-12','female','0906','tuquyen@gmail.com','HN','2021-07-01','Staff','Active'),
-('E07','Vu Van G','1997-07-16','male','0907','g@gmail.com','HN','2020-08-08','Staff','Active'),
-('E08','Dang Thi H','1996-08-17','female','0908','h@gmail.com','HCM','2019-09-09','Staff','Active'),
-('E09','Bui Van I','1995-09-18','male','0909','i@gmail.com','DN','2018-10-10','Staff','Active'),
-('E10','Nguyen Thi J','1999-10-19','female','0910','j@gmail.com','HN','2022-11-11','Staff','Active');
+('E01','Nguyen Hong Ngoc','1998-01-10','Female','0901','a@gmail.com','HN','2001-01-01','Manager','Active'),
+('E02','Tran Van Huy','1997-02-11','Male','0902','b@gmail.com','HCM','2020-05-12','Staff','Active'),
+('E03','Pham Quoc Anh','2001-03-12','Male','0903','c@gmail.com','DN','2019-06-15','Staff','Active'),
+('E04','Pham Thi D','1999-04-13','Female','0904','d@gmail.com','HN','2022-02-10','Staff','Active'),
+('E05','Hoang Van E','1995-05-14','Male','0905','e@gmail.com','HCM','2018-03-20','Staff','Inactive'),
+('E06','Nguyen Tu Quyen','2004-05-12','Female','0906','tuquyen@gmail.com','HN','2021-07-01','Staff','Active'),
+('E07','Vu Van G','1997-07-16','Male','0907','g@gmail.com','HN','2020-08-08','Staff','Active'),
+('E08','Dang Thi H','1996-08-17','Female','0908','h@gmail.com','HCM','2019-09-09','Staff','Active'),
+('E09','Bui Van I','1995-09-18','Male','0909','i@gmail.com','DN','2018-10-10','Staff','Active'),
+('E10','Nguyen Thi J','1999-10-19','Female','0910','j@gmail.com','HN','2022-11-11','Staff','Active');
 
 -- =========================
 -- INSERT PAYROLL (REAL TIME)
@@ -538,11 +538,11 @@ BEGIN
             LEAVE checkout_loop;
         END IF;
 
-        -- Check-out ngẫu nhiên từ 16:30 → 18:00
+        -- Check-out ngẫu nhiên từ 18:30 → 20:00
         UPDATE EMPLOYEE_CHECKIN
         SET CheckOutTime =
             SEC_TO_TIME(
-                TIME_TO_SEC('16:30:00')
+                TIME_TO_SEC('18:30:00')
                 + FLOOR(RAND() * 5400) -- +0 → +90 phút
             )
         WHERE CheckInID = v_checkin_id;
@@ -869,30 +869,299 @@ JOIN EMPLOYEE_PAYROLL p
 ORDER BY p.Year, p.Month, e.EmployeeID;
 -- SELECT * FROM vw_EmployeeSalary;
 
+-- NGOC
 
 -- =========================
--- USER & PERMISSION
+-- TABLE: PRODUCT_CATEGORY
+-- =========================
+CREATE TABLE IF NOT EXISTS PRODUCT_CATEGORY (
+    CategoryID   VARCHAR(30)  PRIMARY KEY,
+    CategoryName VARCHAR(100) NOT NULL
+);
+
+-- =========================
+-- TABLE: PRODUCT
+-- =========================
+CREATE TABLE IF NOT EXISTS PRODUCT (
+    ProductID    VARCHAR(30)  PRIMARY KEY,
+    ProductName  VARCHAR(150) NOT NULL,
+    CategoryID   VARCHAR(30)  NOT NULL,
+    Quantity     INT NOT NULL DEFAULT 0,
+    Unit         VARCHAR(20),
+    CostPrice   DECIMAL(12,2) NOT NULL DEFAULT 0,
+    Price        DECIMAL(12,2) NOT NULL DEFAULT 0,
+    Description  VARCHAR(255),
+    Image        VARCHAR(255),
+
+    CONSTRAINT fk_product_category
+        FOREIGN KEY (CategoryID)
+        REFERENCES PRODUCT_CATEGORY(CategoryID)
+        ON UPDATE CASCADE
+        ON DELETE RESTRICT
+) ;
+
+CREATE INDEX idx_product_category ON PRODUCT(CategoryID);
+CREATE INDEX idx_product_name ON PRODUCT(ProductName);
+
+-- =========================
+-- TABLE: PROMOTION
+-- =========================
+-- ===== PROMOTION =====
+CREATE TABLE IF NOT EXISTS PROMOTION (
+    PromoID     VARCHAR(30) PRIMARY KEY,
+    PromoName   VARCHAR(100) NOT NULL,
+    Description VARCHAR(255),
+    StartTime   TIME NOT NULL,
+    EndTime     TIME NOT NULL,
+    PromoType   ENUM('percent','fixed') NOT NULL,
+    Value       DECIMAL(12,2) NOT NULL DEFAULT 0,
+    Status      ENUM('Active','Inactive') NOT NULL DEFAULT 'Active'
+);
+
+CREATE INDEX idx_promotion_status ON PROMOTION(Status);
+CREATE INDEX idx_promotion_time ON PROMOTION(StartTime, EndTime);
+
+-- ===== PROMOTION_PRODUCT =====
+CREATE TABLE IF NOT EXISTS PROMOTION_PRODUCT (
+    PromoID   VARCHAR(30) NOT NULL,
+    ProductID VARCHAR(30) NOT NULL,
+    PRIMARY KEY (PromoID, ProductID),
+    UNIQUE (ProductID),
+
+    CONSTRAINT fk_pp_promo
+        FOREIGN KEY (PromoID)
+        REFERENCES PROMOTION(PromoID)
+        ON UPDATE CASCADE
+        ON DELETE CASCADE,
+
+    CONSTRAINT fk_pp_product
+        FOREIGN KEY (ProductID)
+        REFERENCES PRODUCT(ProductID)
+        ON UPDATE CASCADE
+        ON DELETE RESTRICT
+);
+
+CREATE INDEX idx_pp_product ON PROMOTION_PRODUCT(ProductID);
+CREATE INDEX idx_pp_promo   ON PROMOTION_PRODUCT(PromoID);
+
+-- ===== CATEGORY =====
+INSERT INTO PRODUCT_CATEGORY (CategoryID, CategoryName) VALUES
+('C01', 'Cake'),
+('C02', 'Baked'),
+('C03', 'Cookie');
+
+-- ===== PRODUCT (phải insert trước PROMOTION_PRODUCT) =====
+INSERT INTO PRODUCT (ProductID, ProductName, CategoryID, Quantity, Unit, Price, Description, Image) VALUES
+('PD01', 'Strawberry Short Cake', 'C01', 8, 'slice', 160000, 'Fresh strawberry...', 'strawberryshort.jpg'),
+('PD02', 'Lemon Short Cake', 'C01', 8, 'slice', 120000, 'Lemon curd on top', 'lemonshort.jpg'),
+('PD03', 'W Cheesecake', 'C01', 16, 'slice', 135000, '', ''),
+('PD04', 'Matcha Chiffon', 'C01', 8, 'slice', 135000, '', ''),
+('PD05', 'Earl Grey Chiffon', 'C01', 8, 'slice', 100000, '', ''),
+('PD06', 'Whole wheat Cookie', 'C03', 16, 'pack', 38000, '', ''),
+('PD07', 'Nut Cookie', 'C03', 8, 'pack', 38000, '', ''),
+('PD08', 'Choco Fondue', 'C03', 8, 'jar', 120000, '', ''),
+('PD09', 'Choco Merigue', 'C03', 5, 'pack', 45000, '', ''),
+('PD10', 'Lemon Cake', 'C02', 8, 'pack', 70000, '', ''),
+('PD11', 'Choco Muffin', 'C02', 8, 'pack', 75000, '', ''),
+('PD12', 'Earl Grey Financier', 'C02', 16, 'pack', 48000, '', '');
+
+-- ===== PROMOTION (phải có StartTime/EndTime) =====
+INSERT INTO PROMOTION
+(PromoID, PromoName, Description, StartTime, EndTime, PromoType, Value, Status)
+VALUES
+('PR01', 'Bread Discount', 'Discount for bread products', '00:00:00', '23:59:59', 'percent', 10, 'Active'),
+('PR02', 'Cake Special', 'Special discount for cakes', '00:00:00', '23:59:59', 'fixed', 20.00, 'Active'),
+('PR03', 'Cookie Promo', 'Discount for cookie products', '00:00:00', '23:59:59', 'percent', 5, 'Inactive');
+
+-- ===== PROMOTION_PRODUCT =====
+INSERT INTO PROMOTION_PRODUCT (PromoID, ProductID) VALUES
+('PR02', 'PD01'),
+('PR02', 'PD02');
+
+
+/* =========================================================
+   IMPORT (header)
+   - 1 lần restock = 1 ImportID
+   ========================================================= */
+CREATE TABLE IF NOT EXISTS IMPORT (
+    ImportID   VARCHAR(30) PRIMARY KEY,
+    ImportTime DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    Note       VARCHAR(255)
+);
+
+CREATE INDEX idx_import_time ON IMPORT(ImportTime);
+
+/* =========================================================
+   IMPORT_DETAIL (detail)
+   - 1 import có nhiều sản phẩm
+   - lưu số lượng + giá vốn
+   ========================================================= */
+CREATE TABLE IF NOT EXISTS IMPORT_DETAIL (
+    ImportID   VARCHAR(30) NOT NULL,
+    ProductID  VARCHAR(30) NOT NULL,
+    Quantity   INT NOT NULL,
+    CostPrice  DECIMAL(12,2) NOT NULL DEFAULT 0,
+
+    PRIMARY KEY (ImportID, ProductID),
+
+    CONSTRAINT fk_id_import
+        FOREIGN KEY (ImportID)
+        REFERENCES IMPORT(ImportID)
+        ON UPDATE CASCADE
+        ON DELETE CASCADE,
+
+    CONSTRAINT fk_id_product
+        FOREIGN KEY (ProductID)
+        REFERENCES PRODUCT(ProductID)
+        ON UPDATE CASCADE
+        ON DELETE RESTRICT
+);
+
+CREATE INDEX idx_import_detail_product ON IMPORT_DETAIL(ProductID);
+
+/* =========================================================
+   DAILY RESET QUANTITY = 0 on new day
+   ========================================================= */
+/* =========================================
+   SYSTEM CONFIG (for daily reset)
+   ========================================= */
+CREATE TABLE IF NOT EXISTS SYSTEM_CONFIG (
+    ConfigKey   VARCHAR(50) PRIMARY KEY,
+    ConfigValue VARCHAR(50) NOT NULL
+);
+
+INSERT IGNORE INTO SYSTEM_CONFIG (ConfigKey, ConfigValue)
+VALUES ('LAST_RESET_DATE', '2000-01-01');
+
+
+-- IMPORT sample (1 lần nhập)
+INSERT INTO IMPORT (ImportID, Note) VALUES
+('IM001', 'Morning restock');
+
+INSERT INTO IMPORT_DETAIL (ImportID, ProductID, Quantity, CostPrice) VALUES
+('IM001', 'PD01', 6, 80000),
+('IM001', 'PD02', 7, 60000),
+('IM001', 'PD03', 5, 90000),
+('IM001', 'PD04', 8, 85000),
+('IM001', 'PD05', 6, 55000),
+('IM001', 'PD06', 7, 50000),
+('IM001', 'PD07', 5, 52000),
+('IM001', 'PD08', 8, 70000),
+('IM001', 'PD09', 6, 65000),
+('IM001', 'PD10', 7, 60000),
+('IM001', 'PD11', 5, 75000),
+('IM001', 'PD12', 8, 80000);
+
+
+-- Sync tồn kho + giá vốn theo import IM001
+UPDATE PRODUCT p
+JOIN IMPORT_DETAIL d ON p.ProductID = d.ProductID
+SET 
+    p.Quantity = d.Quantity,
+    p.CostPrice = d.CostPrice
+WHERE d.ImportID = 'IM001';
+
+/* ================================
+   CUSTOMER
+================================ */
+CREATE TABLE `customer` (
+  `CustomerID` INT(10) NOT NULL AUTO_INCREMENT,
+  `FullName` VARCHAR(100) NOT NULL,
+  `Phone` VARCHAR(20) NOT NULL,
+  `Gender` ENUM('Male','Female') NOT NULL,
+  `DOB` DATE NOT NULL,
+  `Email` VARCHAR(100) DEFAULT NULL,
+  `Address` VARCHAR(255) DEFAULT NULL,
+  PRIMARY KEY (`CustomerID`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+
+/* ================================
+   ORDERS
+================================ */
+CREATE TABLE `orders` (
+  `OrderID` INT(11) NOT NULL AUTO_INCREMENT,
+  `OrderDate` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP(),
+  `CustomerID` INT(11) NOT NULL,
+  `Total` DECIMAL(12,2) NOT NULL,
+  `PaymentMethod` ENUM('Transfer','Cash') NOT NULL,
+  PRIMARY KEY (`OrderID`),
+  CONSTRAINT fk_orders_customer
+    FOREIGN KEY (`CustomerID`)
+    REFERENCES customer(`CustomerID`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+
+/* ================================
+   ORDER DETAIL
+================================ */
+CREATE TABLE `orderdetail` (
+  `OrderDetailID` INT(11) NOT NULL AUTO_INCREMENT,
+  `OrderID` INT(11) NOT NULL,
+  `ProductID` VARCHAR(30) NOT NULL,
+  `Quantity` INT(11) NOT NULL,
+  `UnitPrice` DECIMAL(12,2) NOT NULL,
+  `CostPrice` DECIMAL(12,2) NOT NULL,
+  `PromoID` VARCHAR(30) DEFAULT NULL,
+  `DiscountAmount` DECIMAL(12,2) DEFAULT 0.00,
+  PRIMARY KEY (`OrderDetailID`),
+  CONSTRAINT fk_orderdetail_order
+    FOREIGN KEY (`OrderID`)
+    REFERENCES orders(`OrderID`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+
+
+-- =========================
+-- USER & PERMISSION (FINAL - CORRECT)
 -- =========================
 
--- ⚠️ Tạo user (chỉ chạy 1 lần)
 CREATE USER IF NOT EXISTS 'manager_user'@'localhost' IDENTIFIED BY '123';
 CREATE USER IF NOT EXISTS 'employee_user'@'localhost' IDENTIFIED BY '123';
 
--- ===== MANAGER: FULL =====
+-- ===== MANAGER: FULL CONTROL =====
 GRANT ALL PRIVILEGES ON bakery_db.* TO 'manager_user'@'localhost';
 
--- ===== EMPLOYEE: CHỈ XEM + CHECK-IN / CHECK-OUT QUA PROCEDURE =====
+-- ===== EMPLOYEE (STAFF) =====
+
+-- Xem thông tin cơ bản
 GRANT SELECT ON bakery_db.EMPLOYEE TO 'employee_user'@'localhost';
+
+-- Attendance / Check-in
 GRANT SELECT ON bakery_db.EMPLOYEE_CHECKIN TO 'employee_user'@'localhost';
 GRANT SELECT ON bakery_db.EMPLOYEE_ATTENDANCE_LOG TO 'employee_user'@'localhost';
 
--- Cho phép gọi procedure check-in / check-out
+-- Product & Promotion
+GRANT SELECT ON bakery_db.PRODUCT TO 'employee_user'@'localhost';
+GRANT SELECT ON bakery_db.PRODUCT_CATEGORY TO 'employee_user'@'localhost';
+GRANT SELECT ON bakery_db.PROMOTION TO 'employee_user'@'localhost';
+GRANT SELECT ON bakery_db.PROMOTION_PRODUCT TO 'employee_user'@'localhost';
+
+-- Lương: CHỈ QUA VIEW
+GRANT SELECT ON bakery_db.vw_EmployeeSalary TO 'employee_user'@'localhost';
+
+-- Chỉ được check-in / check-out qua PROCEDURE
 GRANT EXECUTE ON PROCEDURE bakery_db.sp_employee_checkin_by_email TO 'employee_user'@'localhost';
 GRANT EXECUTE ON PROCEDURE bakery_db.sp_employee_checkout_by_email TO 'employee_user'@'localhost';
 
+--Customer – CRUD
+GRANT SELECT, INSERT, UPDATE, DELETE
+ON bakery_db.customer
+TO 'employee_user'@'localhost';
+
+--Orders – CRUD
+GRANT SELECT, INSERT, UPDATE, DELETE
+ON bakery_db.orders
+TO 'employee_user'@'localhost';
+
+GRANT SELECT, INSERT, UPDATE, DELETE
+ON bakery_db.orderdetail
+TO 'employee_user'@'localhost';
+
+
 FLUSH PRIVILEGES;
 
--- Test quyền
+-- TEST
 SHOW GRANTS FOR 'manager_user'@'localhost';
 SHOW GRANTS FOR 'employee_user'@'localhost';
 

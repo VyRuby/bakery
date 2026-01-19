@@ -13,8 +13,8 @@
 
 <BorderPane prefHeight="540.0" prefWidth="720.0"
             style="-fx-background-color: #F6F7FB;"
-            xmlns="http://javafx.com/javafx/13"
-            xmlns:fx="http://javafx.com/fxml/1"
+             xmlns="http://javafx.com/javafx"
+xmlns:fx="http://javafx.com/fxml"
             fx:controller="controller.ProductDetailController">
 
     <!-- HEADER -->

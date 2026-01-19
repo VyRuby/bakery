@@ -10,7 +10,6 @@ import java.util.ResourceBundle;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
@@ -24,27 +23,7 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
-public class EmployeeController extends BacktoHomeController implements Initializable {
-//    ====== TOP BAR=======
-    @FXML
-    private Button btnLogin;
-    @FXML
-    private Button btnLogout;
-     @FXML
-    private Button btnBack;
-    
-     @FXML
-    private void onLogin(ActionEvent event) {
-    }
-
-    @FXML
-    private void onLogout(ActionEvent event) {
-    }
-    @FXML
-    private void onBack(ActionEvent event) {
-    }
-    
-    
+public class EmployeeController extends BacktoHomeController  implements Initializable {
 
     // ===== TABLE =====
     @FXML private TableView<Employee> tblEmployee;
@@ -56,6 +35,8 @@ public class EmployeeController extends BacktoHomeController implements Initiali
     @FXML private TableColumn<Employee, String> colEmail;
     @FXML private TableColumn<Employee, String> colPosition;
     @FXML private TableColumn<Employee, String> colStatus;
+    @FXML private TextField txtSearch;
+
 
     // ===== FILTER =====
     @FXML private ComboBox<String> cbFilterStatus;
@@ -101,6 +82,23 @@ public class EmployeeController extends BacktoHomeController implements Initiali
     private void handleLoad() {
         loadData();
     }
+    
+    @FXML
+private void handleSearch() {
+
+    String key = txtSearch.getText().trim();
+
+    if (key.isEmpty()) {
+        showAlert("Please enter keyword to search!");
+        return;
+    }
+
+    ObservableList<Employee> list =
+        FXCollections.observableArrayList(dao.search(key));
+
+    tblEmployee.setItems(list);
+}
+
 
     // ================= ADD =================
     @FXML

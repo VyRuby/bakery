@@ -16,7 +16,8 @@
 <?import javafx.scene.control.CheckBox?>
 
 
-<BorderPane prefHeight="600.0" prefWidth="1000.0" style="-fx-background-color: #F6F7FB;" xmlns="http://javafx.com/javafx/13" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.HomeController">
+<BorderPane prefHeight="600.0" prefWidth="1000.0" style="-fx-background-color: #F6F7FB;"   xmlns="http://javafx.com/javafx"
+xmlns:fx="http://javafx.com/fxml" fx:controller="controller.HomeController">
 
     <!-- TOP BAR -->
     <top>

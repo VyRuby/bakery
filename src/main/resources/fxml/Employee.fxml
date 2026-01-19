@@ -1,84 +1,161 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.geometry.Insets?>
-<?import javafx.scene.control.Button?>
-<?import javafx.scene.control.ComboBox?>
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.control.TableColumn?>
-<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
-<?import javafx.scene.layout.BorderPane?>
-<?import javafx.scene.layout.HBox?>
-<?import javafx.scene.layout.Region?>
-<?import javafx.scene.layout.VBox?>
 
-<BorderPane style="-fx-background-color: #EED9C4;" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.EmployeeController">
+<BorderPane
+   xmlns="http://javafx.com/javafx"
+xmlns:fx="http://javafx.com/fxml"
 
-    <!-- ================= TOP : HEADER + FILTER ================= -->
+    fx:controller="controller.EmployeeController"
+    style="-fx-background-color: #EED9C4;">
+
+    <!-- ================= TOP : FILTER ================= -->
     <top>
-        <VBox spacing="10" style="-fx-background-color: #EED9C4;">
+        <VBox spacing="12" style="-fx-background-color: #EED9C4;">
             <padding>
-                <Insets bottom="8" left="16" right="16" top="12" />
+                <Insets top="10" right="10" bottom="10" left="10"/>
             </padding>
 
-            <!-- ===== HEADER ===== -->
-            <HBox alignment="CENTER_LEFT" spacing="12" style="-fx-padding: 10 14; -fx-background-color: white; -fx-background-radius: 14; -fx-border-color: #C19A6B; -fx-border-radius: 14; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.12), 8, 0, 0, 2);">
+            <!-- ===== HEADER: LOGO + TITLE ===== -->
+            <HBox alignment="CENTER_LEFT" spacing="12"
+                  style="-fx-padding: 10;
+                     -fx-background-color: #F8E4D0;
+                     -fx-background-radius: 16;
+                     -fx-border-color: #C19A6B;
+                     -fx-border-radius: 16;
+                     -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.15), 10, 0, 0, 3);">
 
-                <ImageView fitHeight="56" fitWidth="90" preserveRatio="true">
+                <ImageView fitHeight="80" fitWidth="120" preserveRatio="false">
                     <image>
-                        <Image url="@../image/logo.jpeg" />
+                        <Image url="@../image/logo.jpeg"/>
                     </image>
                 </ImageView>
 
-                <Region HBox.hgrow="ALWAYS" />
+                <!-- Spacer trái -->
+                <Region HBox.hgrow="ALWAYS"/>
 
-                <Label style="-fx-font-size: 20px;                                -fx-font-weight: 900;                                -fx-text-fill: #3E2723;" text="EMPLOYEE MANAGEMENT" />
+                <!-- Title ở giữa -->
+                <Label text="EMPLOYEE MANAGEMENT"
+                       style="-fx-font-size: 22px;
+                  -fx-font-weight: bold;
+                  -fx-text-fill: #3E2723;"/>
 
-                <Region HBox.hgrow="ALWAYS" />
+                <!-- Spacer phải -->
+                <Region HBox.hgrow="ALWAYS"/>
             </HBox>
 
             <!-- ===== FILTER ===== -->
-            <HBox alignment="CENTER_LEFT" spacing="12" style="-fx-padding: 10 14;                          -fx-background-color: #FAEBD7;                          -fx-background-radius: 12;                          -fx-border-color: #C19A6B;                          -fx-border-radius: 12;">
+            <HBox spacing="10" alignment="CENTER_LEFT"
+                  style="-fx-padding: 10;
+                     -fx-background-color: #FAEBD7;
+                     -fx-background-radius: 14;
+                     -fx-border-color: #C19A6B;
+                     -fx-border-radius: 14;">
 
-                <Label style="-fx-text-fill: #3E2723;                                -fx-font-weight: 800;" text="Status:" />
+                <Label text="Status:"
+                       style="-fx-text-fill: #3E2723;
+                          -fx-font-weight: bold;"/>
 
-                <ComboBox fx:id="cbFilterStatus" prefHeight="28.0" prefWidth="399.0" style="-fx-background-color: #FFFDF8;                                  -fx-border-color: #C19A6B;                                  -fx-border-radius: 8;                                  -fx-background-radius: 8;" />
+                <ComboBox fx:id="cbFilterStatus" prefWidth="120"
+                          style="-fx-background-color: #FFFDF8;
+                             -fx-border-color: #C19A6B;
+                             -fx-border-radius: 8;
+                             -fx-background-radius: 8;"/>
+            
+                <Label text="Search:"
+                       style="-fx-text-fill: #3E2723;
+                  -fx-font-weight: bold;"/>
 
-                <Button onAction="#handleLoad" prefHeight="34" style="-fx-background-color: #8B5E3C;                                -fx-text-fill: white;                                -fx-background-radius: 10;                                -fx-font-weight: 800;                                -fx-padding: 6 18;" text="Load" />
+                <TextField fx:id="txtSearch"
+                           promptText="Name / Phone / Email"
+                           prefWidth="220"
+                           style="-fx-background-color: #FFFDF8;
+                      -fx-border-color: #C19A6B;
+                      -fx-border-radius: 8;
+                      -fx-background-radius: 8;"/>
+
+                <Button text="Search"
+                        onAction="#handleSearch"
+                        style="-fx-background-color: #8B5E3C;
+                   -fx-text-fill: white;
+                   -fx-background-radius: 12;
+                   -fx-font-weight: bold;
+                   -fx-padding: 6 14;"/>
+
+                <Button text="Load" onAction="#handleLoad"
+                        style="-fx-background-color: #8B5E3C;
+                           -fx-text-fill: white;
+                           -fx-background-radius: 12;
+                           -fx-font-weight: bold;
+                           -fx-padding: 6 14;"/>
             </HBox>
+
         </VBox>
     </top>
 
+
     <!-- ================= CENTER : TABLE ================= -->
     <center>
-        <VBox style="-fx-padding: 12 16;">
-            <TableView fx:id="tblEmployee" style="-fx-background-color: #FAEBD7;                            -fx-border-color: #C19A6B;                            -fx-border-radius: 10;">
-                <columns>
-                    <TableColumn fx:id="colId" prefWidth="80" text="ID" />
-                    <TableColumn fx:id="colName" prefWidth="150" text="Full Name" />
-                    <TableColumn fx:id="colDob" prefWidth="100" text="DOB" />
-                    <TableColumn fx:id="colGender" prefWidth="80" text="Gender" />
-                    <TableColumn fx:id="colPhone" prefWidth="110" text="Phone" />
-                    <TableColumn fx:id="colEmail" prefWidth="160" text="Email" />
-                    <TableColumn fx:id="colPosition" prefWidth="120" text="Position" />
-                    <TableColumn fx:id="colStatus" prefWidth="90" text="Status" />
-                </columns>
-            </TableView>
-        </VBox>
+        <TableView
+            fx:id="tblEmployee"
+            style="-fx-background-color: #FAEBD7;
+                       -fx-border-color: #C19A6B;
+                       -fx-border-radius: 10;">
+            <columns>
+                <TableColumn fx:id="colId" text="ID" prefWidth="80"/>
+                <TableColumn fx:id="colName" text="Full Name" prefWidth="150"/>
+                <TableColumn fx:id="colDob" text="DOB" prefWidth="100"/>
+                <TableColumn fx:id="colGender" text="Gender" prefWidth="80"/>
+                <TableColumn fx:id="colPhone" text="Phone" prefWidth="100"/>
+                <TableColumn fx:id="colEmail" text="Email" prefWidth="150"/>
+                <TableColumn fx:id="colPosition" text="Position" prefWidth="100"/>
+                <TableColumn fx:id="colStatus" text="Status" prefWidth="80"/>
+            </columns>
+        </TableView>
     </center>
 
-    <!-- ================= BOTTOM : ACTION BUTTONS ================= -->
+    <!-- ================= BOTTOM : BUTTONS ================= -->
     <bottom>
-        <HBox alignment="CENTER_RIGHT" spacing="14" style="-fx-padding: 12 16;                       -fx-background-color: #EED9C4;">
+        <VBox spacing="10">
+            <padding>
+                <Insets top="10" right="10" bottom="10" left="10"/>
+            </padding>
 
-            <Button onAction="#handleAdd" prefHeight="36" prefWidth="79.0" style="-fx-background-color: #8B5E3C;                            -fx-text-fill: white;                            -fx-background-radius: 10;                            -fx-font-weight: 800;" text="Add" />
+            <HBox spacing="15" alignment="CENTER_RIGHT">
+                <Button
+                    text="Add"
+                    onAction="#handleAdd"
+                    style="-fx-background-color: #8B5E3C;
+                               -fx-text-fill: white;
+                               -fx-background-radius: 10;
+                               -fx-font-weight: bold;"/>
 
-            <Button onAction="#handleUpdate" prefHeight="36" prefWidth="78.0" style="-fx-background-color: #8B5E3C;                            -fx-text-fill: white;                            -fx-background-radius: 10;                            -fx-font-weight: 800;" text="Update" />
+                <Button
+                    text="Update"
+                    onAction="#handleUpdate"
+                    style="-fx-background-color: #8B5E3C;
+                               -fx-text-fill: white;
+                               -fx-background-radius: 10;
+                               -fx-font-weight: bold;"/>
 
-            <Button onAction="#handleDeactivate" prefHeight="36" style="-fx-background-color: #5D3A24;                            -fx-text-fill: white;                            -fx-background-radius: 10;                            -fx-font-weight: 800;" text="Deactivate" />
-         <Button fx:id="btnBacktoHome" onAction="#goBack" prefHeight="36" prefWidth="142.0" style="-fx-background-color: #8B5E3C;                            -fx-text-fill: white;                            -fx-background-radius: 10;                            -fx-font-weight: 800;" text="Back to Home" />
-        </HBox>
+                <Button
+                    text="Deactivate"
+                    onAction="#handleDeactivate"
+                    style="-fx-background-color: #5D3A24;
+                               -fx-text-fill: white;
+                               -fx-background-radius: 10;
+                               -fx-font-weight: bold;"/>
+                <Button text="← Home" onAction="#goBack"  style="-fx-background-color: #5D3A24;
+                               -fx-text-fill: white;
+                               -fx-background-radius: 10;
+                               -fx-font-weight: bold;"/>
+
+            </HBox>
+        </VBox>
     </bottom>
 
 </BorderPane>

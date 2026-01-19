@@ -151,4 +151,48 @@ public boolean exists(String empId) {
     return false;
 }
 
+// ================= SEARCH =================
+public List<Employee> search(String keyword) {
+
+    List<Employee> list = new ArrayList<>();
+
+    String sql =
+        "SELECT * FROM EMPLOYEE " +
+        "WHERE FullName LIKE ? " +
+        "   OR Phone LIKE ? " +
+        "   OR Email LIKE ?";
+
+    try (Connection con = ConnectDB.getConnection();
+         PreparedStatement ps = con.prepareStatement(sql)) {
+
+        String key = "%" + keyword + "%";
+        ps.setString(1, key);
+        ps.setString(2, key);
+        ps.setString(3, key);
+
+        ResultSet rs = ps.executeQuery();
+
+        while (rs.next()) {
+            list.add(new Employee(
+                rs.getString("EmployeeID"),
+                rs.getString("FullName"),
+                rs.getDate("DOB"),
+                rs.getString("Gender"),
+                rs.getString("Phone"),
+                rs.getString("Email"),
+                rs.getString("Address"),
+                rs.getDate("HireDate"),
+                rs.getString("Position"),
+                rs.getString("Status")
+            ));
+        }
+
+    } catch (SQLException ex) {
+        ex.printStackTrace();
+    }
+
+    return list;
+}
+
+
 }
