@@ -89,4 +89,10 @@ public class ProductDetailController implements Initializable {
     public Product getProduct(){
         return product;
     }
+
+public void setQuantity(int quantity){
+    if(SpinPick !=null && SpinPick.getValueFactory() != null){
+        SpinPick.getValueFactory().setValue(quantity);
+    }
+}    
 }
