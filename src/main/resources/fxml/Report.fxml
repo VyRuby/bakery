@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane id="AnchorPane" prefHeight="400.0" prefWidth="600.0" xmlns:fx="http://javafx.com/fxml" fx:controller="controller.ReportController">
+     <!-- Back button chung -->
+            <Button 
+                fx:id="btnBack" 
+                maxWidth="1.7976931348623157E308" 
+                onAction="#goBack" 
+                prefHeight="40" 
+                style="-fx-background-color: #8B5E3C; -fx-text-fill: white; -fx-font-weight: 800; -fx-background-radius: 12;" 
+                text="← Back to Home" />
+        
+</AnchorPane>

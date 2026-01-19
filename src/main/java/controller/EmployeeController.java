@@ -23,7 +23,7 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
-public class EmployeeController implements Initializable {
+public class EmployeeController extends BacktoHomeController  implements Initializable {
 
     // ===== TABLE =====
     @FXML private TableView<Employee> tblEmployee;

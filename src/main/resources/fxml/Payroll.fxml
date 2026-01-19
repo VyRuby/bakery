@@ -5,8 +5,9 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.image.*?>
 <BorderPane
-        xmlns="http://javafx.com/javafx/25"
-        xmlns:fx="http://javafx.com/fxml/1"
+       xmlns="http://javafx.com/javafx"
+xmlns:fx="http://javafx.com/fxml"
+
         fx:controller="controller.PayrollController"
         style="-fx-background-color: #EED9C4;">
 
@@ -76,7 +77,10 @@
                            -fx-font-weight: bold;
                            -fx-background-radius: 12;
                            -fx-padding: 6 16;"/>
-
+<Button text="← Home" onAction="#goBack"  style="-fx-background-color: #5D3A24;
+                               -fx-text-fill: white;
+                               -fx-background-radius: 10;
+                               -fx-font-weight: bold;"/>
            
         </HBox>
     </VBox>

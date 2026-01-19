@@ -15,7 +15,7 @@ import java.math.BigDecimal;
 import java.net.URL;
 import java.util.ResourceBundle;
 
-public class PayrollController implements Initializable {
+public class PayrollController extends BacktoHomeController  implements Initializable {
 
     @FXML
     private TableView<Payroll> tblPayroll;
