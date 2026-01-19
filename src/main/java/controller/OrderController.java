@@ -146,10 +146,11 @@ public class OrderController extends BacktoHomeController implements Initializab
             }
         });
         
-        LocalDateTime now = LocalDateTime.now();
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
-        String formatteDate= now.format(formatter);
-        dateOrder.setText(formatteDate);
+//        LocalDateTime now = LocalDateTime.now();
+//        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
+//        String formatteDate= now.format(formatter);
+//        dateOrder.setText(formatteDate);
+
 //        listProduct.setOnMouseClicked(e->{
 //            if(e.getClickCount() ==2){
 //                Product product =listProduct.getSelectionModel().getSelectedItem();
@@ -236,7 +237,7 @@ private PromotionDAO promotionDAO = new PromotionDAO();
     
     private void loadProducts(){
         ObservableList<Product> data =
-        FXCollections.observableArrayList(productDao.findAll());
+        FXCollections.observableArrayList(productDao.findAllActive());
 //        listProduct.setItems(data);
 productGrid.getChildren().clear();
 int column =0;
