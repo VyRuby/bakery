@@ -9,8 +9,7 @@ public class Promotion {
     private String promoId;
     private String promoName;
     private String description;
-    private LocalTime startTime;
-    private LocalTime endTime;
+   
 
     // enum('percent','fixed')
     private String promoType;
@@ -25,13 +24,11 @@ public class Promotion {
     public Promotion() {}
 
     public Promotion(String promoId, String promoName, String description,
-                     LocalTime startTime, LocalTime endTime,
                      String promoType, double value, String status) {
         this.promoId = promoId;
         this.promoName = promoName;
         this.description = description;
-        this.startTime = startTime;
-        this.endTime = endTime;
+     
         this.promoType = promoType;
         this.value = value;
         this.status = status;
@@ -46,11 +43,7 @@ public class Promotion {
     public String getDescription() { return description; }
     public void setDescription(String description) { this.description = description; }
 
-    public LocalTime getStartTime() { return startTime; }
-    public void setStartTime(LocalTime startTime) { this.startTime = startTime; }
-
-    public LocalTime getEndTime() { return endTime; }
-    public void setEndTime(LocalTime endTime) { this.endTime = endTime; }
+  
 
     public String getPromoType() { return promoType; }
     public void setPromoType(String promoType) { this.promoType = promoType; }

@@ -20,6 +20,15 @@ import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.stage.Stage;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
+
+import javafx.stage.FileChooser;
+
 
 /**
  * FXML Controller class
@@ -152,6 +161,79 @@ private void onCancel(ActionEvent event) {
 
     @FXML
     private void onBrowseImage(ActionEvent event) {
+        try {
+            FileChooser fc = new FileChooser();
+            fc.setTitle("Choose product image");
+            fc.getExtensionFilters().addAll(
+                    new FileChooser.ExtensionFilter("Image files", "*.png", "*.jpg", "*.jpeg", "*.gif", "*.webp"),
+                    new FileChooser.ExtensionFilter("All files", "*.*")
+            );
+
+            Stage stage = (Stage) btnBrowse.getScene().getWindow();
+            File file = fc.showOpenDialog(stage);
+            if (file == null) {
+                return;
+            }
+
+            String fileName = file.getName();
+            String relativePath = "image/" + fileName;
+
+            boolean copied = false;
+
+            Path mavenResources = Path.of("src", "main", "resources", "image");
+            if (Files.exists(mavenResources.getParent())) {
+                Files.createDirectories(mavenResources);
+                Path dest = mavenResources.resolve(fileName);
+                Files.copy(file.toPath(), dest, StandardCopyOption.REPLACE_EXISTING);
+                copied = true;
+            } else {
+                Path normalResources = Path.of("src", "image");
+                if (Files.exists(normalResources.getParent())) {
+                    Files.createDirectories(normalResources);
+                    Path dest = normalResources.resolve(fileName);
+                    Files.copy(file.toPath(), dest, StandardCopyOption.REPLACE_EXISTING);
+                    copied = true;
+                }
+            }
+
+         
+            txtImage.setText(relativePath);
+            previewImage(relativePath);
+
+            lblPreviewName.setText(txtName.getText() == null ? "" : txtName.getText().trim());
+            lblPreviewPrice.setText(txtPrice.getText() == null ? "" : txtPrice.getText().trim());
+
+            if (copied) {
+                lblMsg.setText("Selected image: " + relativePath);
+            } else {
+                lblMsg.setText("Selected image. (If preview fails, copy image into resources/images)");
+            }
+
+        } catch (IOException ex) {
+            ex.printStackTrace();
+            lblMsg.setText("Cannot copy image file.");
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            lblMsg.setText("Browse image failed.");
+        }
+    }
+
+     private void previewImage(String path) {
+    try {
+        if (path == null || path.isBlank()) {
+            imgProduct.setImage(null);
+            return;
+        }
+        Image img = new Image(getClass().getResourceAsStream("/" + path));
+        imgProduct.setImage(img);
+    } catch (Exception e) {
+        imgProduct.setImage(null);
+    }
+}
+
+    Product getResult() {
+        return result;
+
     }
 
     private Product editingProduct; // null = Add, != null = Edit
@@ -174,8 +256,8 @@ private void onCancel(ActionEvent event) {
         
          // quantity chỉ hiển thị
         lblQuantity.setText(String.valueOf(product.getQuantity()));
-
-        txtId.setDisable(true); // ID không cho sửa
+        // ID không cho sửa
+        txtId.setDisable(true); 
         
         // preview
         lblPreviewName.setText(product.getProductName());
@@ -207,23 +289,7 @@ private void onCancel(ActionEvent event) {
     }
 }
     
-    private void previewImage(String path) {
-    try {
-        if (path == null || path.isBlank()) {
-            imgProduct.setImage(null);
-            return;
-        }
-        Image img = new Image(getClass().getResourceAsStream("/" + path));
-        imgProduct.setImage(img);
-    } catch (Exception e) {
-        imgProduct.setImage(null);
-    }
-}
-
-    Product getResult() {
-        return result;
-
-    }
+   
 
 
     

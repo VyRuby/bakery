@@ -51,10 +51,6 @@ public class PromotionController extends BacktoHomeController implements Initial
     @FXML private TableColumn<Promotion, String> colName;
     @FXML private TableColumn<Promotion, String> colDiscount;
 
-    // GIỮ fx:id colStartDate/colEndDate (đúng FXML), nhưng đổi kiểu sang LocalTime
-    @FXML private TableColumn<Promotion, LocalTime> colStartTime;
-    @FXML private TableColumn<Promotion, LocalTime> colEndTime;
-
     @FXML private TableColumn<Promotion, String> colType;
     @FXML private TableColumn<Promotion, Number> colValue;
     @FXML private TableColumn<Promotion, String> colStatus;
@@ -83,10 +79,6 @@ public class PromotionController extends BacktoHomeController implements Initial
             }
             return new SimpleStringProperty(String.format("%.0f (fixed)", p.getValue()));
         });
-
-   
-        colStartTime.setCellValueFactory(cd -> new SimpleObjectProperty<>(cd.getValue().getStartTime()));
-        colEndTime.setCellValueFactory(cd -> new SimpleObjectProperty<>(cd.getValue().getEndTime()));
 
         colType.setCellValueFactory(new PropertyValueFactory<>("promoType"));
         colValue.setCellValueFactory(new PropertyValueFactory<>("value"));
@@ -121,14 +113,6 @@ public class PromotionController extends BacktoHomeController implements Initial
         applyFilter();
     }
 
-    /**
-     * Với TIME-only:
-     * - Active: Status=Active và NOW nằm trong [StartTime, EndTime]
-     * - Inactive: Status=Inactive
-     * - Upcoming: NOW trước StartTime (nếu promo không qua đêm)
-     * - Expired: NOW sau EndTime (nếu promo không qua đêm)
-     
-     */
     private void applyFilter() {
         String keyword = (txtSearch.getText() == null) ? "" : txtSearch.getText().toLowerCase().trim();
         String filter = cbFilter.getValue();
@@ -146,52 +130,18 @@ public class PromotionController extends BacktoHomeController implements Initial
             boolean matchFilter = true;
 
             if ("Active".equals(filter)) {
-                matchFilter = "Active".equalsIgnoreCase(p.getStatus())
-                        && isNowWithinTimeWindow(now, p.getStartTime(), p.getEndTime());
+                matchFilter = "Active".equalsIgnoreCase(p.getStatus());
 
             } else if ("Inactive".equals(filter)) {
                 matchFilter = "Inactive".equalsIgnoreCase(p.getStatus());
 
-            } else if ("Upcoming".equals(filter)) {
-                // Upcoming theo giờ trong ngày (chỉ hợp lý nếu không qua đêm)
-                matchFilter = "Active".equalsIgnoreCase(p.getStatus())
-                        && isUpcoming(now, p.getStartTime(), p.getEndTime());
-
-            } else if ("Expired".equals(filter)) {
-                // Expired theo giờ trong ngày (chỉ hợp lý nếu không qua đêm)
-                matchFilter = "Active".equalsIgnoreCase(p.getStatus())
-                        && isExpired(now, p.getStartTime(), p.getEndTime());
-            }
+            } 
 
             return matchSearch && matchFilter;
         });
     }
 
-    // NOW 
-    private boolean isNowWithinTimeWindow(LocalTime now, LocalTime start, LocalTime end) {
-        if (start == null || end == null) return false;
-
-        // start <= end
-        if (!end.isBefore(start)) {
-            return !now.isBefore(start) && !now.isAfter(end);
-        }
-
-        return !now.isBefore(start) || !now.isAfter(end);
-    }
-
-    private boolean isUpcoming(LocalTime now, LocalTime start, LocalTime end) {
-        if (start == null || end == null) return false;
-        if (end.isBefore(start)) return false;
-
-        return now.isBefore(start);
-    }
-
-    private boolean isExpired(LocalTime now, LocalTime start, LocalTime end) {
-        if (start == null || end == null) return false;
-        if (end.isBefore(start)) return false;
-
-        return now.isAfter(end);
-    }
+    
 
     @FXML
     private void onRefresh(ActionEvent event) {

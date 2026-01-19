@@ -942,15 +942,12 @@ CREATE TABLE IF NOT EXISTS PROMOTION (
     PromoID     VARCHAR(30) PRIMARY KEY,
     PromoName   VARCHAR(100) NOT NULL,
     Description VARCHAR(255),
-    StartTime   TIME NOT NULL,
-    EndTime     TIME NOT NULL,
     PromoType   ENUM('percent','fixed') NOT NULL,
     Value       DECIMAL(12,2) NOT NULL DEFAULT 0,
     Status      ENUM('Active','Inactive') NOT NULL DEFAULT 'Active'
 );
 
 CREATE INDEX idx_promotion_status ON PROMOTION(Status);
-CREATE INDEX idx_promotion_time ON PROMOTION(StartTime, EndTime);
 
 -- ===== PROMOTION_PRODUCT =====
 CREATE TABLE IF NOT EXISTS PROMOTION_PRODUCT (
@@ -983,8 +980,8 @@ INSERT INTO PRODUCT_CATEGORY (CategoryID, CategoryName) VALUES
 
 -- ===== PRODUCT (phải insert trước PROMOTION_PRODUCT) =====
 INSERT INTO PRODUCT (ProductID, ProductName, CategoryID, Quantity, Unit, Price, Description, Image) VALUES
-('PD01', 'Strawberry Short Cake', 'C01', 8, 'slice', 160000, 'Fresh strawberry...', 'strawberryshort.jpg'),
-('PD02', 'Lemon Short Cake', 'C01', 8, 'slice', 120000, 'Lemon curd on top', 'lemonshort.jpg'),
+('PD01', 'Strawberry Short Cake', 'C01', 8, 'slice', 160000, 'Fresh strawberry...', ''),
+('PD02', 'Lemon Short Cake', 'C01', 8, 'slice', 120000, 'Lemon curd on top', ''),
 ('PD03', 'W Cheesecake', 'C01', 16, 'slice', 135000, '', ''),
 ('PD04', 'Matcha Chiffon', 'C01', 8, 'slice', 135000, '', ''),
 ('PD05', 'Earl Grey Chiffon', 'C01', 8, 'slice', 100000, '', ''),
@@ -996,13 +993,14 @@ INSERT INTO PRODUCT (ProductID, ProductName, CategoryID, Quantity, Unit, Price, 
 ('PD11', 'Choco Muffin', 'C02', 8, 'pack', 75000, '', ''),
 ('PD12', 'Earl Grey Financier', 'C02', 16, 'pack', 48000, '', '');
 
+
 -- ===== PROMOTION (phải có StartTime/EndTime) =====
 INSERT INTO PROMOTION
-(PromoID, PromoName, Description, StartTime, EndTime, PromoType, Value, Status)
+(PromoID, PromoName, Description, PromoType, Value, Status)
 VALUES
-('PR01', 'Bread Discount', 'Discount for bread products', '00:00:00', '23:59:59', 'percent', 10, 'Active'),
-('PR02', 'Cake Special', 'Special discount for cakes', '00:00:00', '23:59:59', 'fixed', 20.00, 'Active'),
-('PR03', 'Cookie Promo', 'Discount for cookie products', '00:00:00', '23:59:59', 'percent', 5, 'Inactive');
+('PR01', 'Bread Discount', 'Discount for bread products', 'percent', 10, 'Active'),
+('PR02', 'Cake Special', 'Special discount for cakes', 'fixed', 20.00, 'Active'),
+('PR03', 'Cookie Promo', 'Discount for cookie products',  'percent', 5, 'Inactive');
 
 -- ===== PROMOTION_PRODUCT =====
 INSERT INTO PROMOTION_PRODUCT (PromoID, ProductID) VALUES
@@ -1092,9 +1090,9 @@ SET
     p.CostPrice = d.CostPrice
 WHERE d.ImportID = 'IM001';
 
--- Huy
+-- Huy id them AUTO_INCREMENT
 CREATE TABLE `orders` (
-  `OrderID` int(11) NOT NULL,
+  `OrderID` int(11) NOT NULL AUTO_INCREMENT,
   `OrderDate` datetime NOT NULL DEFAULT current_timestamp(),
   `CustomerID` int(11) NOT NULL,
   `Total` decimal(12,2) NOT NULL,
@@ -1103,7 +1101,7 @@ CREATE TABLE `orders` (
 
 
 CREATE TABLE `orderdetail` (
-  `OrderDetailID` int(11) NOT NULL,
+  `OrderDetailID` int(11) NOT NULL AUTO_INCREMENT,
   `OrderID` int(11) NOT NULL,
   `ProductID` varchar(30) NOT NULL,
   `Quantity` int(11) NOT NULL,
@@ -1116,7 +1114,7 @@ CREATE TABLE `orderdetail` (
 
 
 CREATE TABLE `customer` (
-  `CustomerID` int(10) NOT NULL,
+  `CustomerID` int(10) NOT NULL AUTO_INCREMENT,
   `FullName` varchar(100) NOT NULL,
   `Phone` varchar(20) NOT NULL,
   `Gender` enum('Male','Female') NOT NULL,
@@ -1129,3 +1127,9 @@ INSERT INTO `customer` (`CustomerID`, `FullName`, `Phone`, `Gender`, `DOB`, `Ema
 (1, 'Huy', '0967923921', 'Male', '2015-01-06', NULL, NULL),
 (2, 'Ngoc', '0911223344', 'Female', '2015-12-02', NULL, NULL),
 (3, 'Visitor', '000000', 'Male', '0000-00-00', NULL, NULL);
+
+-- CHỈNH SỬA BẢNG PRODUCT, THÊM ACTIVE, DEACTIVE
+ALTER TABLE PRODUCT
+ADD COLUMN Status ENUM('Active','Inactive') NOT NULL DEFAULT 'Active';
+
+CREATE INDEX idx_product_status ON PRODUCT(Status);
