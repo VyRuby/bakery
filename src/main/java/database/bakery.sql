@@ -911,306 +911,6 @@ CREATE TABLE IF NOT EXISTS PROMOTION (
     PromoID     VARCHAR(30) PRIMARY KEY,
     PromoName   VARCHAR(100) NOT NULL,
     Description VARCHAR(255),
-    StartTime   TIME NOT NULL,
-    EndTime     TIME NOT NULL,
-    PromoType   ENUM('percent','fixed') NOT NULL,
-    Value       DECIMAL(12,2) NOT NULL DEFAULT 0,
-    Status      ENUM('Active','Inactive') NOT NULL DEFAULT 'Active'
-);
-
-CREATE INDEX idx_promotion_status ON PROMOTION(Status);
-CREATE INDEX idx_promotion_time ON PROMOTION(StartTime, EndTime);
-
--- ===== PROMOTION_PRODUCT =====
-CREATE TABLE IF NOT EXISTS PROMOTION_PRODUCT (
-    PromoID   VARCHAR(30) NOT NULL,
-    ProductID VARCHAR(30) NOT NULL,
-    PRIMARY KEY (PromoID, ProductID),
-    UNIQUE (ProductID),
-
-    CONSTRAINT fk_pp_promo
-        FOREIGN KEY (PromoID)
-        REFERENCES PROMOTION(PromoID)
-        ON UPDATE CASCADE
-        ON DELETE CASCADE,
-
-    CONSTRAINT fk_pp_product
-        FOREIGN KEY (ProductID)
-        REFERENCES PRODUCT(ProductID)
-        ON UPDATE CASCADE
-        ON DELETE RESTRICT
-);
-
-CREATE INDEX idx_pp_product ON PROMOTION_PRODUCT(ProductID);
-CREATE INDEX idx_pp_promo   ON PROMOTION_PRODUCT(PromoID);
-
--- ===== CATEGORY =====
-INSERT INTO PRODUCT_CATEGORY (CategoryID, CategoryName) VALUES
-('C01', 'Cake'),
-('C02', 'Baked'),
-('C03', 'Cookie');
-
--- ===== PRODUCT (phải insert trước PROMOTION_PRODUCT) =====
-INSERT INTO PRODUCT (ProductID, ProductName, CategoryID, Quantity, Unit, Price, Description, Image) VALUES
-('PD01', 'Strawberry Short Cake', 'C01', 8, 'slice', 160000, 'Fresh strawberry...', 'strawberryshort.jpg'),
-('PD02', 'Lemon Short Cake', 'C01', 8, 'slice', 120000, 'Lemon curd on top', 'lemonshort.jpg'),
-('PD03', 'W Cheesecake', 'C01', 16, 'slice', 135000, '', ''),
-('PD04', 'Matcha Chiffon', 'C01', 8, 'slice', 135000, '', ''),
-('PD05', 'Earl Grey Chiffon', 'C01', 8, 'slice', 100000, '', ''),
-('PD06', 'Whole wheat Cookie', 'C03', 16, 'pack', 38000, '', ''),
-('PD07', 'Nut Cookie', 'C03', 8, 'pack', 38000, '', ''),
-('PD08', 'Choco Fondue', 'C03', 8, 'jar', 120000, '', ''),
-('PD09', 'Choco Merigue', 'C03', 5, 'pack', 45000, '', ''),
-('PD10', 'Lemon Cake', 'C02', 8, 'pack', 70000, '', ''),
-('PD11', 'Choco Muffin', 'C02', 8, 'pack', 75000, '', ''),
-('PD12', 'Earl Grey Financier', 'C02', 16, 'pack', 48000, '', '');
-
--- ===== PROMOTION (phải có StartTime/EndTime) =====
-INSERT INTO PROMOTION
-(PromoID, PromoName, Description, StartTime, EndTime, PromoType, Value, Status)
-VALUES
-('PR01', 'Bread Discount', 'Discount for bread products', '00:00:00', '23:59:59', 'percent', 10, 'Active'),
-('PR02', 'Cake Special', 'Special discount for cakes', '00:00:00', '23:59:59', 'fixed', 20.00, 'Active'),
-('PR03', 'Cookie Promo', 'Discount for cookie products', '00:00:00', '23:59:59', 'percent', 5, 'Inactive');
-
--- ===== PROMOTION_PRODUCT =====
-INSERT INTO PROMOTION_PRODUCT (PromoID, ProductID) VALUES
-('PR02', 'PD01'),
-('PR02', 'PD02');
-
-
-/* =========================================================
-   IMPORT (header)
-   - 1 lần restock = 1 ImportID
-   ========================================================= */
-CREATE TABLE IF NOT EXISTS IMPORT (
-    ImportID   VARCHAR(30) PRIMARY KEY,
-    ImportTime DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    Note       VARCHAR(255)
-);
-
-CREATE INDEX idx_import_time ON IMPORT(ImportTime);
-
-/* =========================================================
-   IMPORT_DETAIL (detail)
-   - 1 import có nhiều sản phẩm
-   - lưu số lượng + giá vốn
-   ========================================================= */
-CREATE TABLE IF NOT EXISTS IMPORT_DETAIL (
-    ImportID   VARCHAR(30) NOT NULL,
-    ProductID  VARCHAR(30) NOT NULL,
-    Quantity   INT NOT NULL,
-    CostPrice  DECIMAL(12,2) NOT NULL DEFAULT 0,
-
-    PRIMARY KEY (ImportID, ProductID),
-
-    CONSTRAINT fk_id_import
-        FOREIGN KEY (ImportID)
-        REFERENCES IMPORT(ImportID)
-        ON UPDATE CASCADE
-        ON DELETE CASCADE,
-
-    CONSTRAINT fk_id_product
-        FOREIGN KEY (ProductID)
-        REFERENCES PRODUCT(ProductID)
-        ON UPDATE CASCADE
-        ON DELETE RESTRICT
-);
-
-CREATE INDEX idx_import_detail_product ON IMPORT_DETAIL(ProductID);
-
-/* =========================================================
-   DAILY RESET QUANTITY = 0 on new day
-   ========================================================= */
-/* =========================================
-   SYSTEM CONFIG (for daily reset)
-   ========================================= */
-CREATE TABLE IF NOT EXISTS SYSTEM_CONFIG (
-    ConfigKey   VARCHAR(50) PRIMARY KEY,
-    ConfigValue VARCHAR(50) NOT NULL
-);
-
-INSERT IGNORE INTO SYSTEM_CONFIG (ConfigKey, ConfigValue)
-VALUES ('LAST_RESET_DATE', '2000-01-01');
-
-
--- IMPORT sample (1 lần nhập)
-INSERT INTO IMPORT (ImportID, Note) VALUES
-('IM001', 'Morning restock');
-
-INSERT INTO IMPORT_DETAIL (ImportID, ProductID, Quantity, CostPrice) VALUES
-('IM001', 'PD01', 6, 80000),
-('IM001', 'PD02', 7, 60000),
-('IM001', 'PD03', 5, 90000),
-('IM001', 'PD04', 8, 85000),
-('IM001', 'PD05', 6, 55000),
-('IM001', 'PD06', 7, 50000),
-('IM001', 'PD07', 5, 52000),
-('IM001', 'PD08', 8, 70000),
-('IM001', 'PD09', 6, 65000),
-('IM001', 'PD10', 7, 60000),
-('IM001', 'PD11', 5, 75000),
-('IM001', 'PD12', 8, 80000);
-
-
--- Sync tồn kho + giá vốn theo import IM001
-UPDATE PRODUCT p
-JOIN IMPORT_DETAIL d ON p.ProductID = d.ProductID
-SET 
-    p.Quantity = d.Quantity,
-    p.CostPrice = d.CostPrice
-WHERE d.ImportID = 'IM001';
-
-/* ================================
-   CUSTOMER
-================================ */
-CREATE TABLE `customer` (
-  `CustomerID` INT(10) NOT NULL AUTO_INCREMENT,
-  `FullName` VARCHAR(100) NOT NULL,
-  `Phone` VARCHAR(20) NOT NULL,
-  `Gender` ENUM('Male','Female') NOT NULL,
-  `DOB` DATE NOT NULL,
-  `Email` VARCHAR(100) DEFAULT NULL,
-  `Address` VARCHAR(255) DEFAULT NULL,
-  PRIMARY KEY (`CustomerID`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
-
-/* ================================
-   ORDERS
-================================ */
-CREATE TABLE `orders` (
-  `OrderID` INT(11) NOT NULL AUTO_INCREMENT,
-  `OrderDate` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP(),
-  `CustomerID` INT(11) NOT NULL,
-  `Total` DECIMAL(12,2) NOT NULL,
-  `PaymentMethod` ENUM('Transfer','Cash') NOT NULL,
-  PRIMARY KEY (`OrderID`),
-  CONSTRAINT fk_orders_customer
-    FOREIGN KEY (`CustomerID`)
-    REFERENCES customer(`CustomerID`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
-
-/* ================================
-   ORDER DETAIL
-================================ */
-CREATE TABLE `orderdetail` (
-  `OrderDetailID` INT(11) NOT NULL AUTO_INCREMENT,
-  `OrderID` INT(11) NOT NULL,
-  `ProductID` VARCHAR(30) NOT NULL,
-  `Quantity` INT(11) NOT NULL,
-  `UnitPrice` DECIMAL(12,2) NOT NULL,
-  `CostPrice` DECIMAL(12,2) NOT NULL,
-  `PromoID` VARCHAR(30) DEFAULT NULL,
-  `DiscountAmount` DECIMAL(12,2) DEFAULT 0.00,
-  PRIMARY KEY (`OrderDetailID`),
-  CONSTRAINT fk_orderdetail_order
-    FOREIGN KEY (`OrderID`)
-    REFERENCES orders(`OrderID`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
-
-
--- =========================
--- USER & PERMISSION (FINAL - CORRECT)
--- =========================
-
-CREATE USER IF NOT EXISTS 'manager_user'@'localhost' IDENTIFIED BY '123';
-CREATE USER IF NOT EXISTS 'employee_user'@'localhost' IDENTIFIED BY '123';
-
--- ===== MANAGER: FULL CONTROL =====
-GRANT ALL PRIVILEGES ON bakery_db.* TO 'manager_user'@'localhost';
-
--- ===== EMPLOYEE (STAFF) =====
-
--- Xem thông tin cơ bản
-GRANT SELECT ON bakery_db.EMPLOYEE TO 'employee_user'@'localhost';
-
--- Attendance / Check-in
-GRANT SELECT ON bakery_db.EMPLOYEE_CHECKIN TO 'employee_user'@'localhost';
-GRANT SELECT ON bakery_db.EMPLOYEE_ATTENDANCE_LOG TO 'employee_user'@'localhost';
-
--- Product & Promotion
-GRANT SELECT ON bakery_db.PRODUCT TO 'employee_user'@'localhost';
-GRANT SELECT ON bakery_db.PRODUCT_CATEGORY TO 'employee_user'@'localhost';
-GRANT SELECT ON bakery_db.PROMOTION TO 'employee_user'@'localhost';
-GRANT SELECT ON bakery_db.PROMOTION_PRODUCT TO 'employee_user'@'localhost';
-
--- Lương: CHỈ QUA VIEW
-GRANT SELECT ON bakery_db.vw_EmployeeSalary TO 'employee_user'@'localhost';
-
--- Chỉ được check-in / check-out qua PROCEDURE
-GRANT EXECUTE ON PROCEDURE bakery_db.sp_employee_checkin_by_email TO 'employee_user'@'localhost';
-GRANT EXECUTE ON PROCEDURE bakery_db.sp_employee_checkout_by_email TO 'employee_user'@'localhost';
-
---Customer – CRUD
-GRANT SELECT, INSERT, UPDATE, DELETE
-ON bakery_db.customer
-TO 'employee_user'@'localhost';
-
---Orders – CRUD
-GRANT SELECT, INSERT, UPDATE, DELETE
-ON bakery_db.orders
-TO 'employee_user'@'localhost';
-
-GRANT SELECT, INSERT, UPDATE, DELETE
-ON bakery_db.orderdetail
-TO 'employee_user'@'localhost';
-
-
-FLUSH PRIVILEGES;
-
--- TEST
-SHOW GRANTS FOR 'manager_user'@'localhost';
-SHOW GRANTS FOR 'employee_user'@'localhost';
-
-
-
-
-
--- NGOC
-
--- =========================
--- TABLE: PRODUCT_CATEGORY
--- =========================
-CREATE TABLE IF NOT EXISTS PRODUCT_CATEGORY (
-    CategoryID   VARCHAR(30)  PRIMARY KEY,
-    CategoryName VARCHAR(100) NOT NULL
-);
-
--- =========================
--- TABLE: PRODUCT
--- =========================
-CREATE TABLE IF NOT EXISTS PRODUCT (
-    ProductID    VARCHAR(30)  PRIMARY KEY,
-    ProductName  VARCHAR(150) NOT NULL,
-    CategoryID   VARCHAR(30)  NOT NULL,
-    Quantity     INT NOT NULL DEFAULT 0,
-    Unit         VARCHAR(20),
-    CostPrice   DECIMAL(12,2) NOT NULL DEFAULT 0,
-    Price        DECIMAL(12,2) NOT NULL DEFAULT 0,
-    Description  VARCHAR(255),
-    Image        VARCHAR(255),
-
-    CONSTRAINT fk_product_category
-        FOREIGN KEY (CategoryID)
-        REFERENCES PRODUCT_CATEGORY(CategoryID)
-        ON UPDATE CASCADE
-        ON DELETE RESTRICT
-) ;
-
-CREATE INDEX idx_product_category ON PRODUCT(CategoryID);
-CREATE INDEX idx_product_name ON PRODUCT(ProductName);
-
--- =========================
--- TABLE: PROMOTION
--- =========================
--- ===== PROMOTION =====
-CREATE TABLE IF NOT EXISTS PROMOTION (
-    PromoID     VARCHAR(30) PRIMARY KEY,
-    PromoName   VARCHAR(100) NOT NULL,
-    Description VARCHAR(255),
     PromoType   ENUM('percent','fixed') NOT NULL,
     Value       DECIMAL(12,2) NOT NULL DEFAULT 0,
     Status      ENUM('Active','Inactive') NOT NULL DEFAULT 'Active'
@@ -1392,6 +1092,109 @@ CREATE TABLE `customer` (
   `Address` varchar(255) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+DELIMITER $$
+
+CREATE PROCEDURE sp_GenerateOrderData_Year2025()
+BEGIN
+    DECLARE v_month INT DEFAULT 1;
+    DECLARE v_order_count INT;
+    DECLARE v_i INT;
+
+    DECLARE v_order_id INT;
+    DECLARE v_customer INT;
+    DECLARE v_pay ENUM('Cash','Transfer');
+    DECLARE v_order_date DATETIME;
+
+    DECLARE v_product VARCHAR(30);
+    DECLARE v_qty INT;
+    DECLARE v_price DECIMAL(12,2);
+    DECLARE v_cost DECIMAL(12,2);
+    DECLARE v_discount DECIMAL(12,2);
+    DECLARE v_total DECIMAL(12,2);
+
+    WHILE v_month <= 12 DO
+
+        -- mỗi tháng 10–20 order
+        SET v_order_count = 10 + FLOOR(RAND() * 11);
+        SET v_i = 1;
+
+        WHILE v_i <= v_order_count DO
+            SET v_total = 0;
+
+            SET v_customer = FLOOR(1 + RAND() * 3);
+            SET v_pay = IF(RAND() > 0.5, 'Cash', 'Transfer');
+
+            SET v_order_date =
+                STR_TO_DATE(
+                    CONCAT(
+                        '2025-',
+                        LPAD(v_month,2,'0'),
+                        '-',
+                        LPAD(1 + FLOOR(RAND()*26),2,'0'),
+                        ' ',
+                        LPAD(8 + FLOOR(RAND()*10),2,'0'),
+                        ':',
+                        LPAD(FLOOR(RAND()*60),2,'0'),
+                        ':00'
+                    ),
+                    '%Y-%m-%d %H:%i:%s'
+                );
+
+            INSERT INTO orders (OrderDate, CustomerID, Total, PaymentMethod)
+            VALUES (v_order_date, v_customer, 0, v_pay);
+
+            SET v_order_id = LAST_INSERT_ID();
+
+            -- mỗi order 1–4 sản phẩm
+            SET @item_count = 1 + FLOOR(RAND() * 4);
+            SET @j = 1;
+
+            WHILE @j <= @item_count DO
+
+                SELECT ProductID, Price, CostPrice
+                INTO v_product, v_price, v_cost
+                FROM PRODUCT
+                WHERE Status = 'Active'
+                ORDER BY RAND()
+                LIMIT 1;
+
+                SET v_qty = 1 + FLOOR(RAND() * 3);
+
+                -- discount cho cake
+                IF v_product IN ('PD01','PD02') AND RAND() > 0.5 THEN
+                    SET v_discount = 20000;
+                    SET @promo = 'PR02';
+                ELSE
+                    SET v_discount = 0;
+                    SET @promo = NULL;
+                END IF;
+
+                INSERT INTO orderdetail
+                (OrderID, ProductID, Quantity, UnitPrice, CostPrice, PromoID, DiscountAmount)
+                VALUES
+                (v_order_id, v_product, v_qty, v_price, v_cost, @promo, v_discount);
+
+                SET v_total = v_total + (v_price * v_qty - v_discount);
+
+                SET @j = @j + 1;
+            END WHILE;
+
+            UPDATE orders
+            SET Total = v_total
+            WHERE OrderID = v_order_id;
+
+            SET v_i = v_i + 1;
+        END WHILE;
+
+        SET v_month = v_month + 1;
+    END WHILE;
+END$$
+
+DELIMITER ;
+--test data
+CALL sp_GenerateOrderData_Year2025();
+
+
 INSERT INTO `customer` (`CustomerID`, `FullName`, `Phone`, `Gender`, `DOB`, `Email`, `Address`) VALUES
 (1, 'Huy', '0967923921', 'Male', '2015-01-06', NULL, NULL),
 (2, 'Ngoc', '0911223344', 'Female', '2015-12-02', NULL, NULL),
@@ -1402,3 +1205,56 @@ ALTER TABLE PRODUCT
 ADD COLUMN Status ENUM('Active','Inactive') NOT NULL DEFAULT 'Active';
 
 CREATE INDEX idx_product_status ON PRODUCT(Status);
+
+-- =========================
+-- USER & PERMISSION (FINAL - CORRECT)
+-- =========================
+
+CREATE USER IF NOT EXISTS 'a@gmail.com'@'localhost' IDENTIFIED BY '123';
+CREATE USER IF NOT EXISTS 'b@gmail.com'@'localhost' IDENTIFIED BY '123';
+
+-- ===== MANAGER: FULL CONTROL =====
+GRANT ALL PRIVILEGES ON bakery_db.* TO 'a@gmail.com'@'localhost';
+
+-- ===== EMPLOYEE (STAFF) =====
+
+-- Xem thông tin cơ bản
+GRANT SELECT ON bakery_db.EMPLOYEE TO 'b@gmail.com'@'localhost';
+
+-- Attendance / Check-in
+GRANT SELECT ON bakery_db.EMPLOYEE_CHECKIN TO 'b@gmail.com'@'localhost';
+GRANT SELECT ON bakery_db.EMPLOYEE_ATTENDANCE_LOG TO 'b@gmail.com'@'localhost';
+
+-- Product & Promotion
+GRANT SELECT ON bakery_db.PRODUCT TO 'b@gmail.com'@'localhost';
+GRANT SELECT ON bakery_db.PRODUCT_CATEGORY TO 'b@gmail.com'@'localhost';
+GRANT SELECT ON bakery_db.PROMOTION TO 'b@gmail.com'@'localhost';
+GRANT SELECT ON bakery_db.PROMOTION_PRODUCT TO 'b@gmail.com'@'localhost';
+
+-- Lương: CHỈ QUA VIEW
+GRANT SELECT ON bakery_db.vw_EmployeeSalary TO 'b@gmail.com'@'localhost';
+
+-- Chỉ được check-in / check-out qua PROCEDURE
+GRANT EXECUTE ON PROCEDURE bakery_db.sp_employee_checkin_by_email TO 'b@gmail.com'@'localhost';
+GRANT EXECUTE ON PROCEDURE bakery_db.sp_employee_checkout_by_email TO 'b@gmail.com'@'localhost';
+
+--Customer – CRUD
+GRANT SELECT, INSERT, UPDATE, DELETE
+ON bakery_db.customer
+TO 'b@gmail.com'@'localhost';
+
+--Orders – CRUD
+GRANT SELECT, INSERT, UPDATE, DELETE
+ON bakery_db.orders
+TO 'b@gmail.com'@'localhost';
+
+GRANT SELECT, INSERT, UPDATE, DELETE
+ON bakery_db.orderdetail
+TO 'b@gmail.com'@'localhost';
+
+
+FLUSH PRIVILEGES;
+
+-- TEST
+SHOW GRANTS FOR 'a@gmail.com'@'localhost';
+SHOW GRANTS FOR 'b@gmail.com'@'localhost';

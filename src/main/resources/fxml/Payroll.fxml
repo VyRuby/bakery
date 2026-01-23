@@ -5,86 +5,79 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.image.*?>
 <BorderPane
-       xmlns="http://javafx.com/javafx"
-xmlns:fx="http://javafx.com/fxml"
+    xmlns="http://javafx.com/javafx"
+    xmlns:fx="http://javafx.com/fxml"
 
-        fx:controller="controller.PayrollController"
-        style="-fx-background-color: #EED9C4;">
+    fx:controller="controller.PayrollController"
+    style="-fx-background-color: #EED9C4;">
 
     <!-- ================= TOP ================= -->
     <!-- ================= TOP ================= -->
-<top>
-    <VBox spacing="12"
-          style="-fx-background-color: #EED9C4;">
-        <padding>
-            <Insets top="12" right="16" bottom="12" left="16"/>
-        </padding>
+    <top>
+        <VBox spacing="12"
+              style="-fx-background-color: #EED9C4;">
+            <padding>
+                <Insets top="12" right="16" bottom="12" left="16"/>
+            </padding>
 
-        <!-- ===== HEADER: LOGO + TITLE ===== -->
-<HBox alignment="CENTER_LEFT" spacing="12"
-      style="-fx-padding: 10;
+            <!-- ===== HEADER: LOGO + TITLE ===== -->
+            <HBox alignment="CENTER_LEFT" spacing="12"
+                  style="-fx-padding: 10;
              -fx-background-color: #F8E4D0;
              -fx-background-radius: 16;
              -fx-border-color: #C19A6B;
              -fx-border-radius: 16;
              -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.15), 10, 0, 0, 3);">
 
-    <!-- LOGO -->
-    <ImageView fitHeight="80" fitWidth="120" preserveRatio="false">
-        <image>
-            <Image url="@../image/logo.jpeg"/>
-        </image>
-    </ImageView>
+                <!-- LOGO -->
+                <ImageView fitHeight="80" fitWidth="120" preserveRatio="false">
+                    <image>
+                        <Image url="@../image/logo.jpeg"/>
+                    </image>
+                </ImageView>
 
-    <!-- Spacer trái -->
-    <Region HBox.hgrow="ALWAYS"/>
+                <!-- Spacer trái -->
+                <Region HBox.hgrow="ALWAYS"/>
 
-    <!-- TITLE ở giữa -->
-    <Label text="PAYROLL MANAGEMENT"
-           style="-fx-font-size: 22px;
+                <!-- TITLE ở giữa -->
+                <Label text="PAYROLL MANAGEMENT"
+                       style="-fx-font-size: 22px;
                   -fx-font-weight: bold;
                   -fx-text-fill: #3E2723;"/>
 
-    <!-- Spacer phải -->
-    <Region HBox.hgrow="ALWAYS"/>
+                <!-- Spacer phải -->
+                <Region HBox.hgrow="ALWAYS"/>
 
-</HBox>
+            </HBox>
 
-        <!-- FILTER BAR -->
-        <HBox spacing="12" alignment="CENTER_LEFT"
-              style="-fx-padding: 10;
+            <!-- FILTER BAR -->
+            <HBox spacing="12" alignment="CENTER_LEFT"
+                  style="-fx-padding: 10;
                      -fx-background-color: #FAEBD7;
                      -fx-background-radius: 14;
                      -fx-border-color: #C19A6B;
                      -fx-border-radius: 14;">
 
-            <Label text="Month:"
-                   style="-fx-text-fill: #3E2723;
+                <Label text="Month:"
+                       style="-fx-text-fill: #3E2723;
                           -fx-font-weight: bold;"/>
 
-            <ComboBox fx:id="cbMonth"
-                      prefWidth="110"
-                      style="-fx-background-color: #FFFDF8;
+                <ComboBox fx:id="cbMonth"
+                          prefWidth="110"
+                          style="-fx-background-color: #FFFDF8;
                              -fx-border-color: #C19A6B;
                              -fx-border-radius: 10;
                              -fx-background-radius: 10;"/>
 
-            <Button fx:id="btnCalculate"
-                    text="Calculate Salary"
-                    onAction="#handleCalculate"
-                    style="-fx-background-color: #8B5E3C;
-                           -fx-text-fill: white;
-                           -fx-font-weight: bold;
-                           -fx-background-radius: 12;
-                           -fx-padding: 6 16;"/>
-<Button text="← Home" onAction="#goBack"  style="-fx-background-color: #5D3A24;
+                
+                <Button text="← Home" onAction="#goBack"  style="-fx-background-color: #5D3A24;
                                -fx-text-fill: white;
                                -fx-background-radius: 10;
                                -fx-font-weight: bold;"/>
            
-        </HBox>
-    </VBox>
-</top>
+            </HBox>
+        </VBox>
+    </top>
 
 
     <!-- ================= CENTER ================= -->
@@ -95,8 +88,8 @@ xmlns:fx="http://javafx.com/fxml"
             </padding>
 
             <TableView
-                    fx:id="tblPayroll"
-                    style="-fx-background-color: #FAEBD7;
+                fx:id="tblPayroll"
+                style="-fx-background-color: #FAEBD7;
                            -fx-border-color: #C19A6B;
                            -fx-border-radius: 14;
                            -fx-background-radius: 14;">
@@ -105,6 +98,8 @@ xmlns:fx="http://javafx.com/fxml"
                     <TableColumn fx:id="colEmpId" text="Employee ID" prefWidth="110"/>
                     <TableColumn fx:id="colName" text="Full Name" prefWidth="160"/>
                     <TableColumn fx:id="colMonth" text="Month" prefWidth="70"/>
+                    <TableColumn fx:id="colWorkDays" text="Work Days"  prefWidth="90"/>
+
                     <TableColumn fx:id="colBaseSalary" text="Base Salary" prefWidth="130"/>
                     <TableColumn fx:id="colBonus" text="Bonus" prefWidth="110"/>
                     <TableColumn fx:id="colPenalty" text="Penalty" prefWidth="110"/>
@@ -122,10 +117,7 @@ xmlns:fx="http://javafx.com/fxml"
                 <Insets top="6" right="16" bottom="10" left="16"/>
             </padding>
 
-            <Label
-                    text="Employee can view only | Manager has full control"
-                    style="-fx-text-fill: #6D4C41;
-                           -fx-font-style: italic;"/>
+            
         </HBox>
     </bottom>
 

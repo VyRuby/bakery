@@ -163,6 +163,7 @@
                     <columns>
                         <TableColumn fx:id="ProductName" prefWidth="140.0" text="Product" />
                         <TableColumn fx:id="Number" prefWidth="50.0" text="Qty" />
+                        <TableColumn fx:id="CostColum" prefWidth="67.20002746582031" text="Cost" />
                         <TableColumn fx:id="Price" prefWidth="70.0" text="Price" />
                         <TableColumn fx:id="TotalPrice" prefWidth="85.0" text="Total" />
                         <TableColumn fx:id="DelColum" prefWidth="45.0" text="Del" />

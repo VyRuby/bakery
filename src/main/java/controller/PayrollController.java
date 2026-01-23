@@ -35,6 +35,9 @@ public class PayrollController extends BacktoHomeController  implements Initiali
     private TableColumn<Payroll, BigDecimal> colPenalty;
     @FXML
     private TableColumn<Payroll, BigDecimal> colTotalSalary;
+    @FXML
+private TableColumn<Payroll, Integer> colWorkDays;
+
 
     @FXML
     private ComboBox<String> cbMonth;
@@ -76,6 +79,9 @@ public class PayrollController extends BacktoHomeController  implements Initiali
 
         colTotalSalary.setCellValueFactory(d
                 -> new ReadOnlyObjectWrapper<>(d.getValue().getTotalSalary()));
+        colWorkDays.setCellValueFactory(d
+        -> new ReadOnlyObjectWrapper<>(d.getValue().getWorkDays()));
+
 
         // format tiền VN
         formatMoney(colBaseSalary);
