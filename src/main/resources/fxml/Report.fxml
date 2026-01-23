@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.chart.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="controller.ReportController"
+            prefWidth="1300"
+            prefHeight="750"
+            style="-fx-background-color:#F4F6F5;">
+
+    <children>
+
+        <HBox spacing="20"
+              AnchorPane.topAnchor="20"
+              AnchorPane.leftAnchor="20"
+              AnchorPane.rightAnchor="20"
+              AnchorPane.bottomAnchor="20">
+
+            <!-- MAIN CONTENT -->
+            <VBox spacing="20" HBox.hgrow="ALWAYS">
+
+                <!-- TOP 2 CARD -->
+<HBox spacing="20">
+
+    <!-- TOTAL REVENUE DONUT -->
+    <VBox spacing="10"
+          prefWidth="450"
+          style="-fx-background-color:white;
+                 -fx-background-radius:16;
+                 -fx-padding:20;
+                 -fx-effect:dropshadow(gaussian,rgba(0,0,0,0.08),10,0,0,4);">
+
+        <Label text="Total Revenue"
+               style="-fx-font-size:16;
+                      -fx-font-weight:bold;
+                      -fx-text-fill:#1F3D2B;"/>
+
+        <StackPane prefHeight="250">
+
+            <ProgressIndicator fx:id="revenueProgress"
+                               prefWidth="220"
+                               prefHeight="220"
+                               progress="0.75"
+                               style="-fx-progress-color:#6B8E23;"/>
+
+            <VBox alignment="CENTER">
+                <Label fx:id="lbRevenue"
+                       text="$0"
+                       style="-fx-font-size:28;
+                              -fx-font-weight:bold;"/>
+                <Label text="Total"
+                       style="-fx-text-fill:#999;"/>
+            </VBox>
+
+        </StackPane>
+    </VBox>
+
+    <!-- GROWTH ORIENTATION -->
+    <VBox spacing="10"
+          prefWidth="450"
+          style="-fx-background-color:white;
+                 -fx-background-radius:16;
+                 -fx-padding:20;
+                 -fx-effect:dropshadow(gaussian,rgba(0,0,0,0.08),10,0,0,4);">
+
+        <Label text="Growth Orientation"
+               style="-fx-font-size:16;
+                      -fx-font-weight:bold;
+                      -fx-text-fill:#1F3D2B;"/>
+
+        <LineChart fx:id="chartGrowth"
+                   animated="false"
+                   createSymbols="true">
+            <xAxis><CategoryAxis/></xAxis>
+            <yAxis><NumberAxis/></yAxis>
+        </LineChart>
+
+    </VBox>
+</HBox>
+
+
+                <!-- BOTTOM BIG CHART -->
+                <VBox spacing="10"
+                      VBox.vgrow="ALWAYS"
+                      style="-fx-background-color:white;
+                             -fx-background-radius:16;
+                             -fx-padding:15;
+                             -fx-effect:dropshadow(gaussian,rgba(0,0,0,0.08),10,0,0,4);">
+
+                    <BarChart fx:id="chartBottom" animated="false"
+                              VBox.vgrow="ALWAYS">
+                        <xAxis><CategoryAxis/></xAxis>
+                        <yAxis><NumberAxis/></yAxis>
+                    </BarChart>
+
+                </VBox>
+            </VBox>
+
+            <!-- RIGHT SIDEBAR -->
+            <VBox spacing="20" prefWidth="220">
+
+                <!-- IMAGE 1 -->
+                <VBox style="-fx-background-color:white;
+                             -fx-background-radius:16;
+                             -fx-padding:10;
+                             -fx-effect:dropshadow(gaussian,rgba(0,0,0,0.08),10,0,0,4);">
+                    <ImageView fx:id="imgTop"
+                               fitWidth="200"
+                               fitHeight="140"
+                               preserveRatio="true"/>
+                </VBox>
+
+                <!-- IMAGE 2 -->
+                <VBox style="-fx-background-color:white;
+                             -fx-background-radius:16;
+                             -fx-padding:10;
+                             -fx-effect:dropshadow(gaussian,rgba(0,0,0,0.08),10,0,0,4);">
+                    <ImageView fx:id="imgBottom"
+                               fitWidth="200"
+                               fitHeight="140"
+                               preserveRatio="true"/>
+                </VBox>
+
+            </VBox>
+        </HBox>
+
+    </children>
+</AnchorPane>

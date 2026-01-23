@@ -1,0 +1,187 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.VBox?>
+
+<BorderPane prefHeight="700.0" prefWidth="1100.0" style="-fx-background-color: #F6F7FB;" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.OrderController">
+
+    <!-- TOP BAR -->
+    <top>
+    <HBox alignment="CENTER_LEFT" prefHeight="78.0" spacing="14.0" style="-fx-background-color: white;                  -fx-border-color: #E6E8EF;                  -fx-border-width: 0 0 1 0;">
+        <padding>
+            <Insets bottom="14" left="18" right="18" top="14" />
+        </padding>
+
+        <!-- LOGO -->
+        <HBox alignment="CENTER_LEFT" spacing="10">
+            <ImageView fitHeight="42.0" fitWidth="42.0" preserveRatio="true">
+                <image>
+                    <Image url="@image/logo.png" />
+                </image>
+            </ImageView>
+
+            <VBox alignment="CENTER_LEFT" spacing="2">
+                <Label style="-fx-font-size: 18px;                               -fx-font-weight: 800;                               -fx-text-fill: #1F2A37;" text="GATEAUET" />
+                <Label style="-fx-font-size: 12px;                               -fx-text-fill: #6B7280;" text="Order Management" />
+            </VBox>
+        </HBox>
+
+        <Region HBox.hgrow="ALWAYS" />
+
+        <!-- BANNER -->
+        <ImageView fitHeight="38.0" fitWidth="140.0" opacity="0.92" preserveRatio="true">
+            <image>
+                <Image url="@image/top-banner.png" />
+            </image>
+        </ImageView>
+
+        <Region HBox.hgrow="ALWAYS" />
+
+        <!-- USER / LOGIN -->
+        <HBox alignment="CENTER_RIGHT" spacing="10">
+            <ImageView fitHeight="36.0" fitWidth="36.0" preserveRatio="true">
+                <image>
+                    <Image url="@image/user.png" />
+                </image>
+            </ImageView>
+
+            <VBox alignment="CENTER_LEFT" spacing="2">
+                <Label style="-fx-font-size: 13px;                               -fx-font-weight: 600;                               -fx-text-fill: #111827;" text="Staff" />
+                <Label style="-fx-font-size: 11px;                               -fx-text-fill: #6B7280;" text="Not logged in" />
+            </VBox>
+        </HBox>
+    </HBox>
+</top>
+
+
+    <!-- CENTER -->
+    <center>
+        <HBox spacing="14">
+            <padding>
+                <Insets bottom="18" left="18" right="18" top="18" />
+            </padding>
+
+            <!-- LEFT: PRODUCT LIST -->
+            <VBox prefWidth="520" spacing="10" style="-fx-background-color: white;                          -fx-background-radius: 18;                          -fx-border-radius: 18;                          -fx-border-color: #E6E8EF;">
+                <padding>
+                    <Insets bottom="14" left="14" right="14" top="14" />
+                </padding>
+
+                <Label style="-fx-font-size: 18px; -fx-font-weight: 900;" text="Products" />
+            <AnchorPane prefHeight="112.0" prefWidth="490.0">
+               <children>
+                  <CheckBox fx:id="ctBaked" layoutX="8.0" layoutY="6.0" mnemonicParsing="false" text="Baked" />
+                  <CheckBox fx:id="ctCake" layoutX="95.0" layoutY="6.0" mnemonicParsing="false" text="Cake" />
+                  <CheckBox fx:id="ctCookie" layoutX="183.0" layoutY="5.0" mnemonicParsing="false" text="Cookie" />
+                  <TextField fx:id="findProduct" layoutX="312.0" layoutY="1.0" />
+                  
+               </children>
+            </AnchorPane>
+
+                <ScrollPane fitToWidth="true" prefHeight="560">
+                    <content>
+                        <GridPane fx:id="productGrid" hgap="12" vgap="12" />
+                    </content>
+                </ScrollPane>
+            </VBox>
+
+            <!-- RIGHT -->
+            <VBox prefWidth="520" spacing="12">
+
+                <!-- ORDER INFO -->
+                <VBox spacing="10" style="-fx-background-color: white;                              -fx-background-radius: 18;                              -fx-border-radius: 18;                              -fx-border-color: #E6E8EF;">
+                    <padding>
+                        <Insets bottom="14" left="14" right="14" top="14" />
+                    </padding>
+                    <HBox alignment="CENTER_LEFT" spacing="10">
+                <Label style="-fx-font-size: 16px; -fx-font-weight: 900; -fx-text-fill: #111827;" text="Order Info" />
+
+                        <Region HBox.hgrow="ALWAYS" />
+
+                        <!-- Back button chung -->
+                        <Button fx:id="btnBack" onAction="#goBack" prefHeight="36" style="-fx-background-color: #8B5E3C;                                        -fx-text-fill: white;                                        -fx-font-weight: 800;                                        -fx-background-radius: 12;" text="← Back to Home" />
+                    </HBox>
+
+                
+
+                    <GridPane hgap="12" vgap="10">
+                        <Label style="-fx-font-weight: 800;" text="Series:" GridPane.columnIndex="0" GridPane.rowIndex="0" />
+                        <Label text="-" GridPane.columnIndex="1" GridPane.rowIndex="0" />
+
+                        <Label style="-fx-font-weight: 800;" text="Date:" GridPane.columnIndex="0" GridPane.rowIndex="1" />
+                        <Label fx:id="dateOrder" text="Date" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+
+                        <Label style="-fx-font-weight: 800;" text="Customer:" GridPane.columnIndex="0" GridPane.rowIndex="2" />
+                        <Label fx:id="customer" text="Visitor" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+
+                        <Label style="-fx-font-weight: 800;" text="Phone:" GridPane.columnIndex="0" GridPane.rowIndex="3" />
+                        <TextField fx:id="phonefind" promptText="Find customer by phone" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+                  <columnConstraints>
+                     <ColumnConstraints />
+                     <ColumnConstraints />
+                  </columnConstraints>
+                  <rowConstraints>
+                     <RowConstraints />
+                     <RowConstraints />
+                     <RowConstraints />
+                     <RowConstraints />
+                  </rowConstraints>
+                    </GridPane>
+
+                    <HBox alignment="CENTER_LEFT" spacing="12">
+                        <CheckBox fx:id="Transfer" text="Transfer" />
+
+                        <Region HBox.hgrow="ALWAYS" />
+
+                        <Button fx:id="addcus" onAction="#addcus" prefHeight="36" style="-fx-background-color: #8B5E3C;                                        -fx-text-fill: white;                                        -fx-font-weight: 800;                                        -fx-background-radius: 12;" text="+ Add Customer" />
+                    </HBox>
+                </VBox>
+
+                <!-- ORDER DETAIL TABLE -->
+                <VBox prefHeight="361.0" prefWidth="538.0" spacing="10" style="-fx-background-color: white;                              -fx-background-radius: 18;                              -fx-border-radius: 18;                              -fx-border-color: #E6E8EF;">
+                    <padding>
+                        <Insets bottom="14" left="14" right="14" top="14" />
+                    </padding>
+
+                    <Label style="-fx-font-size: 16px; -fx-font-weight: 900;" text="Order Details" />
+
+                    <TableView fx:id="orderDetail" prefHeight="247.0" prefWidth="505.0">
+                        <columns>
+                            <TableColumn fx:id="ProductName" prefWidth="147.20001238584518" text="Product" />
+                            <TableColumn fx:id="Number" prefWidth="36.79998779296875" text="Qty" />
+                     <TableColumn fx:id="CostColum" prefWidth="67.20002746582031" text="Cost" />
+                            <TableColumn fx:id="Price" prefWidth="71.99998474121094" text="Price" />
+                            <TableColumn fx:id="TotalPrice" prefWidth="130.39990234375" text="Total" />
+                     <TableColumn fx:id="DelColum" prefWidth="31.2000732421875" text="Del" />
+                        </columns>
+                    </TableView>
+
+                    <HBox alignment="CENTER_RIGHT" spacing="12">
+                        <Label style="-fx-font-size: 14px; -fx-font-weight: 800;" text="Total:" />
+                        <Label fx:id="totalOrder" style="-fx-font-size: 18px; -fx-font-weight: 900;" text="Total" />
+
+                        <Button fx:id="buttonOrder" onAction="#handleOrder" prefHeight="38" prefWidth="110" style="-fx-background-color: #8B5E3C;                                        -fx-text-fill: white;                                        -fx-font-weight: 900;                                        -fx-background-radius: 12;" text="Order" />
+                    </HBox>
+                </VBox>
+
+            </VBox>
+        </HBox>
+    </center>
+
+</BorderPane>
