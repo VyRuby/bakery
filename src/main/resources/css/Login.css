@@ -1,0 +1,89 @@
+/*
+Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+Click nbfs://nbhost/SystemFileSystem/Templates/Other/CascadeStyleSheet.css to edit this template
+*/
+
+
+/* ===== Root background ===== */
+.root-bg {
+    -fx-background-color: #F6EFE6;
+    -fx-font-family: "Segoe UI", "Inter", "Arial";
+    -fx-font-smoothing-type: lcd;
+}
+
+/* ===== Card ===== */
+.login-card {
+    -fx-background-color: rgba(255,255,255,0.96);
+    -fx-background-radius: 20;
+    -fx-border-radius: 20;
+    -fx-border-color: rgba(17,24,39,0.10);
+    -fx-border-width: 1;
+}
+
+/* ===== Titles ===== */
+.title-small {
+    -fx-font-size: 11px;
+    -fx-text-fill: #6B7280;
+    -fx-font-weight: 700;
+    -fx-letter-spacing: 1px;
+}
+
+.title-main {
+    -fx-font-size: 22px;
+    -fx-text-fill: #111827;
+    -fx-font-weight: 900;
+}
+
+/* ===== Inputs ===== */
+.text-field, .password-field {
+    -fx-background-color: white;
+    -fx-background-radius: 12;
+    -fx-border-radius: 12;
+    -fx-border-color: rgba(17,24,39,0.14);
+    -fx-border-width: 1;
+    -fx-padding: 0 12 0 12;
+    -fx-pref-height: 40px;
+
+    -fx-highlight-fill: rgba(139,94,60,0.25);
+    -fx-highlight-text-fill: #111827;
+    -fx-prompt-text-fill: #9CA3AF;
+}
+
+.text-field:focused, .password-field:focused {
+    -fx-border-color: rgba(139,94,60,0.85);
+    -fx-border-width: 1.4;
+    -fx-effect: dropshadow(gaussian, rgba(139,94,60,0.22), 14, 0.25, 0, 4);
+}
+
+/* ===== Error label ===== */
+.error-label {
+    -fx-text-fill: #DC2626;
+    -fx-font-size: 11px;
+}
+
+/* ===== Button ===== */
+.primary-button {
+    -fx-background-radius: 12;
+    -fx-font-weight: 800;
+    -fx-text-fill: white;
+    -fx-cursor: hand;
+    -fx-pref-height: 40px;
+
+    -fx-background-color: linear-gradient(to right, #8B5E3C, #A47148);
+}
+
+.primary-button:hover {
+    -fx-effect: dropshadow(gaussian, rgba(17,24,39,0.18), 16, 0.20, 0, 6);
+    -fx-opacity: 0.98;
+}
+
+.primary-button:pressed {
+    -fx-translate-y: 1px;
+    -fx-opacity: 0.96;
+}
+
+/* ===== Small text ===== */
+.hint-text, .footer-text {
+    -fx-font-size: 11px;
+    -fx-text-fill: #6B7280;
+}
