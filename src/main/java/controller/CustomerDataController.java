@@ -14,12 +14,18 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.ListView;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleGroup;
+import javafx.scene.control.Alert;
+import javafx.scene.control.TextField;
+
+
+
 
 /**
  * FXML Controller class
@@ -170,6 +176,7 @@ public class CustomerDataController extends BacktoHomeController implements Init
                 cAddress.getText(),
                 0
         );
+        try{
         boolean savecus =customerDao.insert(c);
         
         if(savecus){
@@ -180,13 +187,29 @@ public class CustomerDataController extends BacktoHomeController implements Init
             
             clearCustomerForm();
             
-        }else{
-            System.out.println("Error !");
         }
+//        else{
+//            System.out.println("Error !");
+        }catch(java.sql.SQLException e){
+            if(e.getErrorCode() == 1062){
+            showAlert("Error", "This phone number  already exit !");    
+            
+        }else{
+                showAlert("Error", e.getMessage());
+            }
+        
         
         
     }
-
+    }
+    
+private void showAlert(String title, String content){
+    Alert alert= new Alert(Alert.AlertType.ERROR);
+    alert.setTitle(title);
+    alert.setHeaderText(null);
+    alert.setContentText(content);
+    alert.showAndWait();
+}
     
     
     

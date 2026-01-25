@@ -16,7 +16,11 @@ import javafx.scene.control.RadioButton;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.layout.VBox;
+import DAO_Customer_Order.CustomerDao;
+import java.sql.SQLException;
 
+import javafx.scene.control.Alert;
+import javafx.scene.control.TextField;
 /**
  * FXML Controller class
  *
@@ -91,8 +95,31 @@ public class CustomerController implements Initializable {
         cusAddress.getText(),
                 0
         );
+        try{
+    CustomerDao dao = new CustomerDao();
+    if (dao.insert(saveCustomer)){
         closeWindow();
     }
+        }
+        catch(SQLException e)
+        {
+            if(e.getErrorCode() == 1062){
+                showAlert("Error!", "Phone number already exited");
+            }else{
+    showAlert("Save Failed" , e.getMessage());    
+}
+    }}
+
+private void showAlert(String title, String content){
+    Alert alert= new Alert(Alert.AlertType.ERROR);
+    alert.setTitle(title);
+    alert.setHeaderText(null);
+    alert.setContentText(content);
+    alert.showAndWait();
+}
+    
+    
+    
     
     public Customer getSaveCustomer(){
         return saveCustomer;

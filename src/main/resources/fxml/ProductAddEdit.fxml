@@ -88,9 +88,7 @@
                                style="-fx-background-color: #F3F4F6; -fx-text-fill: #111827; -fx-padding: 6 10; -fx-background-radius: 10; -fx-font-weight: 700;"/>
                         <Label text="(Quantity is managed in Import screen)"
                                style="-fx-text-fill: #6B7280; -fx-font-size: 11px;"/>
-                        <!-- Nếu muốn có nút chuyển qua Import -->
-                        <!-- <Button fx:id="btnImportStock" text="Import Stock..." onAction="#onImportStock"
-                                style="-fx-background-color:#EEF2FF; -fx-text-fill:#8B5E3C; -fx-font-weight:700; -fx-background-radius:10;"/> -->
+                       
                     </HBox>
 
                     <Label text="Image path:" GridPane.rowIndex="6" GridPane.columnIndex="0"

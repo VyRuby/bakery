@@ -13,10 +13,8 @@
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
-<?import javafx.scene.control.CheckBox?>
 
-
-<BorderPane prefHeight="600.0" prefWidth="1000.0" style="-fx-background-color: #F6F7FB;" xmlns="http://javafx.com/javafx/13" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.HomeController">
+<BorderPane prefHeight="600.0" prefWidth="1000.0" style="-fx-background-color: #F6F7FB;" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.HomeController">
 
     <!-- TOP BAR -->
     <top>
@@ -70,8 +68,8 @@
             </padding>
 
             <VBox alignment="TOP_LEFT" maxWidth="980" spacing="4" style="-fx-background-color: #EED9C4;">
-                <Label style="-fx-font-size: 22px; -fx-font-weight: 800; -fx-text-fill: #111827;" text="Quick Navigation" />
-                <Label style="-fx-font-size: 12px; -fx-text-fill: #6B7280;" text="Chọn module bạn muốn thao tác" />
+                <Label style="-fx-font-size: 22px; -fx-font-weight: 800; -fx-text-fill: #111827;" text="MENU" />
+                <Label style="-fx-font-size: 12px; -fx-text-fill: #6B7280;" text="Please choose a module you want to check" />
             </VBox>
 
             <GridPane fx:id="gridMenu" hgap="18" maxWidth="980" vgap="18">
@@ -91,7 +89,7 @@
                     <padding><Insets bottom="18" left="18" right="18" top="18" /></padding>
                     <VBox alignment="TOP_LEFT" spacing="10">
                         <Label style="-fx-font-size: 16px; -fx-font-weight: 800; -fx-text-fill: #111827;" text="PRODUCT" />
-                        <Label style="-fx-font-size: 12px; -fx-text-fill: #6B7280;" text="Quản lý sản phẩm, danh mục, giá bán" wrapText="true" />
+                        <Label style="-fx-font-size: 12px; -fx-text-fill: #6B7280;" text="Manage product list, category and restock" wrapText="true" />
                         <Region VBox.vgrow="ALWAYS" />
                         <Button fx:id="btnProduct" maxWidth="1.7976931348623157E308" onAction="#goProduct" prefHeight="36" style="-fx-background-color: #8B5E3C; -fx-text-fill: white; -fx-font-weight: 700; -fx-background-radius: 12;" text="Go to Product →" />
                     </VBox>
@@ -102,7 +100,7 @@
                     <padding><Insets bottom="18" left="18" right="18" top="18" /></padding>
                     <VBox alignment="TOP_LEFT" spacing="10">
                         <Label style="-fx-font-size: 16px; -fx-font-weight: 800; -fx-text-fill: #111827;" text="PROMOTION" />
-                        <Label style="-fx-font-size: 12px; -fx-text-fill: #6B7280;" text="Quản lý khuyến mãi, áp dụng khuyến mãi " wrapText="true" />
+                        <Label style="-fx-font-size: 12px; -fx-text-fill: #6B7280;" text="Manage promotion and apply promotion" wrapText="true" />
                         <Region VBox.vgrow="ALWAYS" />
                         <Button fx:id="btnPromotion" maxWidth="1.7976931348623157E308" onAction="#goPromotion" prefHeight="36" style="-fx-background-color: #8B5E3C; -fx-text-fill: white; -fx-font-weight: 700; -fx-background-radius: 12;" text="Go to Promotion →" />
                     </VBox>
@@ -113,7 +111,7 @@
                     <padding><Insets bottom="18" left="18" right="18" top="18" /></padding>
                     <VBox alignment="TOP_LEFT" spacing="10">
                         <Label style="-fx-font-size: 16px; -fx-font-weight: 800; -fx-text-fill: #111827;" text="ORDER" />
-                        <Label style="-fx-font-size: 12px; -fx-text-fill: #6B7280;" text="Tạo đơn hàng, thanh toán, lịch sử giao dịch" wrapText="true" />
+                        <Label style="-fx-font-size: 12px; -fx-text-fill: #6B7280;" text="Create new order, payment" wrapText="true" />
                         <Region VBox.vgrow="ALWAYS" />
                         <Button fx:id="btnOrder" maxWidth="1.7976931348623157E308" onAction="#goOrder" prefHeight="36" style="-fx-background-color: #8B5E3C; -fx-text-fill: white; -fx-font-weight: 700; -fx-background-radius: 12;" text="Go to Order →" />
                     </VBox>
@@ -124,7 +122,7 @@
                     <padding><Insets bottom="18" left="18" right="18" top="18" /></padding>
                     <VBox alignment="TOP_LEFT" spacing="10">
                         <Label style="-fx-font-size: 16px; -fx-font-weight: 800; -fx-text-fill: #111827;" text="CUSTOMER" />
-                        <Label style="-fx-font-size: 12px; -fx-text-fill: #6B7280;" text="Thông tin khách hàng, tích điểm, nhóm khách" wrapText="true" />
+                        <Label style="-fx-font-size: 12px; -fx-text-fill: #6B7280;" text="Customer detail information" wrapText="true" />
                         <Region VBox.vgrow="ALWAYS" />
                         <Button fx:id="btnCustomer" maxWidth="1.7976931348623157E308" onAction="#goCustomer" prefHeight="36" style="-fx-background-color: #8B5E3C; -fx-text-fill: white; -fx-font-weight: 700; -fx-background-radius: 12;" text="Go to Customer →" />
                     </VBox>
@@ -135,7 +133,7 @@
                     <padding><Insets bottom="18" left="18" right="18" top="18" /></padding>
                     <VBox alignment="TOP_LEFT" spacing="10">
                         <Label style="-fx-font-size: 16px; -fx-font-weight: 800; -fx-text-fill: #111827;" text="EMPLOYEE" />
-                        <Label style="-fx-font-size: 12px; -fx-text-fill: #6B7280;" text="Quản lý nhân viên, phân quyền, chấm công" wrapText="true" />
+                        <Label style="-fx-font-size: 12px; -fx-text-fill: #6B7280;" text="Manage employee list, checkin and salary" wrapText="true" />
                         <Region VBox.vgrow="ALWAYS" />
                         <Button fx:id="btnEmployee" maxWidth="1.7976931348623157E308" onAction="#goEmployee" prefHeight="36" style="-fx-background-color: #8B5E3C; -fx-text-fill: white; -fx-font-weight: 700; -fx-background-radius: 12;" text="Go to Employee →" />
                     </VBox>
@@ -145,8 +143,8 @@
                 <StackPane style="-fx-background-color: white; -fx-background-radius: 18; -fx-border-radius: 18; -fx-border-color: #E6E8EF;" GridPane.columnIndex="2" GridPane.rowIndex="1">
                     <padding><Insets bottom="18" left="18" right="18" top="18" /></padding>
                     <VBox alignment="TOP_LEFT" spacing="10">
-                        <Label style="-fx-font-size: 16px; -fx-font-weight: 800; -fx-text-fill: #111827;" text="REPORT" />
-                        <Label style="-fx-font-size: 12px; -fx-text-fill: #6B7280;" text="Báo cáo doanh thu, tồn kho, thống kê" wrapText="true" />
+                        <Label style="-fx-font-size: 16px; -fx-font-weight: 800; -fx-text-fill: #111827;" text="DASHBOARD" />
+                        <Label style="-fx-font-size: 12px; -fx-text-fill: #6B7280;" text="Statistic report" wrapText="true" />
                         <Region VBox.vgrow="ALWAYS" />
                         <Button fx:id="btnReport" maxWidth="1.7976931348623157E308" onAction="#goReport" prefHeight="36" style="-fx-background-color: #8B5E3C; -fx-text-fill: white; -fx-font-weight: 700; -fx-background-radius: 12;" text="Go to Report →" />
                     </VBox>

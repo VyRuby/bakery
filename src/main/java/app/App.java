@@ -8,6 +8,8 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+import javafx.animation.TranslateTransition;
+import javafx.util.Duration;
 
 /**
  * JavaFX App

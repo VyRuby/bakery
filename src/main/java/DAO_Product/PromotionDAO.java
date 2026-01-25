@@ -22,7 +22,7 @@ public class PromotionDAO {
 
         String sqlPromo =
                 "SELECT PromoID, PromoName, Description, " +
-                "StartTime, EndTime, PromoType, Value, Status " +
+                " PromoType, Value, Status " +
                 "FROM PROMOTION";
 
         try (Connection con = ConnectDB.getConnection();
@@ -34,8 +34,6 @@ public class PromotionDAO {
                         rs.getString("PromoID"),
                         rs.getString("PromoName"),
                         rs.getString("Description"),
-                        rs.getTime("StartTime").toLocalTime(),
-                        rs.getTime("EndTime").toLocalTime(),
                         rs.getString("PromoType"),
                         rs.getDouble("Value"),
                         rs.getString("Status")
@@ -58,7 +56,7 @@ public class PromotionDAO {
 
         String sqlPromo =
                 "INSERT INTO PROMOTION " +
-                "(PromoID, PromoName, Description, StartTime, EndTime, PromoType, Value, Status) " +
+                "(PromoID, PromoName, Description, PromoType, Value, Status) " +
                 "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
 
         try (Connection con = ConnectDB.getConnection()) {
@@ -68,8 +66,6 @@ public class PromotionDAO {
                 ps.setString(1, p.getPromoId());
                 ps.setString(2, p.getPromoName());
                 ps.setString(3, p.getDescription());
-                ps.setTime(4, Time.valueOf(p.getStartTime()));
-                ps.setTime(5, Time.valueOf(p.getEndTime()));
                 ps.setString(6, p.getPromoType());
                 ps.setDouble(7, p.getValue());
                 ps.setString(8, p.getStatus());
@@ -88,8 +84,6 @@ public class PromotionDAO {
                 "UPDATE PROMOTION SET " +
                 "PromoName = ?, " +
                 "Description = ?, " +
-                "StartTime = ?, " +
-                "EndTime = ?, " +
                 "PromoType = ?, " +
                 "Value = ?, " +
                 "Status = ? " +
@@ -101,8 +95,6 @@ public class PromotionDAO {
             try (PreparedStatement ps = con.prepareStatement(sqlPromo)) {
                 ps.setString(1, p.getPromoName());
                 ps.setString(2, p.getDescription());
-                ps.setTime(3, Time.valueOf(p.getStartTime()));
-                ps.setTime(4, Time.valueOf(p.getEndTime()));
                 ps.setString(5, p.getPromoType());
                 ps.setDouble(6, p.getValue());
                 ps.setString(7, p.getStatus());
@@ -252,7 +244,7 @@ public Promotion getActivePromoByProduct(String productId){
     String sql="SELECT p.* FROM PROMOTION p " +
             "JOIN PROMOTION_PRODUCT pp ON p.PromoID = pp.PromoID " +
             "WHERE pp.ProductID = ? AND p.Status = 'ACTIVE' " +
-            "AND CURTIME() BETWEEN p.StartTime AND p.EndTime " +
+            //xóa time
             "LIMIT 1";
     
     try(Connection con = ConnectDB.getConnection();
@@ -263,9 +255,7 @@ public Promotion getActivePromoByProduct(String productId){
                 return new Promotion(
                 rs.getString("PromoID"),
                         rs.getString("PromoName"),
-                        rs.getString("Description"),
-                        rs.getTime("StartTime").toLocalTime(),
-                        rs.getTime("EndTime").toLocalTime(),
+                        rs.getString("Description"),                      
                         rs.getString("PromoType"),
                         rs.getDouble("Value"),
                         rs.getString("Status")

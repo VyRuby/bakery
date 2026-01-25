@@ -13,7 +13,9 @@ import model.Product;
 public class OrderDetailItem {
     private Product product;
     private int quantity;
+    private float costPrice;
     private float price;
+    
     private String promoID;
     private float discountAmount;
         
@@ -21,6 +23,7 @@ public class OrderDetailItem {
     public OrderDetailItem(Product product, int quantity) {
         this.product = product;
         this.quantity = quantity;
+        this.costPrice=product.getCostPrice();
         this.price = product.getPrice();
         this.promoID=null;
         this.discountAmount=0;
@@ -48,6 +51,14 @@ public class OrderDetailItem {
             
     public Product getProduct() {
         return product;
+    }
+
+    public float getCostPrice() {
+        return costPrice;
+    }
+
+    public void setCostPrice(float costPrice) {
+        this.costPrice = costPrice;
     }
     
     public String getProductName(){

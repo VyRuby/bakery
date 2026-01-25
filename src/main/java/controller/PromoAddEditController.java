@@ -28,9 +28,6 @@ public class PromoAddEditController {
     @FXML private TextField txtPromoName;
     @FXML private TextArea txtDescription;
 
-    @FXML private TextField txtStartTime;
-    @FXML private TextField txtEndTime;
-
     @FXML private ComboBox<String> cbPromoType;
     @FXML private TextField txtValue;
     @FXML private ComboBox<String> cbStatus;
@@ -48,7 +45,7 @@ public class PromoAddEditController {
     private Promotion result = null;
     private boolean editMode = false;
 
-    // ✅ map để quản lý checkbox theo Product
+    // map để quản lý checkbox theo Product
     private final ObservableMap<Product, BooleanProperty> checkedMap = FXCollections.observableHashMap();
     
     // ProductID -> PromoID
@@ -61,11 +58,15 @@ public class PromoAddEditController {
         cbPromoType.getSelectionModel().select("percent");
         cbStatus.getSelectionModel().select("Active");
 
-        txtStartTime.setText("00:00:00");
-        txtEndTime.setText("23:59:59");
+       
 
         // load products
-        var products = FXCollections.observableArrayList(productDAO.findAll());
+        var products = FXCollections.observableArrayList(
+        productDAO.findAll()
+                .stream()
+                .filter(p -> p.getQuantity() > 0)
+                .collect(java.util.stream.Collectors.toList())
+        );
         lvProducts.setItems(products);
 
         // init checked map
@@ -76,7 +77,7 @@ public class PromoAddEditController {
         
         productPromoMap = promotionDAO.getProductPromoMap();
 
-        // ✅ ListView hiển thị checkbox
+        // ListView hiển thị checkbox
         lvProducts.setCellFactory(lv -> new CheckBoxListCell<>(
         item -> checkedMap.get(item)
 ) {
@@ -117,10 +118,6 @@ public class PromoAddEditController {
         }
     }
 });
-
-        
-        
-
     }
 
     public void setMode(Promotion promo) {
@@ -138,8 +135,7 @@ public class PromoAddEditController {
             txtDescription.clear();
 
             txtValue.setText("0");
-            txtStartTime.setText("00:00:00");
-            txtEndTime.setText("23:59:59");
+           
             cbPromoType.getSelectionModel().select("percent");
             cbStatus.getSelectionModel().select("Active");
 
@@ -155,9 +151,7 @@ public class PromoAddEditController {
         txtPromoName.setText(promo.getPromoName());
         txtDescription.setText(promo.getDescription() == null ? "" : promo.getDescription());
 
-        txtStartTime.setText(promo.getStartTime() == null ? "00:00:00" : promo.getStartTime().toString());
-        txtEndTime.setText(promo.getEndTime() == null ? "23:59:59" : promo.getEndTime().toString());
-
+      
         cbPromoType.getSelectionModel().select(promo.getPromoType());
         txtValue.setText(String.valueOf(promo.getValue()));
         cbStatus.getSelectionModel().select(promo.getStatus());
@@ -178,22 +172,8 @@ public class PromoAddEditController {
 
     }
 
-    private LocalTime parseTime(String s) {
-        if (s == null) return null;
-        s = s.trim();
-        if (s.isEmpty()) return null;
 
-        try {
-            if (s.matches("\\d{2}:\\d{2}$")) {
-                return LocalTime.parse(s, DateTimeFormatter.ofPattern("HH:mm"));
-            }
-            return LocalTime.parse(s, DateTimeFormatter.ofPattern("HH:mm:ss"));
-        } catch (DateTimeParseException e) {
-            return null;
-        }
-    }
-
-    // ✅ lấy list productIds đang tick
+    // lấy list productIds đang tick
     private List<String> getCheckedProductIds() {
         List<String> ids = new ArrayList<>();
         for (Product pr : lvProducts.getItems()) {
@@ -246,16 +226,7 @@ public class PromoAddEditController {
             return;
         }
 
-        LocalTime start = parseTime(txtStartTime.getText());
-        LocalTime end = parseTime(txtEndTime.getText());
-        if (start == null || end == null) {
-            lblMsg.setText("Start/End time must be HH:mm or HH:mm:ss");
-            return;
-        }
-        if (!end.isAfter(start)) {
-            lblMsg.setText("EndTime must be after StartTime.");
-            return;
-        }
+       
 
         String type = cbPromoType.getValue();
         if (type == null || (!type.equals("percent") && !type.equals("fixed"))) {
@@ -284,8 +255,7 @@ public class PromoAddEditController {
         p.setPromoName(promoName);
         p.setDescription(txtDescription.getText());
 
-        p.setStartTime(start);
-        p.setEndTime(end);
+      
 
         p.setPromoType(type);
         p.setValue(value);

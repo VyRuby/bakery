@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 import app.ConnectDB;
 
+
 /**
  *
  * @author Admin
@@ -31,8 +32,9 @@ public class CustomerDao {
                 if(rs.next()){
                     return new Customer(
                     rs.getInt("CustomerID"),
-                            rs.getString("Phone"),
-                            rs.getString("FullName")
+                            rs.getString("FullName"),
+                            rs.getString("Phone")
+                            
                             
                     );
                 }
@@ -129,7 +131,7 @@ public class CustomerDao {
     }
     return null;            }
     
-    public boolean insert (Customer c){
+    public boolean insert (Customer c) throws SQLException{
         String sql = "INSERT INTO customer (FullName,Phone,Email,Address,Gender,DOB) VALUES (?,?,?,?,?,?)";
     
     try(Connection con = ConnectDB.getConnection();
@@ -143,10 +145,15 @@ public class CustomerDao {
         
         return ps.executeUpdate()>0;
         
-        
-    }catch (SQLException e){
-        System.out.println("Error !" + e);
-    }
-    return false;
-    }
+    }}
+
+
+//    catch (SQLException e){
+//        if(e.getErrorCode() == 1062){
+//            System.out.println("Phone number already exited !");
+//        }
+//        System.out.println("Error !" + e);
+//    }
+//    return false;
+//    }
 }

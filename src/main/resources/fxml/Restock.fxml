@@ -15,7 +15,8 @@
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox spacing="12" style="-fx-background-color: #FFFFFF;" xmlns="http://javafx.com/javafx/13" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.RestockController">
+<VBox spacing="12" style="-fx-background-color: #FFFFFF;"   xmlns="http://javafx.com/javafx"
+xmlns:fx="http://javafx.com/fxml" fx:controller="controller.RestockController">
 
     <padding>
         <Insets bottom="16" left="16" right="16" top="16" />

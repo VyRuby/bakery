@@ -51,6 +51,7 @@ import java.io.File;
 import org.w3c.dom.Document;
 import model.Promotion;
 import DAO_Product.PromotionDAO;
+import javafx.scene.control.Alert;
 import javafx.scene.control.TextField;
 /**
  * FXML Controller class
@@ -99,7 +100,8 @@ public class OrderController extends BacktoHomeController implements Initializab
     private CheckBox ctCookie;
     @FXML
     private TextField findProduct;
-    
+    @FXML
+    private TableColumn<OrderDetailItem, Float> CostColum;
     
     
     
@@ -113,6 +115,7 @@ public class OrderController extends BacktoHomeController implements Initializab
         loadProducts();
         ProductName.setCellValueFactory(new PropertyValueFactory<>("productName"));
         Number.setCellValueFactory( new PropertyValueFactory<>("quantity"));
+        CostColum.setCellValueFactory(new PropertyValueFactory<>("costPrice"));
         Price.setCellValueFactory(new PropertyValueFactory<>("price"));
         TotalPrice.setCellValueFactory(new PropertyValueFactory<>("total"));
         DelColum.setCellFactory(param -> new javafx.scene.control.TableCell<OrderDetailItem, Void>(){
@@ -155,58 +158,8 @@ public class OrderController extends BacktoHomeController implements Initializab
             }
         });
         
-        LocalDateTime now = LocalDateTime.now();
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
-        String formatteDate= now.format(formatter);
-        dateOrder.setText(formatteDate);
-//        listProduct.setOnMouseClicked(e->{
-//            if(e.getClickCount() ==2){
-//                Product product =listProduct.getSelectionModel().getSelectedItem();
-//                if(product != null){
-//                    openProductDetail(product);
-//                }
-//            }
-//        }
-        
-//        );
-        
-//        listProduct.setCellFactory(param -> new ListCell <Product>(){
-//        private ImageView imageView = new ImageView();
-//        private Label nameLabel = new Label();
-//        private Label priceLabel = new Label();
-//        private VBox vbox = new VBox (nameLabel, priceLabel);
-//        private HBox hbox = new HBox (imageView, vbox);
-//        {
-//            imageView.setFitHeight(70);
-//            imageView.setFitWidth(70);
-//            imageView.setPreserveRatio(true);
-//            
-//            vbox.setSpacing(10);
-//            hbox.setSpacing(10);
-//            
-//        }
-//        @Override
-//        protected void updateItem (Product item,boolean empty){
-//            super.updateItem(item,empty);
-//            if(empty|| item == null){
-//                setGraphic(null);
-//            }else{
-//                nameLabel.setText(item.getProductName());
-//                priceLabel.setText(item.getPrice() + "USD");
-//            
-//            try{
-//                Image img = new Image(
-//                getClass().getResourceAsStream("/" + item.getImage()));
-//                imageView.setImage(img);
-//            }catch(Exception e){
-//                imageView.setImage(null);
-//            }
-//            setGraphic(hbox);
-//            }  
-//        }    
-//    })
                 
-                ;
+                
      orderDetail.setItems(orderList);
      orderDetail.setOnMouseClicked(e -> {
          if(e.getClickCount() ==2 
@@ -234,7 +187,7 @@ public class OrderController extends BacktoHomeController implements Initializab
             
             ProductDetailController controller = loader.getController();
             
-            controller.setProduct(Item.getProduct());
+            controller.setProduct(Item.getProduct(), Item.getPrice());
             controller.setQuantity(Item.getQuantity());
             
             Stage stage = new Stage();
@@ -296,29 +249,6 @@ private PromotionDAO promotionDAO = new PromotionDAO();
     }
     private productDao productDao = new productDao();
     
-//    private void loadProducts(){
-//        ObservableList<Product> data =
-//        FXCollections.observableArrayList(productDao.findAll());
-////        listProduct.setItems(data);
-//productGrid.getChildren().clear();
-//int column =0;
-//int row =0;
-//int MAX_COLUMN=3;
-//
-//for(Product product : data){
-//    VBox productCard = createProductCard(product);
-//    
-//    productGrid.add(productCard, column, row);
-//    
-//    column++;
-//    if(column == MAX_COLUMN){
-//        column = 0;
-//        row++;
-//    }
-//}
-//          
-//
-//    }
     
     private ObservableList<OrderDetailItem> orderList = FXCollections.observableArrayList();
     
@@ -351,7 +281,7 @@ private PromotionDAO promotionDAO = new PromotionDAO();
         }
      
         OrderDetailItem newItem= new OrderDetailItem(product,quantity);
-        
+        newItem.setCostPrice(product.getPrice());
         newItem.setPrice(unitPrice);
         newItem.setPromoID(promoId);
         newItem.setDiscountAmount(discountAmount);
@@ -378,7 +308,18 @@ private PromotionDAO promotionDAO = new PromotionDAO();
             Parent root = loader.load();
             
             ProductDetailController controller = loader.getController();
-            controller.setProduct(product);
+            float finalPrice =product.getPrice();
+            Promotion activePromo=promotionDAO.getActivePromoByProduct(product.getProductId());
+            if(activePromo != null){
+                float discount = ("Percent".equalsIgnoreCase(activePromo.getPromoType())) 
+                        ? (float) (product.getPrice() * (activePromo.getValue()/100))
+                        : (float) activePromo.getValue();
+                finalPrice = product.getPrice() - discount ;
+                
+                
+            }
+                
+            controller.setProduct(product, finalPrice);
             
             Stage stage = new Stage();
             stage.setScene(new Scene(root));
@@ -514,6 +455,7 @@ private PromotionDAO promotionDAO = new PromotionDAO();
         }else{
             customerId=3;
         }
+        String customerName = (c!=null) ? c.getName() : "Visitor";
         
         String paymentMethod = Transfer.isSelected() ?"TRANSFER" : "CASH";
         
@@ -532,10 +474,15 @@ private PromotionDAO promotionDAO = new PromotionDAO();
         
         for(OrderDetailItem item : orderList){
             orderDetailDao.insertDetail(orderId, item);
+            
+            productDao.reduceQuantity(item.getProduct().getProductId(), item.getQuantity());
         }
+        exportToPDF(orderId, customerName, paymentMethod, total);
+        
+        showAlert(Alert.AlertType.INFORMATION, "Order complete!", "Saved order !", " Invoice in : D:/Invoice_Order" + orderId +".pdf");
         
         System.out.println("order Saved !");
-        
+        loadProducts();
         orderList.clear();
         orderDetail.refresh();
         totalOrder.setText("0 USD");
@@ -549,8 +496,8 @@ private PromotionDAO promotionDAO = new PromotionDAO();
         com.itextpdf.text.Document document = new com.itextpdf.text.Document() {};
         try{
             
-            String folderPath = "D:/datacode/dataproject/";
-            String fileName= "Invoid_Order" + orderId + ".pdf";
+            String folderPath = "D:/";
+            String fileName= "Invoice_Order" + orderId + ".pdf";
             PdfWriter.getInstance(document, new FileOutputStream(folderPath + fileName));
             document.open();
             
@@ -560,13 +507,15 @@ private PromotionDAO promotionDAO = new PromotionDAO();
             Paragraph title= new Paragraph("Invoice", titleFont);
             title.setAlignment(Element.ALIGN_CENTER);
             document.add(title);
-            document.add(new Paragraph("*****************"));
+            document.add(new Paragraph("*****************", titleFont));
             
             document.add(new Paragraph("Order ID: " + orderId));
             document.add(new Paragraph("Customer: " + customerName));
             document.add(new Paragraph("Date: " + dateOrder.getText()));
             document.add(new Paragraph("Payment Method: " + paymentMethod));
             document.add(new Paragraph(" "));
+            
+            
             
             
             PdfPTable table = new PdfPTable(4);
@@ -592,6 +541,9 @@ private PromotionDAO promotionDAO = new PromotionDAO();
             
             }
             document.add(table);
+            document.add(new Paragraph("*****************", titleFont));
+            document.add(new Paragraph("Thank You !"));
+            
             document.close();
             
             
@@ -619,7 +571,7 @@ private PromotionDAO promotionDAO = new PromotionDAO();
         productGrid.getChildren().clear();
         int column = 0 ;
         int row = 0;
-        int MAX_COLUMN=3;
+        int MAX_COLUMN=4;
         
         String keyword = (findProduct.getText() == null)? "" :findProduct.getText().toLowerCase().trim();
         boolean cat1 =ctBaked.isSelected();
@@ -651,9 +603,15 @@ private PromotionDAO promotionDAO = new PromotionDAO();
             }
         }
         
-
-        
     }
+private void showAlert(Alert.AlertType type, String title, String header, String content){
+    Alert alert= new Alert(type);
+    alert.setTitle(title);
+    alert.setHeaderText(header);
+    alert.setContentText(content);
+    alert.showAndWait();
+}
+    
     
 
     
