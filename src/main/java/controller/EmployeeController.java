@@ -173,173 +173,223 @@ public class EmployeeController extends BacktoHomeController implements Initiali
     // ================= POPUP FORM =================
     private void openEmployeeForm(Employee emp, boolean isUpdate) {
 
-        Stage stage = new Stage();
-        stage.setTitle(isUpdate ? "Update Employee" : "Add Employee");
-        stage.initModality(Modality.APPLICATION_MODAL);
+    Stage stage = new Stage();
+    stage.setTitle(isUpdate ? "Update Employee" : "Add Employee");
+    stage.initModality(Modality.APPLICATION_MODAL);
 
-        String inputStyle
-                = "-fx-background-color: #FFFDF8;"
-                + "-fx-border-color: #C19A6B;"
-                + "-fx-border-radius: 8;"
-                + "-fx-background-radius: 8;"
-                + "-fx-padding: 6 8 6 8;";
+    String inputStyle =
+            "-fx-background-color:#FFFDF8;" +
+            "-fx-border-color:#C19A6B;" +
+            "-fx-border-radius:8;" +
+            "-fx-background-radius:8;" +
+            "-fx-padding:6 8;";
 
-        TextField txtId = new TextField();
-        TextField txtName = new TextField();
-        TextField txtPhone = new TextField();
-        TextField txtEmail = new TextField();
-        TextField txtAddress = new TextField();
-        TextField txtPosition = new TextField();
-        TextField txtSalary = new TextField();
-        txtSalary.setTextFormatter(new TextFormatter<>(change -> {
-            if (change.getControlNewText().matches("\\d*")) {
-                return change;
+    // ===== INPUT =====
+    TextField txtId = new TextField();
+    TextField txtName = new TextField();
+    TextField txtPhone = new TextField();
+    TextField txtEmail = new TextField();
+    TextField txtAddress = new TextField();
+    TextField txtSalary = new TextField();
+
+    DatePicker dpDob = new DatePicker();
+    DatePicker dpHire = new DatePicker();
+
+    ComboBox<String> cbGender = new ComboBox<>();
+    cbGender.getItems().addAll("male", "female");
+
+    ComboBox<String> cbStatus = new ComboBox<>();
+    cbStatus.getItems().addAll("Active", "Inactive");
+
+    ComboBox<String> cbPosition = new ComboBox<>();
+    cbPosition.getItems().addAll("Manager", "Staff");
+
+    txtId.setStyle(inputStyle);
+    txtName.setStyle(inputStyle);
+    txtPhone.setStyle(inputStyle);
+    txtEmail.setStyle(inputStyle);
+    txtAddress.setStyle(inputStyle);
+    txtSalary.setStyle(inputStyle);
+
+    txtSalary.setTextFormatter(new TextFormatter<>(c ->
+            c.getControlNewText().matches("\\d*") ? c : null));
+
+    // ===== ERROR LABELS =====
+    Label errId = new Label();
+    Label errName = new Label();
+    Label errEmail = new Label();
+    Label errSalary = new Label();
+
+    Button btnSave = new Button(isUpdate ? "Update" : "Add");
+    btnSave.setDisable(true);
+
+    // ===== LOAD UPDATE DATA =====
+    if (isUpdate && emp != null) {
+        txtId.setText(emp.getEmployeeID());
+        txtId.setDisable(true);
+        txtName.setText(emp.getFullName());
+        dpDob.setValue(emp.getDob().toLocalDate());
+        cbGender.setValue(emp.getGender());
+        txtPhone.setText(emp.getPhone());
+        txtEmail.setText(emp.getEmail());
+        txtAddress.setText(emp.getAddress());
+        dpHire.setValue(emp.getHireDate().toLocalDate());
+        cbPosition.setValue(emp.getPosition());
+        cbStatus.setValue(emp.getStatus());
+        txtSalary.setText(String.valueOf(emp.getBaseDailySalary()));
+    }
+
+    // ===== VALIDATION =====
+    Runnable validate = () -> {
+
+        boolean ok = true;
+
+        // ID
+        if (!isUpdate) {
+            if (txtId.getText().isBlank()) {
+                markError(txtId, errId, "Required");
+                ok = false;
+            } else if (dao.exists(txtId.getText().trim())) {
+                markError(txtId, errId, "ID already exists");
+                ok = false;
+            } else {
+                clearError(txtId, errId);
             }
-            return null;
-        }));
-
-        DatePicker dpDob = new DatePicker();
-        DatePicker dpHire = new DatePicker();
-
-        ComboBox<String> cbGender = new ComboBox<>();
-        cbGender.getItems().addAll("male", "female");
-
-        ComboBox<String> cbStatus = new ComboBox<>();
-        cbStatus.getItems().addAll("Active", "Inactive");
-
-        txtId.setStyle(inputStyle);
-        txtName.setStyle(inputStyle);
-        txtPhone.setStyle(inputStyle);
-        txtEmail.setStyle(inputStyle);
-        txtAddress.setStyle(inputStyle);
-        txtPosition.setStyle(inputStyle);
-        txtSalary.setStyle(inputStyle);
-
-        if (isUpdate && emp != null) {
-            txtId.setText(emp.getEmployeeID());
-            txtId.setDisable(true);
-            txtName.setText(emp.getFullName());
-            dpDob.setValue(emp.getDob().toLocalDate());
-            cbGender.setValue(emp.getGender());
-            txtPhone.setText(emp.getPhone());
-            txtEmail.setText(emp.getEmail());
-            txtAddress.setText(emp.getAddress());
-            dpHire.setValue(emp.getHireDate().toLocalDate());
-            txtPosition.setText(emp.getPosition());
-            cbStatus.setValue(emp.getStatus());
-            txtSalary.setText(String.valueOf(emp.getBaseDailySalary()));
         }
 
-        GridPane grid = new GridPane();
-        grid.setHgap(10);
-        grid.setVgap(10);
-        grid.setPadding(new Insets(20));
+        // Name
+        if (txtName.getText().isBlank()) {
+            markError(txtName, errName, "Required");
+            ok = false;
+        } else {
+            clearError(txtName, errName);
+        }
 
-        int r = 0;
-        grid.add(new Label("Employee ID:"), 0, r);
-        grid.add(txtId, 1, r++);
-        grid.add(new Label("Full Name:"), 0, r);
-        grid.add(txtName, 1, r++);
-        grid.add(new Label("DOB:"), 0, r);
-        grid.add(dpDob, 1, r++);
-        grid.add(new Label("Gender:"), 0, r);
-        grid.add(cbGender, 1, r++);
-        grid.add(new Label("Phone:"), 0, r);
-        grid.add(txtPhone, 1, r++);
-        grid.add(new Label("Email:"), 0, r);
-        grid.add(txtEmail, 1, r++);
-        grid.add(new Label("Address:"), 0, r);
-        grid.add(txtAddress, 1, r++);
-        grid.add(new Label("Hire Date:"), 0, r);
-        grid.add(dpHire, 1, r++);
-        grid.add(new Label("Position:"), 0, r);
-        grid.add(txtPosition, 1, r++);
-        grid.add(new Label("Status:"), 0, r);
-        grid.add(cbStatus, 1, r++);
-        grid.add(new Label("Daily Salary:"), 0, r);
-        grid.add(txtSalary, 1, r++);
+        // Email
+        if (!isValidEmail(txtEmail.getText())) {
+            markError(txtEmail, errEmail, "Invalid email");
+            ok = false;
+        } else if (isUpdate
+                ? dao.existsEmailExceptId(txtEmail.getText(), txtId.getText())
+                : dao.existsEmail(txtEmail.getText())) {
+            markError(txtEmail, errEmail, "Email already exists");
+            ok = false;
+        } else {
+            clearError(txtEmail, errEmail);
+        }
 
-        Button btnSave = new Button(isUpdate ? "Update" : "Add");
-        Button btnClose = new Button("Close");
+        // Salary
+        try {
+            int s = Integer.parseInt(txtSalary.getText());
+            if (s <= 0) throw new Exception();
+            clearError(txtSalary, errSalary);
+        } catch (Exception e) {
+            markError(txtSalary, errSalary, "Invalid salary");
+            ok = false;
+        }
 
-        btnClose.setOnAction(e -> stage.close());
+        btnSave.setDisable(!ok);
+    };
 
-        btnSave.setOnAction(e -> {
-            try {
-                if (txtId.getText().isBlank()
-                        || txtName.getText().isBlank()
-                        || dpDob.getValue() == null
-                        || cbGender.getValue() == null
-                        || txtPhone.getText().isBlank()
-                        || txtEmail.getText().isBlank()
-                        || dpHire.getValue() == null
-                        || cbStatus.getValue() == null
-                        || txtSalary.getText().isBlank()) {
+    txtId.textProperty().addListener((o, a, b) -> validate.run());
+    txtName.textProperty().addListener((o, a, b) -> validate.run());
+    txtEmail.textProperty().addListener((o, a, b) -> validate.run());
+    txtSalary.textProperty().addListener((o, a, b) -> validate.run());
 
-                    showAlert("Please fill in all required fields!");
-                    return;
-                }
+    // ===== GRID =====
+    GridPane grid = new GridPane();
+    grid.setHgap(10);
+    grid.setVgap(6);
+    grid.setPadding(new Insets(20));
 
-                // ✅ CHECK ID TRÙNG
-                if (!isUpdate && dao.exists(txtId.getText().trim())) {
-                    showAlert("Employee ID already exists!");
-                    return;
-                }
+    int r = 0;
+    grid.add(new Label("Employee ID"), 0, r);
+    grid.add(txtId, 1, r);
+    grid.add(errId, 2, r++);
 
-                // ✅ EMAIL
-                if (!isValidEmail(txtEmail.getText().trim())) {
-                    showAlert("Invalid email format!");
-                    return;
-                }
+    grid.add(new Label("Full Name"), 0, r);
+    grid.add(txtName, 1, r);
+    grid.add(errName, 2, r++);
 
-                // ✅ SALARY
-                int salary;
-                try {
-                    salary = Integer.parseInt(txtSalary.getText());
-                    if (salary <= 0) {
-                        throw new Exception();
-                    }
-                } catch (Exception ex) {
-                    showAlert("Daily salary must be a positive number!");
-                    return;
-                }
+    grid.add(new Label("DOB"), 0, r);
+    grid.add(dpDob, 1, r++);
 
-                Employee newEmp = new Employee(
-                        txtId.getText().trim(),
-                        txtName.getText().trim(),
-                        Date.valueOf(dpDob.getValue()),
-                        cbGender.getValue(),
-                        txtPhone.getText().trim(),
-                        txtEmail.getText().trim(),
-                        txtAddress.getText().trim(),
-                        Date.valueOf(dpHire.getValue()),
-                        txtPosition.getText().trim(),
-                        cbStatus.getValue(),
-                        salary
-                );
+    grid.add(new Label("Gender"), 0, r);
+    grid.add(cbGender, 1, r++);
 
-                if (isUpdate) {
-                    dao.update(newEmp);
-                } else {
-                    dao.insert(newEmp);
-                }
+    grid.add(new Label("Phone"), 0, r);
+    grid.add(txtPhone, 1, r++);
 
-                loadData();
-                stage.close();
+    grid.add(new Label("Email"), 0, r);
+    grid.add(txtEmail, 1, r);
+    grid.add(errEmail, 2, r++);
 
-            } catch (Exception ex) {
-                showAlert("Error while saving employee!");
-                ex.printStackTrace();
-            }
-        });
+    grid.add(new Label("Address"), 0, r);
+    grid.add(txtAddress, 1, r++);
 
-        HBox hbox = new HBox(10, btnSave, btnClose);
-        hbox.setAlignment(Pos.CENTER_RIGHT);
+    grid.add(new Label("Hire Date"), 0, r);
+    grid.add(dpHire, 1, r++);
 
-        VBox root = new VBox(15, grid, hbox);
-        root.setPadding(new Insets(12));
+    grid.add(new Label("Position"), 0, r);
+    grid.add(cbPosition, 1, r++);
 
-        stage.setScene(new Scene(root, 430, 600));
-        stage.showAndWait();
-    }
+    grid.add(new Label("Status"), 0, r);
+    grid.add(cbStatus, 1, r++);
+
+    grid.add(new Label("Daily Salary"), 0, r);
+    grid.add(txtSalary, 1, r);
+    grid.add(errSalary, 2, r++);
+
+    // ===== SAVE =====
+    btnSave.setOnAction(e -> {
+        try {
+            Employee newEmp = new Employee(
+                    txtId.getText().trim(),
+                    txtName.getText().trim(),
+                    Date.valueOf(dpDob.getValue()),
+                    cbGender.getValue(),
+                    txtPhone.getText().trim(),
+                    txtEmail.getText().trim(),
+                    txtAddress.getText().trim(),
+                    Date.valueOf(dpHire.getValue()),
+                    cbPosition.getValue(),
+                    cbStatus.getValue(),
+                    Integer.parseInt(txtSalary.getText())
+            );
+
+            if (isUpdate) dao.update(newEmp);
+            else dao.insert(newEmp);
+
+            loadData();
+            stage.close();
+
+        } catch (Exception ex) {
+            showAlert(ex.getMessage());
+        }
+    });
+
+    Button btnClose = new Button("Close");
+    btnClose.setOnAction(e -> stage.close());
+
+    HBox hbox = new HBox(10, btnSave, btnClose);
+    hbox.setAlignment(Pos.CENTER_RIGHT);
+
+    VBox root = new VBox(15, grid, hbox);
+    root.setPadding(new Insets(12));
+
+    stage.setScene(new Scene(root, 520, 560));
+    stage.showAndWait();
+}
+
+    private void markError(Control field, Label errorLabel, String message) {
+    field.setStyle("-fx-border-color:red; -fx-border-radius:8;");
+    errorLabel.setText(message);
+    errorLabel.setStyle("-fx-text-fill:red; -fx-font-size:11;");
+}
+
+private void clearError(Control field, Label errorLabel) {
+    field.setStyle("-fx-border-color:#C19A6B; -fx-border-radius:8;");
+    errorLabel.setText("");
+}
+
 }

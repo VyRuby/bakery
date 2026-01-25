@@ -47,68 +47,82 @@ public class EmployeeDAO {
     }
 
     // ===== INSERT =====
-    public boolean insert(Employee e) {
+  public boolean insert(Employee e) {
 
-        String sql =
-            "INSERT INTO EMPLOYEE " +
-            "(EmployeeID, FullName, DOB, Gender, Phone, Email, Address, HireDate, Position, Status, BaseDailySalary) " +
-            "VALUES (?,?,?,?,?,?,?,?,?,?,?)";
-
-        try (Connection con = ConnectDB.getConnection();
-             PreparedStatement ps = con.prepareStatement(sql)) {
-
-            ps.setString(1, e.getEmployeeID());
-            ps.setString(2, e.getFullName());
-            ps.setDate(3, e.getDob());
-            ps.setString(4, e.getGender().toLowerCase());
-            ps.setString(5, e.getPhone());
-            ps.setString(6, e.getEmail());
-            ps.setString(7, e.getAddress());
-            ps.setDate(8, e.getHireDate());
-            ps.setString(9, e.getPosition());
-            ps.setString(10, e.getStatus());
-            ps.setInt(11, e.getBaseDailySalary());
-
-            ps.executeUpdate();
-            return true;
-
-        } catch (SQLException ex) {
-            ex.printStackTrace();
-        }
-        return false;
+    // 🔒 DAO-level validation
+    if (exists(e.getEmployeeID())) {
+        throw new RuntimeException("Employee ID already exists");
     }
+    if (existsEmail(e.getEmail())) {
+        throw new RuntimeException("Email already exists");
+    }
+
+    String sql =
+        "INSERT INTO EMPLOYEE " +
+        "(EmployeeID, FullName, DOB, Gender, Phone, Email, Address, HireDate, Position, Status, BaseDailySalary) " +
+        "VALUES (?,?,?,?,?,?,?,?,?,?,?)";
+
+    try (Connection con = ConnectDB.getConnection();
+         PreparedStatement ps = con.prepareStatement(sql)) {
+
+        ps.setString(1, e.getEmployeeID());
+        ps.setString(2, e.getFullName());
+        ps.setDate(3, e.getDob());
+        ps.setString(4, e.getGender().toLowerCase());
+        ps.setString(5, e.getPhone());
+        ps.setString(6, e.getEmail());
+        ps.setString(7, e.getAddress());
+        ps.setDate(8, e.getHireDate());
+        ps.setString(9, e.getPosition());
+        ps.setString(10, e.getStatus());
+        ps.setInt(11, e.getBaseDailySalary());
+
+        ps.executeUpdate();
+        return true;
+
+    } catch (SQLException ex) {
+        ex.printStackTrace();
+        throw new RuntimeException("Insert employee failed!");
+    }
+}
 
     // ===== UPDATE =====
-    public boolean update(Employee e) {
+   public boolean update(Employee e) {
 
-        String sql =
-            "UPDATE EMPLOYEE SET FullName=?, DOB=?, Gender=?, Phone=?, Email=?, " +
-            "Address=?, HireDate=?, Position=?, Status=?, BaseDailySalary=? " +
-            "WHERE EmployeeID=?";
-
-        try (Connection con = ConnectDB.getConnection();
-             PreparedStatement ps = con.prepareStatement(sql)) {
-
-            ps.setString(1, e.getFullName());
-            ps.setDate(2, e.getDob());
-            ps.setString(3, e.getGender().toLowerCase());
-            ps.setString(4, e.getPhone());
-            ps.setString(5, e.getEmail());
-            ps.setString(6, e.getAddress());
-            ps.setDate(7, e.getHireDate());
-            ps.setString(8, e.getPosition());
-            ps.setString(9, e.getStatus());
-            ps.setInt(10, e.getBaseDailySalary());
-            ps.setString(11, e.getEmployeeID());
-
-            ps.executeUpdate();
-            return true;
-
-        } catch (SQLException ex) {
-            ex.printStackTrace();
-        }
-        return false;
+    // 🔒 DAO-level email uniqueness
+    if (existsEmailExceptId(e.getEmail(), e.getEmployeeID())) {
+        throw new RuntimeException("Email already exists");
     }
+
+    String sql =
+        "UPDATE EMPLOYEE SET FullName=?, DOB=?, Gender=?, Phone=?, Email=?, " +
+        "Address=?, HireDate=?, Position=?, Status=?, BaseDailySalary=? " +
+        "WHERE EmployeeID=?";
+
+    try (Connection con = ConnectDB.getConnection();
+         PreparedStatement ps = con.prepareStatement(sql)) {
+
+        ps.setString(1, e.getFullName());
+        ps.setDate(2, e.getDob());
+        ps.setString(3, e.getGender().toLowerCase());
+        ps.setString(4, e.getPhone());
+        ps.setString(5, e.getEmail());
+        ps.setString(6, e.getAddress());
+        ps.setDate(7, e.getHireDate());
+        ps.setString(8, e.getPosition());
+        ps.setString(9, e.getStatus());
+        ps.setInt(10, e.getBaseDailySalary());
+        ps.setString(11, e.getEmployeeID());
+
+        ps.executeUpdate();
+        return true;
+
+    } catch (SQLException ex) {
+        ex.printStackTrace();
+        throw new RuntimeException("Update employee failed!");
+    }
+}
+
 
     // ===== OTHERS (KHÔNG ĐỔI) =====
     public void deactivate(String id) {
@@ -133,6 +147,37 @@ public class EmployeeDAO {
         }
         return false;
     }
+    
+    // ===== CHECK EMAIL =====
+public boolean existsEmail(String email) {
+    String sql = "SELECT 1 FROM EMPLOYEE WHERE Email = ?";
+    try (Connection con = ConnectDB.getConnection();
+         PreparedStatement ps = con.prepareStatement(sql)) {
+
+        ps.setString(1, email);
+        return ps.executeQuery().next();
+
+    } catch (SQLException e) {
+        e.printStackTrace();
+    }
+    return false;
+}
+
+public boolean existsEmailExceptId(String email, String empId) {
+    String sql = "SELECT 1 FROM EMPLOYEE WHERE Email = ? AND EmployeeID <> ?";
+    try (Connection con = ConnectDB.getConnection();
+         PreparedStatement ps = con.prepareStatement(sql)) {
+
+        ps.setString(1, email);
+        ps.setString(2, empId);
+        return ps.executeQuery().next();
+
+    } catch (SQLException e) {
+        e.printStackTrace();
+    }
+    return false;
+}
+
     
     // ===== SEARCH =====
 public List<Employee> search(String keyword) {
