@@ -1,0 +1,187 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane style="-fx-background-color: #F6EFE6;"
+            xmlns="http://javafx.com/javafx/25"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="controller.EmployeeController">
+
+    <!-- ================= LEFT : SIDEBAR ================= -->
+    <left>
+        <VBox prefWidth="223" spacing="14"
+              style="-fx-background-color: rgba(255,255,255,0.92);
+                     -fx-border-color: rgba(62,43,31,0.12);
+                     -fx-border-width: 0 1 0 0;">
+            <padding>
+                <Insets top="18" right="14" bottom="18" left="14"/>
+            </padding>
+
+            <ImageView fitHeight="81" fitWidth="190" preserveRatio="true">
+                <image>
+                    <Image url="@../image/logo.jpeg"/>
+                </image>
+            </ImageView>
+
+            <VBox spacing="8">
+                <Label text="MAIN MENU"
+                       style="-fx-font-size:11px;-fx-font-weight:900;-fx-text-fill:#7A6A5E;"/>
+
+                <Button text="Employee Module"
+                        maxWidth="1.7976931348623157E308"
+                        style="-fx-background-color: rgba(139,94,60,0.14);
+                               -fx-text-fill:#3E2B1F;
+                               -fx-font-weight:900;
+                               -fx-background-radius:12;
+                               -fx-alignment:CENTER_LEFT;
+                               -fx-padding:10 12;"/>
+
+                <Button text="← Back to Home"
+                        onAction="#goBack"
+                        maxWidth="1.7976931348623157E308"
+                        style="-fx-background-color:#8B5E3C;
+                               -fx-text-fill:white;
+                               -fx-font-weight:900;
+                               -fx-background-radius:12;
+                               -fx-alignment:CENTER_LEFT;
+                               -fx-padding:10 12;
+                               -fx-cursor:hand;"/>
+            </VBox>
+
+            <Region VBox.vgrow="ALWAYS"/>
+
+            <VBox spacing="10"
+                  style="-fx-background-color: rgba(139,94,60,0.08);
+                         -fx-background-radius:16;
+                         -fx-padding:12;">
+                <Label text="Quick actions"
+                       style="-fx-font-size:12px;-fx-font-weight:900;-fx-text-fill:#5B4B40;"/>
+
+                <Button text="Add employee"
+                        onAction="#handleAdd"
+                        maxWidth="1.7976931348623157E308"
+                        style="-fx-background-color: linear-gradient(to right,#8B5E3C,#A47148);
+                               -fx-text-fill:white;
+                               -fx-font-weight:900;
+                               -fx-background-radius:12;
+                               -fx-padding:10 12;
+                               -fx-cursor:hand;"/>
+
+                <Button text="Update"
+                        onAction="#handleUpdate"
+                        style="-fx-background-color: rgba(139,94,60,0.12);
+                               -fx-text-fill:#3E2B1F;
+                               -fx-font-weight:900;
+                               -fx-background-radius:12;
+                               -fx-padding:10 16;"/>
+
+                <Button text="Deactivate"
+                        onAction="#handleDeactivate"
+                        style="-fx-background-color: rgba(220,38,38,0.12);
+                               -fx-text-fill:#B91C1C;
+                               -fx-font-weight:900;
+                               -fx-background-radius:12;
+                               -fx-padding:10 16;"/>
+            </VBox>
+        </VBox>
+    </left>
+
+    <!-- ================= TOP : HEADER + FILTER ================= -->
+    <top>
+        <VBox spacing="12">
+            <padding>
+                <Insets top="18" right="18" bottom="10" left="18"/>
+            </padding>
+
+            <!-- Header -->
+            <VBox spacing="3">
+                <Label text="Employee"
+                       style="-fx-font-size:22px;-fx-font-weight:900;-fx-text-fill:#3E2B1F;"/>
+                <Label text="Manage employee list, filter and actions"
+                       style="-fx-font-size:12px;-fx-text-fill:#7A6A5E;"/>
+            </VBox>
+
+            <!-- Filter card -->
+            <HBox spacing="10"
+                  style="-fx-background-color: rgba(255,255,255,0.92);
+                         -fx-background-radius:16;
+                         -fx-border-radius:16;
+                         -fx-border-color: rgba(62,43,31,0.12);
+                         -fx-border-width:1;
+                         -fx-padding:12;">
+
+                <Label text="Status"
+                       style="-fx-text-fill:#5B4B40;-fx-font-weight:900;"/>
+
+                <ComboBox fx:id="cbFilterStatus" prefWidth="160"
+                          style="-fx-background-radius:12;
+                                 -fx-border-radius:12;
+                                 -fx-border-color: rgba(62,43,31,0.16);"/>
+
+                <Region prefWidth="8"/>
+
+                <Label text="Search"
+                       style="-fx-text-fill:#5B4B40;-fx-font-weight:900;"/>
+
+                <TextField fx:id="txtSearch"
+                           prefWidth="360"
+                           promptText="Name / Email"
+                           style="-fx-background-radius:12;
+                                  -fx-border-radius:12;
+                                  -fx-border-color: rgba(62,43,31,0.16);
+                                  -fx-padding:0 12;"/>
+
+                <Region HBox.hgrow="ALWAYS"/>
+            </HBox>
+        </VBox>
+    </top>
+
+    <!-- ================= CENTER : TABLE CARD ================= -->
+    <center>
+        <VBox>
+            <padding>
+                <Insets top="0" right="18" bottom="18" left="18"/>
+            </padding>
+
+            <VBox spacing="10"
+                  style="-fx-background-color: rgba(255,255,255,0.92);
+                         -fx-background-radius:18;
+                         -fx-border-radius:18;
+                         -fx-border-color: rgba(62,43,31,0.12);
+                         -fx-border-width:1;">
+                <padding>
+                    <Insets top="14" right="14" bottom="14" left="14"/>
+                </padding>
+
+                <HBox>
+                    <Label text="Employee List"
+                           style="-fx-font-size:16px;-fx-font-weight:900;-fx-text-fill:#3E2B1F;"/>
+                    <Region HBox.hgrow="ALWAYS"/>
+                    <Label text="Tip: select row before update or deactivate"
+                           style="-fx-font-size:11px;-fx-text-fill:#7A6A5E;"/>
+                </HBox>
+
+                <TableView fx:id="tblEmployee" prefHeight="520"
+                           style="-fx-background-radius:12;
+                                  -fx-border-radius:12;
+                                  -fx-border-color: rgba(62,43,31,0.12);">
+                    <columns>
+                        <TableColumn fx:id="colId" text="ID" prefWidth="70"/>
+                        <TableColumn fx:id="colName" text="Full Name" prefWidth="170"/>
+                        <TableColumn fx:id="colDob" text="DOB" prefWidth="110"/>
+                        <TableColumn fx:id="colGender" text="Gender" prefWidth="90"/>
+                        <TableColumn fx:id="colPhone" text="Phone" prefWidth="120"/>
+                        <TableColumn fx:id="colEmail" text="Email" prefWidth="190"/>
+                        <TableColumn fx:id="colPosition" text="Position" prefWidth="120"/>
+                        <TableColumn fx:id="colStatus" text="Status" prefWidth="90"/>
+                        <TableColumn fx:id="colSalary" text="Daily Salary" prefWidth="120"/>
+                    </columns>
+                </TableView>
+            </VBox>
+        </VBox>
+    </center>
+
+</BorderPane>

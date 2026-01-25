@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="controller.CheckInController"
+            style="-fx-background-color: #EED9C4;">
+
+    <!-- ================= TOP ================= -->
+    <top>
+        <VBox spacing="12">
+            <padding>
+                <Insets top="10" right="10" bottom="10" left="10"/>
+            </padding>
+
+            <!-- HEADER -->
+            <HBox spacing="12" alignment="CENTER_LEFT"
+                  style="-fx-padding: 10;
+                         -fx-background-color: #F8E4D0;
+                         -fx-background-radius: 16;
+                         -fx-border-color: #C19A6B;
+                         -fx-border-radius: 16;">
+
+                <ImageView fitHeight="80" fitWidth="120">
+                    <image>
+                        <Image url="@../image/logo.jpeg"/>
+                    </image>
+                </ImageView>
+
+                <Region HBox.hgrow="ALWAYS"/>
+
+                <Label text="EMPLOYEE CHECK IN / CHECK OUT"
+                       style="-fx-font-size: 22px;
+                              -fx-font-weight: bold;
+                              -fx-text-fill: #3E2723;"/>
+
+                <Region HBox.hgrow="ALWAYS"/>
+            </HBox>
+
+            <!-- FORM -->
+            <HBox spacing="12" alignment="CENTER_LEFT"
+                  style="-fx-padding: 10;
+                         -fx-background-color: #FAEBD7;
+                         -fx-background-radius: 14;
+                         -fx-border-color: #C19A6B;
+                         -fx-border-radius: 14;">
+
+                <Label text="Employee Email:" style="-fx-font-weight:bold"/>
+
+                <TextField fx:id="txtEmployeeId" prefWidth="220"/>
+
+                <Button text="Check In" onAction="#handleCheckIn"/>
+                <Button text="Check Out" onAction="#handleCheckOut"/>
+
+                <Region HBox.hgrow="ALWAYS"/>
+
+                <!-- FILTER -->
+                <Label text="Filter Date:"/>
+                <DatePicker fx:id="dpDate" onAction="#filterByDate"/>
+
+                <Button text="← Home" onAction="#goBack"/>
+            </HBox>
+        </VBox>
+    </top>
+
+    <!-- ================= CENTER ================= -->
+    <center>
+        <TableView fx:id="tblCheckIn"
+                   style="-fx-background-color: #FAEBD7;
+                          -fx-border-color: #C19A6B;
+                          -fx-border-radius: 16;
+                          -fx-background-radius: 16;
+                          -fx-padding: 10;">
+            <columns>
+                <TableColumn fx:id="colId" prefWidth="60" text="ID"/>
+                <TableColumn fx:id="colEmpId" prefWidth="120" text="Employee ID"/>
+                <TableColumn fx:id="colFullName" prefWidth="180" text="Full Name"/>
+                <TableColumn fx:id="colDate" prefWidth="120" text="Work Date"/>
+                <TableColumn fx:id="colIn" prefWidth="110" text="Check In"/>
+                <TableColumn fx:id="colOut" prefWidth="110" text="Check Out"/>
+                <TableColumn fx:id="colLate" prefWidth="80" text="Late"/>
+            </columns>
+        </TableView>
+    </center>
+
+</BorderPane>
