@@ -8,97 +8,141 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import model.CheckIn;
 
 import java.net.URL;
+import java.sql.Date;
+import java.sql.Time;
+import java.time.LocalDate;
 import java.util.ResourceBundle;
 
-public class CheckInController extends BacktoHomeController  implements Initializable {
+public class CheckInController extends BacktoHomeController implements Initializable {
 
     @FXML private TableView<CheckIn> tblCheckIn;
+
     @FXML private TableColumn<CheckIn, Integer> colId;
     @FXML private TableColumn<CheckIn, String> colEmpId;
-    @FXML private TableColumn<CheckIn, String> colDate;
-    @FXML private TableColumn<CheckIn, String> colIn;
-    @FXML private TableColumn<CheckIn, String> colOut;
+    @FXML private TableColumn<CheckIn, String> colFullName;
+    @FXML private TableColumn<CheckIn, Date> colDate;
+   @FXML private TableColumn<CheckIn, Time> colIn;
+@FXML private TableColumn<CheckIn, Time> colOut;
+
     @FXML private TableColumn<CheckIn, Boolean> colLate;
 
-    // 👉 đổi ý nghĩa: nhập EMAIL
     @FXML private TextField txtEmployeeId;
+    @FXML private DatePicker dpDate;
 
     private final CheckInDAO dao = new CheckInDAO();
 
+    // ================= INITIALIZE =================
     @Override
     public void initialize(URL url, ResourceBundle rb) {
 
         colId.setCellValueFactory(new PropertyValueFactory<>("checkInID"));
         colEmpId.setCellValueFactory(new PropertyValueFactory<>("employeeID"));
+        colFullName.setCellValueFactory(new PropertyValueFactory<>("fullName"));
         colDate.setCellValueFactory(new PropertyValueFactory<>("workDate"));
         colIn.setCellValueFactory(new PropertyValueFactory<>("checkInTime"));
         colOut.setCellValueFactory(new PropertyValueFactory<>("checkOutTime"));
         colLate.setCellValueFactory(new PropertyValueFactory<>("late"));
 
-        loadData();
+        loadCurrentMonth();
     }
 
-    private void loadData() {
-        ObservableList<CheckIn> list =
-                FXCollections.observableArrayList(dao.getTodayCheckIn());
-        tblCheckIn.setItems(list);
+    // ================= LOAD CURRENT MONTH =================
+    private void loadCurrentMonth() {
+
+        LocalDate now = LocalDate.now();
+
+        tblCheckIn.setItems(
+                FXCollections.observableArrayList(
+                        dao.getCheckInByMonth(
+                                now.getMonthValue(),
+                                now.getYear()
+                        )
+                )
+        );
     }
 
-    // ===============================
-    // CHECK-IN BY EMAIL
-    // ===============================
+    // ================= FILTER BY DATE =================
     @FXML
-    private void handleCheckIn() {
+    private void filterByDate() {
 
-        String email = txtEmployeeId.getText().trim();
-
-        if (email.isEmpty()) {
-            alert("Please enter email!");
+        if (dpDate.getValue() == null) {
+            loadCurrentMonth();
             return;
         }
 
+        tblCheckIn.setItems(
+                FXCollections.observableArrayList(
+                        dao.getCheckInByDate(
+                                Date.valueOf(dpDate.getValue())
+                        )
+                )
+        );
+    }
+
+    // ================= CHECK-IN =================
+    @FXML
+    private void handleCheckIn() {
+
         try {
+            String email = txtEmployeeId.getText().trim();
+            if (email.isEmpty()) {
+                alert("Please enter email!");
+                return;
+            }
+
             dao.checkInByEmail(email);
-            loadData();
-            txtEmployeeId.clear();
+            refreshAfterAction();
+            alertInfo("Check-In successful!");
+
         } catch (RuntimeException ex) {
             alert(ex.getMessage());
+        } catch (Exception e) {
+            alert("Unexpected error: " + e.getMessage());
         }
     }
-    
-    // ===============================
-    // CHECK-OUT BY EMAIL
-    // ===============================
+
+    // ================= CHECK-OUT =================
     @FXML
-private void handleCheckOut() {
+    private void handleCheckOut() {
 
-    String email = txtEmployeeId.getText().trim();
+        try {
+            String email = txtEmployeeId.getText().trim();
+            if (email.isEmpty()) {
+                alert("Please enter email!");
+                return;
+            }
 
-    if (email.isEmpty()) {
-        alert("Please enter email!");
-        return;
+            dao.checkOutByEmail(email);
+            refreshAfterAction();
+            alertInfo("Check-Out successful!");
+
+        } catch (RuntimeException ex) {
+            alert(ex.getMessage());
+        } catch (Exception e) {
+            alert("Unexpected error: " + e.getMessage());
+        }
     }
 
-    try {
-        dao.checkOutByEmail(email); // gọi procedure Check-Out
-        loadData();                // reload bảng
-        txtEmployeeId.clear();     // xóa input
-        alertInfo("Check-Out successful!");
-    } catch (RuntimeException ex) {
-        alert(ex.getMessage());
+    private void refreshAfterAction() {
+        txtEmployeeId.clear();
+        if (dpDate.getValue() != null) {
+            filterByDate();
+        } else {
+            loadCurrentMonth();
+        }
     }
-}
 
-// Thêm Alert thông báo thành công
-private void alertInfo(String msg) {
-    Alert a = new Alert(Alert.AlertType.INFORMATION);
-    a.setContentText(msg);
-    a.show();
-}
-
-
+    // ================= ALERT =================
     private void alert(String msg) {
         Alert a = new Alert(Alert.AlertType.WARNING);
+        a.setHeaderText(null);
+        a.setContentText(msg);
+        a.show();
+    }
+
+    private void alertInfo(String msg) {
+        Alert a = new Alert(Alert.AlertType.INFORMATION);
+        a.setHeaderText(null);
         a.setContentText(msg);
         a.show();
     }

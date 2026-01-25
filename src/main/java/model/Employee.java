@@ -25,13 +25,15 @@ public class Employee implements Serializable {
     private Date hireDate;
     private String position;
     private String status; // Active / Inactive
+    private int baseDailySalary;
 
     public Employee() {
     }
 
     public Employee(String employeeID, String fullName, Date dob, String gender,
-                    String phone, String email, String address,
-                    Date hireDate, String position, String status) {
+            String phone, String email, String address,
+            Date hireDate, String position, String status,
+            int baseDailySalary) {
         this.employeeID = employeeID;
         this.fullName = fullName;
         this.dob = dob;
@@ -42,12 +44,12 @@ public class Employee implements Serializable {
         this.hireDate = hireDate;
         this.position = position;
         this.status = status;
+        this.baseDailySalary = baseDailySalary;
     }
 
     // =====================
     // GETTERS & SETTERS
     // =====================
-
     public String getEmployeeID() {
         return employeeID;
     }
@@ -126,5 +128,13 @@ public class Employee implements Serializable {
 
     public void setStatus(String status) {
         this.status = status;
+    }
+
+    public int getBaseDailySalary() {
+        return baseDailySalary;
+    }
+
+    public void setBaseDailySalary(int baseDailySalary) {
+        this.baseDailySalary = baseDailySalary;
     }
 }
