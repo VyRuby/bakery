@@ -394,5 +394,21 @@ public class productDao {
     return list;
 }
 
-
+// Them mới 
+// giảm số lượng sản phẩm sau khi đã order 
+public void reduceQuantity(String productId,int soldQty){
+                    String sql= "UPDATE product SET Quantity = Quantity - ? Where ProductID= ?";
+                    
+                    try(Connection con= ConnectDB.getConnection();
+                            PreparedStatement ps= con.prepareStatement(sql)){
+                        ps.setInt(1,soldQty);
+                        ps.setString(2,productId);
+                        ps.executeUpdate();
+                    }catch(SQLException e){
+                        e.printStackTrace();
+                    }
+                    
+                }                
+                
+                
        }

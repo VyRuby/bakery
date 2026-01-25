@@ -157,59 +157,8 @@ public class OrderController extends BacktoHomeController implements Initializab
             }
         });
         
-//        LocalDateTime now = LocalDateTime.now();
-//        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
-//        String formatteDate= now.format(formatter);
-//        dateOrder.setText(formatteDate);
-
-//        listProduct.setOnMouseClicked(e->{
-//            if(e.getClickCount() ==2){
-//                Product product =listProduct.getSelectionModel().getSelectedItem();
-//                if(product != null){
-//                    openProductDetail(product);
-//                }
-//            }
-//        }
-        
-//        );
-        
-//        listProduct.setCellFactory(param -> new ListCell <Product>(){
-//        private ImageView imageView = new ImageView();
-//        private Label nameLabel = new Label();
-//        private Label priceLabel = new Label();
-//        private VBox vbox = new VBox (nameLabel, priceLabel);
-//        private HBox hbox = new HBox (imageView, vbox);
-//        {
-//            imageView.setFitHeight(70);
-//            imageView.setFitWidth(70);
-//            imageView.setPreserveRatio(true);
-//            
-//            vbox.setSpacing(10);
-//            hbox.setSpacing(10);
-//            
-//        }
-//        @Override
-//        protected void updateItem (Product item,boolean empty){
-//            super.updateItem(item,empty);
-//            if(empty|| item == null){
-//                setGraphic(null);
-//            }else{
-//                nameLabel.setText(item.getProductName());
-//                priceLabel.setText(item.getPrice() + "USD");
-//            
-//            try{
-//                Image img = new Image(
-//                getClass().getResourceAsStream("/" + item.getImage()));
-//                imageView.setImage(img);
-//            }catch(Exception e){
-//                imageView.setImage(null);
-//            }
-//            setGraphic(hbox);
-//            }  
-//        }    
-//    })
                 
-                ;
+                
      orderDetail.setItems(orderList);
      orderDetail.setOnMouseClicked(e -> {
          if(e.getClickCount() ==2 
@@ -505,6 +454,7 @@ private PromotionDAO promotionDAO = new PromotionDAO();
         }else{
             customerId=3;
         }
+        String customerName = (c!=null) ? c.getName() : "Visitor";
         
         String paymentMethod = Transfer.isSelected() ?"TRANSFER" : "CASH";
         
@@ -523,10 +473,13 @@ private PromotionDAO promotionDAO = new PromotionDAO();
         
         for(OrderDetailItem item : orderList){
             orderDetailDao.insertDetail(orderId, item);
+            
+            productDao.reduceQuantity(item.getProduct().getProductId(), item.getQuantity());
         }
+        exportToPDF(orderId, customerName, paymentMethod, total);
         
         System.out.println("order Saved !");
-        
+        loadProducts();
         orderList.clear();
         orderDetail.refresh();
         totalOrder.setText("0 USD");

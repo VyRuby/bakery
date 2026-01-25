@@ -1238,12 +1238,12 @@ GRANT SELECT ON bakery_db.vw_EmployeeSalary TO 'b@gmail.com'@'localhost';
 GRANT EXECUTE ON PROCEDURE bakery_db.sp_employee_checkin_by_email TO 'b@gmail.com'@'localhost';
 GRANT EXECUTE ON PROCEDURE bakery_db.sp_employee_checkout_by_email TO 'b@gmail.com'@'localhost';
 
---Customer – CRUD
+-- Customer – CRUD
 GRANT SELECT, INSERT, UPDATE, DELETE
 ON bakery_db.customer
 TO 'b@gmail.com'@'localhost';
 
---Orders – CRUD
+-- Orders – CRUD
 GRANT SELECT, INSERT, UPDATE, DELETE
 ON bakery_db.orders
 TO 'b@gmail.com'@'localhost';
@@ -1258,3 +1258,4 @@ FLUSH PRIVILEGES;
 -- TEST
 SHOW GRANTS FOR 'a@gmail.com'@'localhost';
 SHOW GRANTS FOR 'b@gmail.com'@'localhost';
+

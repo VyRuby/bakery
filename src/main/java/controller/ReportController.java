@@ -5,6 +5,8 @@ import app.ConnectDB;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.chart.*;
+import javafx.scene.control.Label;
+import javafx.scene.control.ProgressIndicator;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import model.Report;
@@ -14,13 +16,16 @@ import java.sql.Connection;
 import java.util.List;
 import java.util.ResourceBundle;
 
-public class ReportController implements Initializable {
+public class ReportController extends BacktoHomeController implements Initializable {
 
-    // ===== CHART TOP =====
-    @FXML private BarChart<String, Number> chartTopLeft;
-    @FXML private LineChart<String, Number> chartTopRight;
+    // ===== TOP LEFT (DONUT) =====
+    @FXML private ProgressIndicator revenueProgress;
+    @FXML private Label lbRevenue;
 
-    // ===== CHART BOTTOM =====
+    // ===== TOP RIGHT (LINE) =====
+    @FXML private LineChart<String, Number> chartGrowth;
+
+    // ===== BOTTOM =====
     @FXML private BarChart<String, Number> chartBottom;
 
     // ===== IMAGE =====
@@ -33,12 +38,11 @@ public class ReportController implements Initializable {
     public void initialize(URL url, ResourceBundle rb) {
 
         try {
-            // ✅ DÙNG CONNECTDB CỦA M
             Connection conn = ConnectDB.getConnection();
             reportDAO = new ReportDAO(conn);
 
-            loadImages();
-            loadTopRevenueChart();
+//            loadImages();
+            loadTotalRevenue();
             loadGrowthChart();
             loadBottomRevenueProfitChart();
 
@@ -47,44 +51,36 @@ public class ReportController implements Initializable {
         }
     }
 
-    // ================= IMAGE =================
-    private void loadImages() {
-        imgTop.setImage(
-            new Image(getClass().getResource("/image/report1.png").toExternalForm())
-        );
-        imgBottom.setImage(
-            new Image(getClass().getResource("/image/report2.png").toExternalForm())
-        );
-    }
+//    // ================= IMAGE =================
+//    private void loadImages() {
+//        imgTop.setImage(
+//                new Image(getClass().getResource("/images/farm1.jpg").toExternalForm())
+//        );
+//        imgBottom.setImage(
+//                new Image(getClass().getResource("/images/farm2.jpg").toExternalForm())
+//        );
+//    }
 
-    // ================= TOP LEFT =================
-    // Tổng doanh thu theo tháng (SQL thật)
-    private void loadTopRevenueChart() throws Exception {
+    // ================= TOTAL REVENUE (DONUT) =================
+    private void loadTotalRevenue() throws Exception {
 
-        chartTopLeft.getData().clear();
-        chartTopLeft.setLegendVisible(false);
-
-        XYChart.Series<String, Number> series = new XYChart.Series<>();
-
+        double total = 0;
         List<Report> list = reportDAO.revenueByMonth();
         for (Report r : list) {
-            series.getData().add(
-                new XYChart.Data<>(r.getPeriod(), r.getTotalRevenue())
-            );
+            total += r.getTotalRevenue();
         }
 
-        chartTopLeft.getData().add(series);
+        lbRevenue.setText("$" + String.format("%,.0f", total));
 
-        // màu xanh giống UI mẫu
-        series.getNode().setStyle("-fx-bar-fill:#A7C957;");
+        // giả lập progress (vì JavaFX ProgressIndicator không phải donut chart thật)
+        revenueProgress.setProgress(0.75);
     }
 
-    // ================= TOP RIGHT =================
-    // Định hướng phát triển (forecast)
+    // ================= GROWTH =================
     private void loadGrowthChart() {
 
-        chartTopRight.getData().clear();
-        chartTopRight.setLegendVisible(false);
+        chartGrowth.getData().clear();
+        chartGrowth.setLegendVisible(false);
 
         XYChart.Series<String, Number> series = new XYChart.Series<>();
 
@@ -93,11 +89,10 @@ public class ReportController implements Initializable {
         series.getData().add(new XYChart.Data<>("2026", 190));
         series.getData().add(new XYChart.Data<>("2027", 260));
 
-        chartTopRight.getData().add(series);
+        chartGrowth.getData().add(series);
     }
 
     // ================= BOTTOM =================
-    // Doanh thu & lợi nhuận (SQL thật)
     private void loadBottomRevenueProfitChart() throws Exception {
 
         chartBottom.getData().clear();
@@ -112,17 +107,13 @@ public class ReportController implements Initializable {
         List<Report> list = reportDAO.profitByMonth();
         for (Report r : list) {
             revenueSeries.getData().add(
-                new XYChart.Data<>(r.getPeriod(), r.getTotalRevenue())
+                    new XYChart.Data<>(r.getPeriod(), r.getTotalRevenue())
             );
             profitSeries.getData().add(
-                new XYChart.Data<>(r.getPeriod(), r.getProfit())
+                    new XYChart.Data<>(r.getPeriod(), r.getProfit())
             );
         }
 
         chartBottom.getData().addAll(revenueSeries, profitSeries);
-
-        // màu giống ảnh summary
-        revenueSeries.getNode().setStyle("-fx-bar-fill:#C7E77F;");
-        profitSeries.getNode().setStyle("-fx-bar-fill:#1F3D2B;");
     }
 }
