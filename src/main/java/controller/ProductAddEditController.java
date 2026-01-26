@@ -94,13 +94,14 @@ private final Map<String, String> nameToId = Map.of(
         cbCategory.getItems().setAll("Baked", "Cake", "Cookie");
     }    
     
-    @FXML
+   @FXML
 private void handleSave(ActionEvent event) {
     try {
+        lblMsg.setText("");
+
         String id = txtId.getText().trim().toUpperCase();
         String name = txtName.getText().trim();
-        
-        //hiển thị name, lưu ID
+
         String categoryName = cbCategory.getValue();
         String categoryId = nameToId.getOrDefault(categoryName, categoryName);
 
@@ -113,34 +114,39 @@ private void handleSave(ActionEvent event) {
             lblMsg.setText("Please input Id, Name and choose Category.");
             return;
         }
-        
+
         // validate format
         if (!id.matches("^PD\\d{2}$")) {
             lblMsg.setText("Product ID must be in format PD00 (e.g. PD01).");
             return;
         }
-        
-        // check trùng ID
-        if (editingProduct == null) {
-            boolean check = productDao.exists(id); 
-            if (check) {
-                lblMsg.setText("This Product ID already exists. Please choose another one.");
+
+
+        // CHECK TRÙNG TÊN (ADD/EDIT)
+        productDao dao = new productDao();
+        if (editingProduct == null) { // ADD
+            if (dao.existsName(name)) {
+                lblMsg.setText("Product name already exists. Please choose another name.");
+                return;
+            }
+        } else { // EDIT
+            if (dao.existsNameEdit(name, editingProduct.getProductId())) {
+                lblMsg.setText("Product name already exists. Please choose another name.");
                 return;
             }
         }
 
         float price = Float.parseFloat(txtPrice.getText().trim());
-//        float costPrice = Float.parseFloat(txtCostPrice.getText());
-    
+
         float costPrice = (editingProduct != null)
-                ? editingProduct.getCostPrice()   // Edit → giữ nguyên
-                : 0f;                             // Add → mặc định 0
+                ? editingProduct.getCostPrice()
+                : 0f;
 
+        int quantity = (editingProduct != null)
+                ? editingProduct.getQuantity()
+                : 0;
 
-        // quantity không chỉnh: giữ nguyên nếu Edit, còn Add thì = 0
-        int quantity = (editingProduct != null) ? editingProduct.getQuantity() : 0;
-
-       Product p = new Product(id, name, categoryId, quantity, unit, costPrice, price, desc, image);
+        Product p = new Product(id, name, categoryId, quantity, unit, costPrice, price, desc, image);
         result = p;
 
         ((Stage) btnSave.getScene().getWindow()).close();
@@ -148,75 +154,70 @@ private void handleSave(ActionEvent event) {
     } catch (NumberFormatException e) {
         lblMsg.setText("Price is invalid.");
     } catch (Exception e) {
-        lblMsg.setText("Error when saving  into database.");
+        lblMsg.setText("Error when saving into database.");
         e.printStackTrace();
     }
 }
 
-    @FXML
+@FXML
 private void onCancel(ActionEvent event) {
     result = null;
     ((Stage) btnCancel.getScene().getWindow()).close();
 }
 
-    @FXML
-    private void onBrowseImage(ActionEvent event) {
-        try {
-            FileChooser fc = new FileChooser();
-            fc.setTitle("Choose product image");
-            fc.getExtensionFilters().addAll(
-                    new FileChooser.ExtensionFilter("Image files", "*.png", "*.jpg", "*.jpeg", "*.gif", "*.webp"),
-                    new FileChooser.ExtensionFilter("All files", "*.*")
-            );
+@FXML
+private void onBrowseImage(ActionEvent event) {
+    try {
+        FileChooser fc = new FileChooser();
+        fc.setTitle("Choose product image");
+        fc.getExtensionFilters().addAll(
+                new FileChooser.ExtensionFilter("Image files", "*.png", "*.jpg", "*.jpeg", "*.gif", "*.webp"),
+                new FileChooser.ExtensionFilter("All files", "*.*")
+        );
 
-            Stage stage = (Stage) btnBrowse.getScene().getWindow();
-            File file = fc.showOpenDialog(stage);
-            if (file == null) {
-                return;
-            }
+        Stage stage = (Stage) btnBrowse.getScene().getWindow();
+        File file = fc.showOpenDialog(stage);
+        if (file == null) return;
 
-            String fileName = file.getName();
-            String relativePath = "image/" + fileName;
+        String fileName = file.getName();
+        String relativePath = "image/" + fileName;
 
-            boolean copied = false;
+        boolean copied = false;
 
-            Path mavenResources = Path.of("src", "main", "resources", "image");
-            if (Files.exists(mavenResources.getParent())) {
-                Files.createDirectories(mavenResources);
-                Path dest = mavenResources.resolve(fileName);
+        Path mavenResources = Path.of("src", "main", "resources", "image");
+        if (Files.exists(mavenResources.getParent())) {
+            Files.createDirectories(mavenResources);
+            Path dest = mavenResources.resolve(fileName);
+            Files.copy(file.toPath(), dest, StandardCopyOption.REPLACE_EXISTING);
+            copied = true;
+        } else {
+            Path normalResources = Path.of("src", "image");
+            if (Files.exists(normalResources.getParent())) {
+                Files.createDirectories(normalResources);
+                Path dest = normalResources.resolve(fileName);
                 Files.copy(file.toPath(), dest, StandardCopyOption.REPLACE_EXISTING);
                 copied = true;
-            } else {
-                Path normalResources = Path.of("src", "image");
-                if (Files.exists(normalResources.getParent())) {
-                    Files.createDirectories(normalResources);
-                    Path dest = normalResources.resolve(fileName);
-                    Files.copy(file.toPath(), dest, StandardCopyOption.REPLACE_EXISTING);
-                    copied = true;
-                }
             }
-
-         
-            txtImage.setText(relativePath);
-            previewImage(relativePath);
-
-            lblPreviewName.setText(txtName.getText() == null ? "" : txtName.getText().trim());
-            lblPreviewPrice.setText(txtPrice.getText() == null ? "" : txtPrice.getText().trim());
-
-            if (copied) {
-                lblMsg.setText("Selected image: " + relativePath);
-            } else {
-                lblMsg.setText("Selected image. (If preview fails, copy image into resources/images)");
-            }
-
-        } catch (IOException ex) {
-            ex.printStackTrace();
-            lblMsg.setText("Cannot copy image file.");
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            lblMsg.setText("Browse image failed.");
         }
+
+        txtImage.setText(relativePath);
+        previewImage(relativePath);
+
+        lblPreviewName.setText(txtName.getText() == null ? "" : txtName.getText().trim());
+        lblPreviewPrice.setText(txtPrice.getText() == null ? "" : txtPrice.getText().trim());
+
+        lblMsg.setText(copied ? "Selected image: " + relativePath
+                              : "Selected image. (Please copy into resources/image if preview fails)");
+
+    } catch (IOException ex) {
+        ex.printStackTrace();
+        lblMsg.setText("Cannot copy image file.");
+    } catch (Exception ex) {
+        ex.printStackTrace();
+        lblMsg.setText("Browse image failed.");
     }
+}
+
 
      private void previewImage(String path) {
     try {
@@ -267,7 +268,8 @@ private void onCancel(ActionEvent event) {
     } else { // ADD
          lblMode.setText("ADD MODE");
          
-        txtId.clear();
+        txtId.setText(new productDao().makeProductId());
+
         txtName.clear();
         cbCategory.getSelectionModel().clearSelection(); 
         txtUnit.clear();
@@ -279,7 +281,7 @@ private void onCancel(ActionEvent event) {
          // default quantity = 0 (không cho sửa)
         lblQuantity.setText("0");
 
-        txtId.setDisable(false);
+        txtId.setDisable(true);
         
         // preview clear
         lblPreviewName.setText("");

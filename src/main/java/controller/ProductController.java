@@ -279,8 +279,8 @@ public class ProductController extends BacktoHomeController implements Initializ
         if (!ok) return;
 
         try {
-            // ✅ soft delete
-            productDao.delete(selected.getProductId()); // bạn đã đổi delete() thành UPDATE Status='Inactive'
+      
+            productDao.delete(selected.getProductId()); 
             viewTable();
             showInfo("Success", "Product set to Inactive.");
         } catch (Exception e) {
@@ -289,17 +289,6 @@ public class ProductController extends BacktoHomeController implements Initializ
         }
     }
 
-    @FXML
-    private void onRefresh(ActionEvent event) {
-        try {
-            viewTable();
-            tblProducts.getSelectionModel().clearSelection();
-            showInfo("Refreshed", "Product list has been refreshed.");
-        } catch (Exception e) {
-            e.printStackTrace();
-            showError("Error", "Refresh Failed", "Unable to refresh product list.");
-        }
-    }
 
     // ===== Restock popup =====
     @FXML

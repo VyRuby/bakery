@@ -51,6 +51,7 @@ import java.io.File;
 import org.w3c.dom.Document;
 import model.Promotion;
 import DAO_Product.PromotionDAO;
+import javafx.scene.control.Alert;
 import javafx.scene.control.TextField;
 /**
  * FXML Controller class
@@ -280,7 +281,7 @@ private PromotionDAO promotionDAO = new PromotionDAO();
         }
      
         OrderDetailItem newItem= new OrderDetailItem(product,quantity);
-        newItem.setCostPrice(product.getCostPrice());
+        newItem.setCostPrice(product.getPrice());
         newItem.setPrice(unitPrice);
         newItem.setPromoID(promoId);
         newItem.setDiscountAmount(discountAmount);
@@ -297,7 +298,7 @@ private PromotionDAO promotionDAO = new PromotionDAO();
         for(OrderDetailItem item : orderList){
             total += item.getTotal();
         }
-        totalOrder.setText(total + "USD");
+        totalOrder.setText(total + "VND");
     }
     private void openProductDetail(Product product){
         try{
@@ -389,17 +390,17 @@ private PromotionDAO promotionDAO = new PromotionDAO();
                     : (float) activePromo.getValue();
             float promotionPrice= originalPrice - discount;
             
-            Label oldPriceLabel= new Label(originalPrice + "USD");
+            Label oldPriceLabel= new Label(originalPrice + "VND");
             oldPriceLabel.setStyle("-fx-text-fill: gray;-fx-strike-through: true ;-fx-font-size: 10px;");
         
-           currentPriceLabel.setText(promotionPrice + "USD");
+           currentPriceLabel.setText(promotionPrice + "VND");
            currentPriceLabel.setStyle("-fx-text-fill: red ;-fx-font-weight: bold;");
            
            priceBox.getChildren().addAll(oldPriceLabel, currentPriceLabel);
            
         
         }else{
-            currentPriceLabel.setText(product.getPrice() + "USD");
+            currentPriceLabel.setText(product.getPrice() + "VND");
             priceBox.getChildren().add(currentPriceLabel);
         }
         
@@ -430,10 +431,6 @@ private PromotionDAO promotionDAO = new PromotionDAO();
         return box;
     }
     
-//    @FXML
-//    private void goBack(ActionEvent event) {
-//    }
-//    
     
     private OrderDao orderDao = new OrderDao();
     private OrderDetailDao orderDetailDao = new OrderDetailDao();
@@ -467,7 +464,7 @@ private PromotionDAO promotionDAO = new PromotionDAO();
         
         int orderId= orderDao.insertOrder(customerId, total , paymentMethod);
         if(orderId == -1){
-            System.out.println("Order failt !");
+            System.out.println("Order fail !");
             return;
         }
         
@@ -478,11 +475,13 @@ private PromotionDAO promotionDAO = new PromotionDAO();
         }
         exportToPDF(orderId, customerName, paymentMethod, total);
         
+        showAlert(Alert.AlertType.INFORMATION, "Order complete!", "Saved order !", " Invoice in : D:/Invoice_Order" + orderId +".pdf");
+        
         System.out.println("order Saved !");
         loadProducts();
         orderList.clear();
         orderDetail.refresh();
-        totalOrder.setText("0 USD");
+        totalOrder.setText("0 VND");
      
         
     }
@@ -504,13 +503,15 @@ private PromotionDAO promotionDAO = new PromotionDAO();
             Paragraph title= new Paragraph("Invoice", titleFont);
             title.setAlignment(Element.ALIGN_CENTER);
             document.add(title);
-            document.add(new Paragraph("*****************"));
+            document.add(new Paragraph("*****************", titleFont));
             
             document.add(new Paragraph("Order ID: " + orderId));
             document.add(new Paragraph("Customer: " + customerName));
             document.add(new Paragraph("Date: " + dateOrder.getText()));
             document.add(new Paragraph("Payment Method: " + paymentMethod));
             document.add(new Paragraph(" "));
+            
+            
             
             
             PdfPTable table = new PdfPTable(4);
@@ -536,6 +537,9 @@ private PromotionDAO promotionDAO = new PromotionDAO();
             
             }
             document.add(table);
+            document.add(new Paragraph("*****************", titleFont));
+            document.add(new Paragraph("Thank You !"));
+            
             document.close();
             
             
@@ -595,10 +599,16 @@ private PromotionDAO promotionDAO = new PromotionDAO();
             }
         }
         
-
-        
     }
-
+private void showAlert(Alert.AlertType type, String title, String header, String content){
+    Alert alert= new Alert(type);
+    alert.setTitle(title);
+    alert.setHeaderText(header);
+    alert.setContentText(content);
+    alert.showAndWait();
+}
+    
+    
 
     
 }

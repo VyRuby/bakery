@@ -40,8 +40,6 @@ import model.Promotion;
 
 public class PromotionController extends BacktoHomeController implements Initializable {
 
-    @FXML private Label lblUser;
-    @FXML private Label lblStatus;
 
     @FXML private TextField txtSearch;
     @FXML private ComboBox<String> cbFilter;
@@ -141,20 +139,6 @@ public class PromotionController extends BacktoHomeController implements Initial
         });
     }
 
-    
-
-    @FXML
-    private void onRefresh(ActionEvent event) {
-        try {
-            viewTable();
-            tblPromotions.getSelectionModel().clearSelection();
-            applyFilter();
-            showInfo("Refreshed", "Promotion list has been refreshed.");
-        } catch (Exception e) {
-            e.printStackTrace();
-            showError("Error", "Refresh Failed", "Unable to refresh promotion list.");
-        }
-    }
 
     // ===== CRUD =====
     @FXML
@@ -175,7 +159,6 @@ public class PromotionController extends BacktoHomeController implements Initial
 
             showInfo("Success", "Promotion added successfully.");
         } catch (java.sql.SQLIntegrityConstraintViolationException ex) {
-            // thường do UNIQUE(ProductID): product đã thuộc promo khác
             showError("Error", "Constraint Violation",
                     "Some selected products are already applied to another promotion.");
         } catch (Exception e) {
@@ -238,7 +221,7 @@ public class PromotionController extends BacktoHomeController implements Initial
         }
     }
 
-    // ===== ALERT (reuse css AlertNoti.css) =====
+    // ===== ALERT =====
     private void applyAlertCss(Alert a) {
         a.getDialogPane().getStylesheets().add(
                 getClass().getResource("/css/AlertNoti.css").toExternalForm()

@@ -118,50 +118,94 @@ public class productDao {
         }
         return p;
     }
-    
-      // ================= CHECK ID EXISTS =================
-    public static boolean exists(String productId) {
-
-        String sql = "SELECT 1 FROM product WHERE ProductID = ?";
-
-        try (Connection con = ConnectDB.getConnection();
-             PreparedStatement ps = con.prepareStatement(sql)) {
-
-            ps.setString(1, productId);
-            ResultSet rs = ps.executeQuery();
-            return rs.next(); // có bản ghi → trùng
-
-        } catch (SQLException e) {
-            e.printStackTrace();
+//    check trùng tên
+      public boolean existsName(String productName) {
+    String sql = "SELECT 1 FROM PRODUCT WHERE LOWER(ProductName) = LOWER(?) LIMIT 1";
+    try (Connection con = ConnectDB.getConnection();
+         PreparedStatement ps = con.prepareStatement(sql)) {
+        ps.setString(1, productName.trim());
+        try (ResultSet rs = ps.executeQuery()) {
+            return rs.next();
         }
+    } catch (Exception e) {
+        e.printStackTrace();
         return false;
     }
-    // ================= INSERT =================
-    public void insert(Product p) {
-          String sql = "INSERT INTO product "
-               + "(ProductID, ProductName, CategoryID, Quantity, Unit, Price, Description, Image) "
-               + "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
-
-        try (Connection con = ConnectDB.getConnection();
-             PreparedStatement ps = con.prepareStatement(sql)) {
-
-            ps.setString(1, p.getProductId());
-            ps.setString(2, p.getProductName());
-            ps.setString(3, p.getCategoryId());
-            ps.setInt(4, p.getQuantity());
-            ps.setString(5, p.getUnit());
-            ps.setFloat(6, p.getCostPrice());
-            ps.setFloat(6, p.getPrice());
-            ps.setString(7, p.getDescription());
-            ps.setString(8, p.getImage());
-
-            ps.executeUpdate();
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-            throw new RuntimeException("Insert product failed");
+}
+      //check trùng tên khi edit
+public boolean existsNameEdit(String productName, String productId) {
+    String sql = "SELECT 1 FROM PRODUCT WHERE LOWER(ProductName)=LOWER(?) AND ProductID<>? LIMIT 1";
+    try (Connection con = ConnectDB.getConnection();
+         PreparedStatement ps = con.prepareStatement(sql)) {
+        ps.setString(1, productName.trim());
+        ps.setString(2, productId);
+        try (ResultSet rs = ps.executeQuery()) {
+            return rs.next();
         }
+    } catch (Exception e) {
+        e.printStackTrace();
+        return false;
     }
+}
+
+    
+    // ================= AUTO PRODUCT ID (PD01 -> PD99...) =================
+public String makeProductId() {
+
+    String sql = "SELECT ProductID FROM PRODUCT WHERE ProductID LIKE 'PD%' ORDER BY ProductID DESC LIMIT 1";
+
+    try (Connection con = ConnectDB.getConnection();
+         PreparedStatement ps = con.prepareStatement(sql);
+         ResultSet rs = ps.executeQuery()) {
+
+        int next = 1;
+
+        if (rs.next()) {
+            String lastId = rs.getString("ProductID"); 
+            String numPart = lastId.substring(2);      
+            next = Integer.parseInt(numPart) + 1;
+        }
+
+        // format 2 chữ số: PD01, PD02...
+        if (next < 10) return "PD0" + next;
+        return "PD" + next;
+
+    } catch (Exception e) {
+        e.printStackTrace();
+        // fallback nếu lỗi DB
+        return "PD01";
+    }
+}
+
+    // ================= INSERT =================
+  public void insert(Product p) {
+
+    String sql = "INSERT INTO PRODUCT " +
+            "(ProductID, ProductName, CategoryID, Quantity, Unit, CostPrice, Price, Description, Image, Status) " +
+            "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+
+    try (Connection con = ConnectDB.getConnection();
+         PreparedStatement ps = con.prepareStatement(sql)) {
+
+        ps.setString(1, p.getProductId());
+        ps.setString(2, p.getProductName());
+        ps.setString(3, p.getCategoryId());
+        ps.setInt(4, p.getQuantity());
+        ps.setString(5, p.getUnit());
+        ps.setFloat(6, p.getCostPrice());
+        ps.setFloat(7, p.getPrice());
+        ps.setString(8, p.getDescription());
+        ps.setString(9, p.getImage());
+        ps.setString(10, (p.getStatus() == null || p.getStatus().isBlank()) ? "Active" : p.getStatus());
+
+        ps.executeUpdate();
+
+    } catch (SQLException e) {
+        e.printStackTrace();
+        throw new RuntimeException("Insert product failed: " + e.getMessage());
+    }
+}
+
     // ================= UPDATE =================
     public void update(Product p) {
 

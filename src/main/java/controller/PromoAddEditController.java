@@ -128,9 +128,10 @@ public class PromoAddEditController {
 
         if (promo == null) {
             editMode = false;
+            txtPromoId.setText(promotionDAO.autoPromoId()); 
 
-            txtPromoId.setDisable(false);
-            txtPromoId.clear();
+            txtPromoId.setDisable(true);
+//            txtPromoId.clear();
             txtPromoName.clear();
             txtDescription.clear();
 
@@ -156,7 +157,7 @@ public class PromoAddEditController {
         txtValue.setText(String.valueOf(promo.getValue()));
         cbStatus.getSelectionModel().select(promo.getStatus());
 
-        // ✅ tick checkbox theo productIds của promo
+        // tick checkbox theo productIds của promo
         if (promo.getProductIds() != null) {
             for (Product pr : lvProducts.getItems()) {
                 if (promo.getProductIds().contains(pr.getProductId())) {
@@ -247,7 +248,7 @@ public class PromoAddEditController {
         String status = cbStatus.getValue();
         if (status == null) status = "Active";
 
-        // ✅ lấy product tick checkbox
+        // lấy product tick checkbox
         List<String> productIds = getCheckedProductIds();
 
         Promotion p = new Promotion();

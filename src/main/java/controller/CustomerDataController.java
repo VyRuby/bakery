@@ -14,12 +14,18 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.ListView;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleGroup;
+import javafx.scene.control.Alert;
+import javafx.scene.control.TextField;
+
+
+
 
 /**
  * FXML Controller class
@@ -86,6 +92,12 @@ public class CustomerDataController extends BacktoHomeController implements Init
             setText(c.getName()+ " - " + c.getPhone() );
         }
     }
+    });
+    
+    cPhone.textProperty().addListener((observable, oldValue, newValue)->{
+      if(!newValue.matches("\\d*")){
+          cPhone.setText(newValue.replaceAll("[^\\d]", ""));
+      }  
     });
     
     findtextcustomer.textProperty().addListener((observable,oldVable, newVable)-> {
@@ -157,19 +169,31 @@ public class CustomerDataController extends BacktoHomeController implements Init
 
     @FXML
     private void handleSaveCus(ActionEvent event) {
-        if(cName.getText().isEmpty()||cPhone.getText().isEmpty()){
+        String email = cEmail.getText().trim();
+        String phone = cPhone.getText().trim();
+        String name= cName.getText().trim();
+        if(name.isEmpty()||phone.isEmpty()){
             System.out.println("Phone and Name cant be null!");
             return ;
         }
+        
+        String emailPattern= "^[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,8}$";
+        
+        if(!email.isEmpty()&&!email.matches(emailPattern)){
+            showAlert("Error","Invalid email format!");
+            return;
+        }
+      
         Customer c= new Customer(
-        cName.getText(),
-                cPhone.getText(),
+        name,
+        phone,
                 cGenMale.isSelected() ? Customer.Gender.Male : Customer.Gender.Female,
                 cDOB.getValue(),
-                cEmail.getText(),
+                email,
                 cAddress.getText(),
                 0
         );
+        try{
         boolean savecus =customerDao.insert(c);
         
         if(savecus){
@@ -180,13 +204,26 @@ public class CustomerDataController extends BacktoHomeController implements Init
             
             clearCustomerForm();
             
-        }else{
-            System.out.println("Error !");
         }
-        
-        
+//        else{
+//            System.out.println("Error !");
+        }catch(java.sql.SQLException e){
+            if(e.getErrorCode() == 1062){
+            showAlert("Error", "This phone number  already exit !");    
+            
+        }else{
+                showAlert("Error", e.getMessage());
+            }       
     }
-
+    }
+    
+private void showAlert(String title, String content){
+    Alert alert= new Alert(Alert.AlertType.ERROR);
+    alert.setTitle(title);
+    alert.setHeaderText(null);
+    alert.setContentText(content);
+    alert.showAndWait();
+}
     
     
     

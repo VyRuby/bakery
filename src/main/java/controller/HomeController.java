@@ -81,7 +81,7 @@ public class HomeController implements Initializable {
         }
     }
 
-      // ✅ BẮT BUỘC CÓ @FXML
+   
     @FXML
     public void onLogin(ActionEvent event) throws IOException {
         App.setRoot("Login");
@@ -131,7 +131,7 @@ public class HomeController implements Initializable {
     private void goCustomer(ActionEvent event) {
         System.out.println("CLICK CUSTOMER");
         try {
-            App.setRoot("customerdata");
+            App.setRoot("CustomerData");
             System.out.println("NAVIGATED TO CUSTOMER");
         } catch (Exception e) {
             e.printStackTrace();

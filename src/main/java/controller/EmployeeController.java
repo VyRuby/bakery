@@ -5,6 +5,8 @@ import DAO_Employee.EmployeeDAO;
 
 import java.net.URL;
 import java.sql.Date;
+import java.time.LocalDate;
+import java.time.Period;
 import java.util.List;
 import java.util.ResourceBundle;
 
@@ -20,6 +22,7 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.scene.text.Text;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
@@ -61,7 +64,7 @@ public class EmployeeController extends BacktoHomeController implements Initiali
     public void initialize(URL url, ResourceBundle rb) {
 
         cbFilterStatus.getItems().addAll("ALL", "Active", "Inactive");
-        cbFilterStatus.setValue("ALL");
+        cbFilterStatus.setValue("ALL"); 
 
         colId.setCellValueFactory(new PropertyValueFactory<>("employeeID"));
         colName.setCellValueFactory(new PropertyValueFactory<>("fullName"));
@@ -72,6 +75,17 @@ public class EmployeeController extends BacktoHomeController implements Initiali
         colPosition.setCellValueFactory(new PropertyValueFactory<>("position"));
         colStatus.setCellValueFactory(new PropertyValueFactory<>("status"));
         colSalary.setCellValueFactory(new PropertyValueFactory<>("baseDailySalary"));
+        
+         styleInactive(colId);
+styleInactive(colName);
+styleInactive(colDob);
+styleInactive(colGender);
+styleInactive(colPhone);
+styleInactive(colEmail);
+styleInactive(colPosition);
+styleInactive(colStatus);
+styleInactive(colSalary);
+
 
         loadData();
 
@@ -81,6 +95,41 @@ public class EmployeeController extends BacktoHomeController implements Initiali
         // ✅ FILTER REALTIME
         cbFilterStatus.valueProperty().addListener((obs, oldVal, newVal) -> autoSearch());
     }
+    
+private <T> void styleInactive(TableColumn<Employee, T> col) {
+    col.setCellFactory(column -> new TableCell<>() {
+
+        private final Text text = new Text();
+
+        @Override
+        protected void updateItem(T item, boolean empty) {
+            super.updateItem(item, empty);
+
+            if (empty || item == null) {
+                setGraphic(null);
+                setText(null);
+                return;
+            }
+
+            text.setText(item.toString());
+
+            Employee emp = getTableView().getItems().get(getIndex());
+
+            if ("Inactive".equalsIgnoreCase(emp.getStatus())) {
+                text.setFill(javafx.scene.paint.Color.web("#B91C1C"));
+                text.setStrikethrough(true);   // ✅ GẠCH NGANG THẬT
+                text.setOpacity(0.8);
+            } else {
+                text.setFill(javafx.scene.paint.Color.BLACK);
+                text.setStrikethrough(false);
+                text.setOpacity(1);
+            }
+
+            setText(null);      // ❌ KHÔNG DÙNG setText
+            setGraphic(text);   // ✅ DÙNG GRAPHIC
+        }
+    });
+}
 
     // ================= LOAD DATA =================
     private void loadData() {
@@ -148,15 +197,27 @@ public class EmployeeController extends BacktoHomeController implements Initiali
 
     // ================= DEACTIVATE =================
     @FXML
-    private void handleDeactivate() {
-        Employee e = tblEmployee.getSelectionModel().getSelectedItem();
-        if (e == null) {
-            showAlert("Please select an employee to deactivate!");
-            return;
-        }
+private void handleDeactivate() {
+    Employee e = tblEmployee.getSelectionModel().getSelectedItem();
+    if (e == null) {
+        showAlert("Please select an employee to deactivate!");
+        return;
+    }
+      // 🚫 ĐÃ INACTIVE → KHÔNG CHO DEACTIVATE
+    if ("Inactive".equalsIgnoreCase(e.getStatus())) {
+        showAlert("This employee is already inactive!");
+        return;
+    }
+
+    try {
         dao.deactivate(e.getEmployeeID());
         loadData();
+        showSuccess("Employee deactivated successfully!");
+    } catch (Exception ex) {
+        showError("Deactivate employee failed!");
     }
+}
+
 
     // ================= ALERT =================
     private void showAlert(String msg) {
@@ -165,6 +226,20 @@ public class EmployeeController extends BacktoHomeController implements Initiali
         alert.setContentText(msg);
         alert.showAndWait();
     }
+    private void showSuccess(String msg) {
+    Alert alert = new Alert(Alert.AlertType.INFORMATION);
+    alert.setHeaderText(null);
+    alert.setContentText(msg);
+    alert.showAndWait();
+}
+
+private void showError(String msg) {
+    Alert alert = new Alert(Alert.AlertType.ERROR);
+    alert.setHeaderText(null);
+    alert.setContentText(msg);
+    alert.showAndWait();
+}
+
 
     private boolean isValidEmail(String email) {
         return email.matches("^[\\w.-]+@[\\w.-]+\\.[a-zA-Z]{2,}$");
@@ -207,6 +282,12 @@ public class EmployeeController extends BacktoHomeController implements Initiali
     txtId.setStyle(inputStyle);
     txtName.setStyle(inputStyle);
     txtPhone.setStyle(inputStyle);
+    //    Không gõ được chữ
+//,Không paste ký tự đặc biệt,Giống hệt Salary
+    txtPhone.setTextFormatter(new TextFormatter<>(c ->
+        c.getControlNewText().matches("\\d*") ? c : null));
+
+
     txtEmail.setStyle(inputStyle);
     txtAddress.setStyle(inputStyle);
     txtSalary.setStyle(inputStyle);
@@ -219,6 +300,9 @@ public class EmployeeController extends BacktoHomeController implements Initiali
     Label errName = new Label();
     Label errEmail = new Label();
     Label errSalary = new Label();
+    Label errPhone = new Label();
+    Label errDob = new Label();
+
 
     Button btnSave = new Button(isUpdate ? "Update" : "Add");
     btnSave.setDisable(true);
@@ -264,6 +348,34 @@ public class EmployeeController extends BacktoHomeController implements Initiali
         } else {
             clearError(txtName, errName);
         }
+        // DOB – validate age >= 18
+if (dpDob.getValue() == null) {
+    markError(dpDob, errDob, "Required");
+    ok = false;
+} else {
+    LocalDate dob = dpDob.getValue();
+    LocalDate today = LocalDate.now();
+    int age = Period.between(dob, today).getYears();
+
+    if (age < 18) {
+        markError(dpDob, errDob, "Must be at least 18 years old");
+        ok = false;
+    } else {
+        clearError(dpDob, errDob);
+    }
+}
+
+        // Phone
+if (txtPhone.getText().isBlank()) {
+    markError(txtPhone, errPhone, "Required");
+    ok = false;
+} else if (!txtPhone.getText().matches("\\d{9,11}")) {
+    markError(txtPhone, errPhone, "9–11 digits");
+    ok = false;
+} else {
+    clearError(txtPhone, errPhone);
+}
+
 
         // Email
         if (!isValidEmail(txtEmail.getText())) {
@@ -295,6 +407,9 @@ public class EmployeeController extends BacktoHomeController implements Initiali
     txtName.textProperty().addListener((o, a, b) -> validate.run());
     txtEmail.textProperty().addListener((o, a, b) -> validate.run());
     txtSalary.textProperty().addListener((o, a, b) -> validate.run());
+    txtPhone.textProperty().addListener((o, a, b) -> validate.run());
+    dpDob.valueProperty().addListener((o, a, b) -> validate.run());
+
 
     // ===== GRID =====
     GridPane grid = new GridPane();
@@ -312,13 +427,17 @@ public class EmployeeController extends BacktoHomeController implements Initiali
     grid.add(errName, 2, r++);
 
     grid.add(new Label("DOB"), 0, r);
-    grid.add(dpDob, 1, r++);
+grid.add(dpDob, 1, r);
+grid.add(errDob, 2, r++);
+
 
     grid.add(new Label("Gender"), 0, r);
     grid.add(cbGender, 1, r++);
 
     grid.add(new Label("Phone"), 0, r);
-    grid.add(txtPhone, 1, r++);
+grid.add(txtPhone, 1, r);
+grid.add(errPhone, 2, r++);
+
 
     grid.add(new Label("Email"), 0, r);
     grid.add(txtEmail, 1, r);
@@ -341,32 +460,40 @@ public class EmployeeController extends BacktoHomeController implements Initiali
     grid.add(errSalary, 2, r++);
 
     // ===== SAVE =====
-    btnSave.setOnAction(e -> {
-        try {
-            Employee newEmp = new Employee(
-                    txtId.getText().trim(),
-                    txtName.getText().trim(),
-                    Date.valueOf(dpDob.getValue()),
-                    cbGender.getValue(),
-                    txtPhone.getText().trim(),
-                    txtEmail.getText().trim(),
-                    txtAddress.getText().trim(),
-                    Date.valueOf(dpHire.getValue()),
-                    cbPosition.getValue(),
-                    cbStatus.getValue(),
-                    Integer.parseInt(txtSalary.getText())
-            );
+   btnSave.setOnAction(e -> {
+    try {
+        Employee newEmp = new Employee(
+                txtId.getText().trim(),
+                txtName.getText().trim(),
+                Date.valueOf(dpDob.getValue()),
+                cbGender.getValue(),
+                txtPhone.getText().trim(),
+                txtEmail.getText().trim(),
+                txtAddress.getText().trim(),
+                Date.valueOf(dpHire.getValue()),
+                cbPosition.getValue(),
+                cbStatus.getValue(),
+                Integer.parseInt(txtSalary.getText())
+        );
 
-            if (isUpdate) dao.update(newEmp);
-            else dao.insert(newEmp);
-
-            loadData();
-            stage.close();
-
-        } catch (Exception ex) {
-            showAlert(ex.getMessage());
+        if (isUpdate) {
+            dao.update(newEmp);
+            showSuccess("Employee updated successfully!");
+        } else {
+            dao.insert(newEmp);
+            showSuccess("Employee added successfully!");
         }
-    });
+
+        loadData();
+        stage.close();
+
+    } catch (Exception ex) {
+        showError(ex.getMessage() != null
+                ? ex.getMessage()
+                : "Operation failed!");
+    }
+});
+
 
     Button btnClose = new Button("Close");
     btnClose.setOnAction(e -> stage.close());
