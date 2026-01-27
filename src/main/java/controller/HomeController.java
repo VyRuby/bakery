@@ -76,8 +76,8 @@ public class HomeController implements Initializable {
 
         // ===== ROLE BASE MENU =====
         if ("EMPLOYEE".equals(Session.role)) {
-            btnEmployee.setDisable(true);
-            btnReport.setDisable(true);
+//            btnEmployee.setDisable(true);
+//            btnReport.setDisable(true);
         }
     }
 

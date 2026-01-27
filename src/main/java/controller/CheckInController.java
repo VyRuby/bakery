@@ -1,11 +1,14 @@
 package controller;
 
 import DAO_Employee.CheckInDAO;
+import DAO_Employee.EmployeeDAO;
 import javafx.collections.*;
 import javafx.fxml.*;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.util.StringConverter;
 import model.CheckIn;
+import model.Employee;
 
 import java.net.URL;
 import java.sql.Date;
@@ -21,20 +24,24 @@ public class CheckInController extends BacktoHomeController implements Initializ
     @FXML private TableColumn<CheckIn, String> colEmpId;
     @FXML private TableColumn<CheckIn, String> colFullName;
     @FXML private TableColumn<CheckIn, Date> colDate;
-   @FXML private TableColumn<CheckIn, Time> colIn;
-@FXML private TableColumn<CheckIn, Time> colOut;
-
+    @FXML private TableColumn<CheckIn, Time> colIn;
+    @FXML private TableColumn<CheckIn, Time> colOut;
     @FXML private TableColumn<CheckIn, Boolean> colLate;
 
-    @FXML private TextField txtEmployeeId;
+    // 🔁 THAY TEXTFIELD → COMBOBOX
+    @FXML private ComboBox<Employee> cbEmployee;
+
     @FXML private DatePicker dpDate;
 
+    private final EmployeeDAO empDao = new EmployeeDAO();
     private final CheckInDAO dao = new CheckInDAO();
 
     // ================= INITIALIZE =================
     @Override
     public void initialize(URL url, ResourceBundle rb) {
 
+          // ✅ REGISTER CONTROLLER
+    ControllerRegistry.setCheckInController(this);
         colId.setCellValueFactory(new PropertyValueFactory<>("checkInID"));
         colEmpId.setCellValueFactory(new PropertyValueFactory<>("employeeID"));
         colFullName.setCellValueFactory(new PropertyValueFactory<>("fullName"));
@@ -42,6 +49,24 @@ public class CheckInController extends BacktoHomeController implements Initializ
         colIn.setCellValueFactory(new PropertyValueFactory<>("checkInTime"));
         colOut.setCellValueFactory(new PropertyValueFactory<>("checkOutTime"));
         colLate.setCellValueFactory(new PropertyValueFactory<>("late"));
+        
+           // 🔁 LOAD ACTIVE EMPLOYEES
+    loadActiveEmployees();
+
+       
+
+        // ✅ HIỂN THỊ: email - fullname
+        cbEmployee.setConverter(new StringConverter<>() {
+            @Override
+            public String toString(Employee e) {
+                return e == null ? "" : e.getEmail() + " - " + e.getFullName();
+            }
+
+            @Override
+            public Employee fromString(String s) {
+                return null; // không cho nhập tay
+            }
+        });
 
         loadCurrentMonth();
     }
@@ -84,13 +109,13 @@ public class CheckInController extends BacktoHomeController implements Initializ
     private void handleCheckIn() {
 
         try {
-            String email = txtEmployeeId.getText().trim();
-            if (email.isEmpty()) {
-                alert("Please enter email!");
+            Employee emp = cbEmployee.getValue();
+            if (emp == null) {
+                alert("Please select employee!");
                 return;
             }
 
-            dao.checkInByEmail(email);
+            dao.checkInByEmail(emp.getEmail());
             refreshAfterAction();
             alertInfo("Check-In successful!");
 
@@ -106,13 +131,13 @@ public class CheckInController extends BacktoHomeController implements Initializ
     private void handleCheckOut() {
 
         try {
-            String email = txtEmployeeId.getText().trim();
-            if (email.isEmpty()) {
-                alert("Please enter email!");
+            Employee emp = cbEmployee.getValue();
+            if (emp == null) {
+                alert("Please select employee!");
                 return;
             }
 
-            dao.checkOutByEmail(email);
+            dao.checkOutByEmail(emp.getEmail());
             refreshAfterAction();
             alertInfo("Check-Out successful!");
 
@@ -124,7 +149,7 @@ public class CheckInController extends BacktoHomeController implements Initializ
     }
 
     private void refreshAfterAction() {
-        txtEmployeeId.clear();
+        cbEmployee.getSelectionModel().clearSelection();
         if (dpDate.getValue() != null) {
             filterByDate();
         } else {
@@ -146,4 +171,13 @@ public class CheckInController extends BacktoHomeController implements Initializ
         a.setContentText(msg);
         a.show();
     }
+     // ================= UPDATE EMAIL OF NEW PARTNER =================
+    public void loadActiveEmployees() {
+    cbEmployee.setItems(
+        FXCollections.observableArrayList(
+            empDao.getEmployees("Active")
+        )
+    );
+}
+
 }

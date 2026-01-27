@@ -14,7 +14,11 @@
 <?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.VBox?>
 
-<BorderPane prefHeight="700.0" prefWidth="1100.0" style="-fx-background-color: #F6EFE6;" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.PayrollController">
+<BorderPane prefHeight="700.0" prefWidth="1100.0"
+            style="-fx-background-color: #F6EFE6;"
+            xmlns="http://javafx.com/javafx/25"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="controller.PayrollController">
 
     <!-- ================= TOP ================= -->
     <top>
@@ -24,43 +28,91 @@
             </padding>
 
             <!-- ===== HEADER CARD ===== -->
-            <HBox alignment="CENTER_LEFT" spacing="12" style="-fx-background-color: rgba(255,255,255,0.92);                          -fx-background-radius: 18;                          -fx-border-radius: 18;                          -fx-border-color: rgba(62,43,31,0.12);                          -fx-border-width: 1;                          -fx-padding: 12 14;">
-                <ImageView fitHeight="50.0" fitWidth="125.0" preserveRatio="true" smooth="true">
+            <HBox alignment="CENTER_LEFT" spacing="12"
+                  style="-fx-background-color: rgba(255,255,255,0.92);
+                         -fx-background-radius: 18;
+                         -fx-border-radius: 18;
+                         -fx-border-color: rgba(62,43,31,0.12);
+                         -fx-border-width: 1;
+                         -fx-padding: 12 14;">
+
+                <ImageView fitHeight="50" fitWidth="130" preserveRatio="true">
                     <image>
                         <Image url="@../image/logo.jpeg" />
                     </image>
                 </ImageView>
 
                 <VBox spacing="2">
-                    <Label style="-fx-font-size: 18px; -fx-font-weight: 900; -fx-text-fill: #3E2B1F;" text="PAYROLL" />
-                    <Label style="-fx-font-size: 12px; -fx-text-fill: #7A6A5E;" text="Payroll Management" />
+                    <Label text="PAYROLL"
+                           style="-fx-font-size: 18px;
+                                  -fx-font-weight: 900;
+                                  -fx-text-fill: #3E2B1F;" />
+                    <Label text="Payroll Management"
+                           style="-fx-font-size: 12px;
+                                  -fx-text-fill: #7A6A5E;" />
                 </VBox>
 
                 <Region HBox.hgrow="ALWAYS" />
 
-                <Button onAction="#goBack" prefHeight="36" style="-fx-background-color: rgba(139,94,60,0.12);                                -fx-text-fill: #3E2B1F;                                -fx-font-weight: 900;                                -fx-background-radius: 12;                                -fx-padding: 0 14 0 14;                                -fx-cursor: hand;" text="← Back to Home" />
+                <Button text="← Back to Home"
+                        onAction="#goBack"
+                        prefHeight="36"
+                        style="-fx-background-color: rgba(139,94,60,0.12);
+                               -fx-text-fill: #3E2B1F;
+                               -fx-font-weight: 900;
+                               -fx-background-radius: 12;
+                               -fx-padding: 0 14;
+                               -fx-cursor: hand;" />
             </HBox>
 
             <!-- ===== FILTER CARD ===== -->
-            <HBox alignment="CENTER_LEFT" spacing="12" style="-fx-background-color: rgba(255,255,255,0.92);                          -fx-background-radius: 18;                          -fx-border-radius: 18;                          -fx-border-color: rgba(62,43,31,0.12);                          -fx-border-width: 1;                          -fx-padding: 12 14;">
+            <HBox alignment="CENTER_LEFT" spacing="12"
+                  style="-fx-background-color: rgba(255,255,255,0.92);
+                         -fx-background-radius: 18;
+                         -fx-border-radius: 18;
+                         -fx-border-color: rgba(62,43,31,0.12);
+                         -fx-border-width: 1;
+                         -fx-padding: 12 14;">
 
-                <Label style="-fx-text-fill:#5B4B40; -fx-font-weight: 900;" text="Month" />
+                <Label text="Month"
+                       style="-fx-text-fill:#5B4B40; -fx-font-weight: 900;" />
 
-                <ComboBox fx:id="cbMonth" prefWidth="140" style="-fx-background-radius: 12;                                  -fx-border-radius: 12;                                  -fx-border-color: rgba(62,43,31,0.16);                                  -fx-border-width: 1;" />
+                <ComboBox fx:id="cbMonth" prefWidth="140"
+                          style="-fx-background-radius: 12;
+                                 -fx-border-radius: 12;
+                                 -fx-border-color: rgba(62,43,31,0.16);
+                                 -fx-border-width: 1;" />
 
-                <Label style="-fx-text-fill:#5B4B40; -fx-font-weight: 900;" text="Year" />
+                <Label text="Year"
+                       style="-fx-text-fill:#5B4B40; -fx-font-weight: 900;" />
 
-                <ComboBox fx:id="cbYear" prefWidth="140" style="-fx-background-radius: 12;                                  -fx-border-radius: 12;                                  -fx-border-color: rgba(62,43,31,0.16);                                  -fx-border-width: 1;" />
+                <ComboBox fx:id="cbYear" prefWidth="140"
+                          style="-fx-background-radius: 12;
+                                 -fx-border-radius: 12;
+                                 -fx-border-color: rgba(62,43,31,0.16);
+                                 -fx-border-width: 1;" />
 
-                <Label style="-fx-text-fill:#5B4B40; -fx-font-weight: 900;" text="Status" />
+                <Label text="Status"
+                       style="-fx-text-fill:#5B4B40; -fx-font-weight: 900;" />
 
-                <ComboBox fx:id="cbStatus" prefWidth="160" promptText="Status" style="-fx-background-radius: 12;                                  -fx-border-radius: 12;                                  -fx-border-color: rgba(62,43,31,0.16);                                  -fx-border-width: 1;" />
+                <ComboBox fx:id="cbStatus" prefWidth="160" promptText="Status"
+                          style="-fx-background-radius: 12;
+                                 -fx-border-radius: 12;
+                                 -fx-border-color: rgba(62,43,31,0.16);
+                                 -fx-border-width: 1;" />
 
                 <Region HBox.hgrow="ALWAYS" />
 
-                <TextField fx:id="txtSearchEmployee" prefHeight="36" prefWidth="260" promptText="Search employee..." style="-fx-background-radius: 12;                                   -fx-border-radius: 12;                                   -fx-border-color: rgba(62,43,31,0.16);                                   -fx-border-width: 1;                                   -fx-padding: 0 12 0 12;" />
+                <TextField fx:id="txtSearchEmployee"
+                           prefHeight="36"
+                           prefWidth="260"
+                           promptText="Search employee..."
+                           style="-fx-background-radius: 12;
+                                  -fx-border-radius: 12;
+                                  -fx-border-color: rgba(62,43,31,0.16);
+                                  -fx-border-width: 1;
+                                  -fx-padding: 0 12;" />
             </HBox>
-
         </VBox>
     </top>
 
@@ -71,19 +123,33 @@
                 <Insets bottom="18" left="18" right="18" top="6" />
             </padding>
 
-            <!-- TABLE CARD -->
-            <VBox spacing="10" style="-fx-background-color: rgba(255,255,255,0.92);                          -fx-background-radius: 18;                          -fx-border-radius: 18;                          -fx-border-color: rgba(62,43,31,0.12);                          -fx-border-width: 1;">
+            <!-- ===== TABLE CARD ===== -->
+            <VBox spacing="10"
+                  style="-fx-background-color: rgba(255,255,255,0.92);
+                         -fx-background-radius: 18;
+                         -fx-border-radius: 18;
+                         -fx-border-color: rgba(62,43,31,0.12);
+                         -fx-border-width: 1;">
                 <padding>
                     <Insets bottom="14" left="14" right="14" top="14" />
                 </padding>
 
-                <HBox alignment="CENTER_LEFT" spacing="10">
-                    <Label style="-fx-font-size: 16px; -fx-font-weight: 900; -fx-text-fill:#3E2B1F;" text="Payroll Table" />
+                <HBox alignment="CENTER_LEFT">
+                    <Label text="Payroll Table"
+                           style="-fx-font-size: 16px;
+                                  -fx-font-weight: 900;
+                                  -fx-text-fill:#3E2B1F;" />
                     <Region HBox.hgrow="ALWAYS" />
-                    <Label style="-fx-font-size: 11px; -fx-text-fill:#7A6A5E;" text="Filter by month, year and status" />
+                    <Label text="Filter by month, year and status"
+                           style="-fx-font-size: 11px;
+                                  -fx-text-fill:#7A6A5E;" />
                 </HBox>
 
-                <TableView fx:id="tblPayroll" prefHeight="520" style="-fx-background-radius: 12;                                   -fx-border-radius: 12;                                   -fx-border-color: rgba(62,43,31,0.12);                                   -fx-border-width: 1;">
+                <TableView fx:id="tblPayroll" prefHeight="520"
+                           style="-fx-background-radius: 12;
+                                  -fx-border-radius: 12;
+                                  -fx-border-color: rgba(62,43,31,0.12);
+                                  -fx-border-width: 1;">
 
                     <columns>
                         <TableColumn fx:id="colEmpId" prefWidth="120" text="Employee ID" />
@@ -96,7 +162,6 @@
                         <TableColumn fx:id="colTotalSalary" prefWidth="160" text="Total Salary" />
                     </columns>
                 </TableView>
-
             </VBox>
         </VBox>
     </center>

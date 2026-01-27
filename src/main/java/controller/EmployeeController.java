@@ -2,6 +2,9 @@ package controller;
 
 import model.Employee;
 import DAO_Employee.EmployeeDAO;
+import app.Session;
+import javafx.application.Platform;
+import javafx.stage.Stage;
 
 import java.net.URL;
 import java.sql.Date;
@@ -19,52 +22,54 @@ import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.*;
 import javafx.scene.text.Text;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 public class EmployeeController extends BacktoHomeController implements Initializable {
+    
 
     // ===== TABLE =====
-    @FXML
-    private TableView<Employee> tblEmployee;
-    @FXML
-    private TableColumn<Employee, String> colId;
-    @FXML
-    private TableColumn<Employee, String> colName;
-    @FXML
-    private TableColumn<Employee, Date> colDob;
-    @FXML
-    private TableColumn<Employee, String> colGender;
-    @FXML
-    private TableColumn<Employee, String> colPhone;
-    @FXML
-    private TableColumn<Employee, String> colEmail;
-    @FXML
-    private TableColumn<Employee, String> colPosition;
-    @FXML
-    private TableColumn<Employee, String> colStatus;
-    @FXML
-    private TableColumn<Employee, Integer> colSalary;
-    @FXML
-    private TextField txtSearch;
+    @FXML private TableView<Employee> tblEmployee;
+    @FXML private TableColumn<Employee, String> colId;
+    @FXML private TableColumn<Employee, String> colName;
+    @FXML private TableColumn<Employee, Date> colDob;
+    @FXML private TableColumn<Employee, String> colGender;
+    @FXML private TableColumn<Employee, String> colPhone;
+    @FXML private TableColumn<Employee, String> colEmail;
+    @FXML private TableColumn<Employee, String> colPosition;
+    @FXML private TableColumn<Employee, String> colStatus;
+    @FXML private TableColumn<Employee, Integer> colSalary;
+    @FXML private TextField txtSearch;
 
-    // ===== FILTER =====
-    @FXML
-    private ComboBox<String> cbFilterStatus;
+    @FXML private ComboBox<String> cbFilterStatus;
 
-    private EmployeeDAO dao = new EmployeeDAO();
+    private final EmployeeDAO dao = new EmployeeDAO();
     private ObservableList<Employee> empList;
 
     // ================= INITIALIZE =================
     @Override
     public void initialize(URL url, ResourceBundle rb) {
+          // ===== CHECK PERMISSION =====
+    if (Session.role == null || !Session.role.equalsIgnoreCase("Manager")) {
+
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle("Access Denied");
+        alert.setHeaderText(null);
+        alert.setContentText("You do not have permission to access Employee Management.");
+        alert.showAndWait();
+
+        Platform.runLater(() -> {
+            Stage stage = (Stage) tblEmployee.getScene().getWindow();
+            stage.close();
+        });
+
+        return;
+    }
 
         cbFilterStatus.getItems().addAll("ALL", "Active", "Inactive");
-        cbFilterStatus.setValue("ALL"); 
+        cbFilterStatus.setValue("ALL");
 
         colId.setCellValueFactory(new PropertyValueFactory<>("employeeID"));
         colName.setCellValueFactory(new PropertyValueFactory<>("fullName"));
@@ -75,448 +80,341 @@ public class EmployeeController extends BacktoHomeController implements Initiali
         colPosition.setCellValueFactory(new PropertyValueFactory<>("position"));
         colStatus.setCellValueFactory(new PropertyValueFactory<>("status"));
         colSalary.setCellValueFactory(new PropertyValueFactory<>("baseDailySalary"));
-        
-         styleInactive(colId);
-styleInactive(colName);
-styleInactive(colDob);
-styleInactive(colGender);
-styleInactive(colPhone);
-styleInactive(colEmail);
-styleInactive(colPosition);
-styleInactive(colStatus);
-styleInactive(colSalary);
 
+        styleInactive(colId);
+        styleInactive(colName);
+        styleInactive(colDob);
+        styleInactive(colGender);
+        styleInactive(colPhone);
+        styleInactive(colEmail);
+        styleInactive(colPosition);
+        styleInactive(colStatus);
+        styleInactive(colSalary);
 
         loadData();
 
-        // ✅ SEARCH REALTIME
-        txtSearch.textProperty().addListener((obs, oldVal, newVal) -> autoSearch());
-
-        // ✅ FILTER REALTIME
-        cbFilterStatus.valueProperty().addListener((obs, oldVal, newVal) -> autoSearch());
+        txtSearch.textProperty().addListener((o, a, b) -> autoSearch());
+        cbFilterStatus.valueProperty().addListener((o, a, b) -> autoSearch());
     }
-    
-private <T> void styleInactive(TableColumn<Employee, T> col) {
-    col.setCellFactory(column -> new TableCell<>() {
 
-        private final Text text = new Text();
+    private <T> void styleInactive(TableColumn<Employee, T> col) {
+        col.setCellFactory(column -> new TableCell<>() {
+            private final Text text = new Text();
 
-        @Override
-        protected void updateItem(T item, boolean empty) {
-            super.updateItem(item, empty);
+            @Override
+            protected void updateItem(T item, boolean empty) {
+                super.updateItem(item, empty);
 
-            if (empty || item == null) {
-                setGraphic(null);
-                setText(null);
-                return;
+                if (empty || item == null) {
+                    setGraphic(null);
+                    return;
+                }
+
+                text.setText(item.toString());
+                Employee emp = getTableView().getItems().get(getIndex());
+
+                if ("Inactive".equalsIgnoreCase(emp.getStatus())) {
+                    text.setFill(javafx.scene.paint.Color.web("#B91C1C"));
+                    text.setStrikethrough(true);
+                    text.setOpacity(0.8);
+                } else {
+                    text.setFill(javafx.scene.paint.Color.BLACK);
+                    text.setStrikethrough(false);
+                    text.setOpacity(1);
+                }
+
+                setGraphic(text);
             }
+        });
+    }
 
-            text.setText(item.toString());
-
-            Employee emp = getTableView().getItems().get(getIndex());
-
-            if ("Inactive".equalsIgnoreCase(emp.getStatus())) {
-                text.setFill(javafx.scene.paint.Color.web("#B91C1C"));
-                text.setStrikethrough(true);   // ✅ GẠCH NGANG THẬT
-                text.setOpacity(0.8);
-            } else {
-                text.setFill(javafx.scene.paint.Color.BLACK);
-                text.setStrikethrough(false);
-                text.setOpacity(1);
-            }
-
-            setText(null);      // ❌ KHÔNG DÙNG setText
-            setGraphic(text);   // ✅ DÙNG GRAPHIC
-        }
-    });
-}
-
-    // ================= LOAD DATA =================
     private void loadData() {
         try {
             empList = FXCollections.observableArrayList(dao.getEmployees("ALL"));
             tblEmployee.setItems(empList);
         } catch (Exception e) {
             showAlert("Cannot load employee data!");
-            e.printStackTrace();
         }
     }
 
-    // ❌ KHÔNG DÙNG NỮA – GIỮ ĐỂ KHỎI LỖI FXML
-    @FXML
-    private void handleLoad() {
-    }
-
-    @FXML
-    private void handleSearch() {
-    }
-
-    // ================= REALTIME SEARCH + FILTER =================
     private void autoSearch() {
-
         try {
             String keyword = txtSearch.getText() == null ? "" : txtSearch.getText().trim();
-            String status = cbFilterStatus.getValue() == null ? "ALL" : cbFilterStatus.getValue();
+            String status = cbFilterStatus.getValue();
 
-            List<Employee> list;
-
-            if (keyword.isEmpty()) {
-                list = dao.getEmployees("ALL");
-            } else {
-                list = dao.search(keyword);
-            }
+            List<Employee> list = keyword.isEmpty()
+                    ? dao.getEmployees("ALL")
+                    : dao.search(keyword);
 
             if (!"ALL".equalsIgnoreCase(status)) {
-                list.removeIf(e -> e.getStatus() == null
-                        || !e.getStatus().equalsIgnoreCase(status));
+                list.removeIf(e -> !status.equalsIgnoreCase(e.getStatus()));
             }
 
             tblEmployee.setItems(FXCollections.observableArrayList(list));
-
-        } catch (Exception ex) {
-            showAlert("Error while searching employees!");
-            ex.printStackTrace(); // để debug
+        } catch (Exception e) {
+            showAlert("Search failed!");
         }
     }
 
-    // ================= ADD / UPDATE =================
-    @FXML
-    private void handleAdd() {
+    @FXML private void handleAdd() {
         openEmployeeForm(null, false);
     }
 
-    @FXML
-    private void handleUpdate() {
+    @FXML private void handleUpdate() {
         Employee e = tblEmployee.getSelectionModel().getSelectedItem();
         if (e == null) {
-            showAlert("Please select an employee to update!");
+            showAlert("Please select an employee!");
             return;
         }
         openEmployeeForm(e, true);
     }
 
-    // ================= DEACTIVATE =================
-    @FXML
-private void handleDeactivate() {
-    Employee e = tblEmployee.getSelectionModel().getSelectedItem();
-    if (e == null) {
-        showAlert("Please select an employee to deactivate!");
-        return;
-    }
-      // 🚫 ĐÃ INACTIVE → KHÔNG CHO DEACTIVATE
-    if ("Inactive".equalsIgnoreCase(e.getStatus())) {
-        showAlert("This employee is already inactive!");
-        return;
-    }
+    @FXML private void handleDeactivate() {
+        Employee e = tblEmployee.getSelectionModel().getSelectedItem();
+        if (e == null) {
+            showAlert("Select employee first!");
+            return;
+        }
+        if ("Inactive".equalsIgnoreCase(e.getStatus())) {
+            showAlert("Employee already inactive!");
+            return;
+        }
 
-    try {
-        dao.deactivate(e.getEmployeeID());
-        loadData();
-        showSuccess("Employee deactivated successfully!");
-    } catch (Exception ex) {
-        showError("Deactivate employee failed!");
-    }
-}
-
-
-    // ================= ALERT =================
-    private void showAlert(String msg) {
-        Alert alert = new Alert(Alert.AlertType.WARNING);
-        alert.setHeaderText(null);
-        alert.setContentText(msg);
-        alert.showAndWait();
-    }
-    private void showSuccess(String msg) {
-    Alert alert = new Alert(Alert.AlertType.INFORMATION);
-    alert.setHeaderText(null);
-    alert.setContentText(msg);
-    alert.showAndWait();
-}
-
-private void showError(String msg) {
-    Alert alert = new Alert(Alert.AlertType.ERROR);
-    alert.setHeaderText(null);
-    alert.setContentText(msg);
-    alert.showAndWait();
-}
-
-
-    private boolean isValidEmail(String email) {
-        return email.matches("^[\\w.-]+@[\\w.-]+\\.[a-zA-Z]{2,}$");
+        try {
+            dao.deactivate(e.getEmployeeID());
+            loadData();
+            showSuccess("Employee deactivated!");
+        } catch (Exception ex) {
+            showError("Deactivate failed!");
+        }
     }
 
     // ================= POPUP FORM =================
     private void openEmployeeForm(Employee emp, boolean isUpdate) {
 
-    Stage stage = new Stage();
-    stage.setTitle(isUpdate ? "Update Employee" : "Add Employee");
-    stage.initModality(Modality.APPLICATION_MODAL);
+        Stage stage = new Stage();
+        stage.setTitle(isUpdate ? "Update Employee" : "Add Employee");
+        stage.initModality(Modality.APPLICATION_MODAL);
 
-    String inputStyle =
-            "-fx-background-color:#FFFDF8;" +
-            "-fx-border-color:#C19A6B;" +
-            "-fx-border-radius:8;" +
-            "-fx-background-radius:8;" +
-            "-fx-padding:6 8;";
+        final int INPUT_WIDTH = 260;
 
-    // ===== INPUT =====
-    TextField txtId = new TextField();
-    TextField txtName = new TextField();
-    TextField txtPhone = new TextField();
-    TextField txtEmail = new TextField();
-    TextField txtAddress = new TextField();
-    TextField txtSalary = new TextField();
+        String inputStyle =
+                "-fx-background-color:#FFFDF8;" +
+                "-fx-border-color:#C19A6B;" +
+                "-fx-border-radius:10;" +
+                "-fx-background-radius:10;" +
+                "-fx-padding:6 10;";
 
-    DatePicker dpDob = new DatePicker();
-    DatePicker dpHire = new DatePicker();
+        TextField txtId = new TextField();
+        TextField txtName = new TextField();
+        TextField txtPhone = new TextField();
+        TextField txtEmail = new TextField();
+        TextField txtAddress = new TextField();
+        TextField txtSalary = new TextField();
 
-    ComboBox<String> cbGender = new ComboBox<>();
-    cbGender.getItems().addAll("male", "female");
+        DatePicker dpDob = new DatePicker();
+        DatePicker dpHire = new DatePicker();
 
-    ComboBox<String> cbStatus = new ComboBox<>();
-    cbStatus.getItems().addAll("Active", "Inactive");
+        ComboBox<String> cbGender = new ComboBox<>(FXCollections.observableArrayList("male", "female"));
+        ComboBox<String> cbStatus = new ComboBox<>(FXCollections.observableArrayList("Active", "Inactive"));
+        ComboBox<String> cbPosition = new ComboBox<>(FXCollections.observableArrayList("Manager", "Staff"));
 
-    ComboBox<String> cbPosition = new ComboBox<>();
-    cbPosition.getItems().addAll("Manager", "Staff");
+        Control[] inputs = {
+                txtId, txtName, txtPhone, txtEmail, txtAddress, txtSalary,
+                dpDob, dpHire, cbGender, cbStatus, cbPosition
+        };
 
-    txtId.setStyle(inputStyle);
-    txtName.setStyle(inputStyle);
-    txtPhone.setStyle(inputStyle);
-    //    Không gõ được chữ
-//,Không paste ký tự đặc biệt,Giống hệt Salary
-    txtPhone.setTextFormatter(new TextFormatter<>(c ->
-        c.getControlNewText().matches("\\d*") ? c : null));
+        for (Control c : inputs) {
+            c.setStyle(inputStyle);
+            c.setPrefWidth(INPUT_WIDTH);
+        }
 
+        txtPhone.setTextFormatter(new TextFormatter<>(c ->
+                c.getControlNewText().matches("\\d*") ? c : null));
+        txtSalary.setTextFormatter(new TextFormatter<>(c ->
+                c.getControlNewText().matches("\\d*") ? c : null));
 
-    txtEmail.setStyle(inputStyle);
-    txtAddress.setStyle(inputStyle);
-    txtSalary.setStyle(inputStyle);
+        Label errId = new Label();
+        Label errName = new Label();
+        Label errEmail = new Label();
+        Label errSalary = new Label();
+        Label errPhone = new Label();
+        Label errDob = new Label();
 
-    txtSalary.setTextFormatter(new TextFormatter<>(c ->
-            c.getControlNewText().matches("\\d*") ? c : null));
+        Label[] errors = {errId, errName, errEmail, errSalary, errPhone, errDob};
+        for (Label e : errors) {
+            e.setVisible(false);
+            e.setManaged(false);
+            e.setPrefWidth(140);
+        }
 
-    // ===== ERROR LABELS =====
-    Label errId = new Label();
-    Label errName = new Label();
-    Label errEmail = new Label();
-    Label errSalary = new Label();
-    Label errPhone = new Label();
-    Label errDob = new Label();
+        if (isUpdate && emp != null) {
+            txtId.setText(emp.getEmployeeID());
+            txtId.setDisable(true);
+            txtName.setText(emp.getFullName());
+            dpDob.setValue(emp.getDob().toLocalDate());
+            cbGender.setValue(emp.getGender());
+            txtPhone.setText(emp.getPhone());
+            txtEmail.setText(emp.getEmail());
+            txtAddress.setText(emp.getAddress());
+            dpHire.setValue(emp.getHireDate().toLocalDate());
+            cbPosition.setValue(emp.getPosition());
+            cbStatus.setValue(emp.getStatus());
+            txtSalary.setText(String.valueOf(emp.getBaseDailySalary()));
+        }
 
+        Button btnSave = new Button(isUpdate ? "Update" : "Add");
+        btnSave.setDisable(true);
 
-    Button btnSave = new Button(isUpdate ? "Update" : "Add");
-    btnSave.setDisable(true);
+        Runnable validate = () -> {
+            boolean ok = true;
 
-    // ===== LOAD UPDATE DATA =====
-    if (isUpdate && emp != null) {
-        txtId.setText(emp.getEmployeeID());
-        txtId.setDisable(true);
-        txtName.setText(emp.getFullName());
-        dpDob.setValue(emp.getDob().toLocalDate());
-        cbGender.setValue(emp.getGender());
-        txtPhone.setText(emp.getPhone());
-        txtEmail.setText(emp.getEmail());
-        txtAddress.setText(emp.getAddress());
-        dpHire.setValue(emp.getHireDate().toLocalDate());
-        cbPosition.setValue(emp.getPosition());
-        cbStatus.setValue(emp.getStatus());
-        txtSalary.setText(String.valueOf(emp.getBaseDailySalary()));
-    }
-
-    // ===== VALIDATION =====
-    Runnable validate = () -> {
-
-        boolean ok = true;
-
-        // ID
-        if (!isUpdate) {
-            if (txtId.getText().isBlank()) {
-                markError(txtId, errId, "Required");
-                ok = false;
-            } else if (dao.exists(txtId.getText().trim())) {
-                markError(txtId, errId, "ID already exists");
-                ok = false;
-            } else {
-                clearError(txtId, errId);
+            if (!isUpdate) {
+                if (txtId.getText().isBlank()) {
+                    markError(txtId, errId, "Required");
+                    ok = false;
+                } else if (dao.exists(txtId.getText().trim())) {
+                    markError(txtId, errId, "ID exists");
+                    ok = false;
+                } else clearError(txtId, errId);
             }
-        }
 
-        // Name
-        if (txtName.getText().isBlank()) {
-            markError(txtName, errName, "Required");
-            ok = false;
-        } else {
-            clearError(txtName, errName);
-        }
-        // DOB – validate age >= 18
-if (dpDob.getValue() == null) {
-    markError(dpDob, errDob, "Required");
-    ok = false;
-} else {
-    LocalDate dob = dpDob.getValue();
-    LocalDate today = LocalDate.now();
-    int age = Period.between(dob, today).getYears();
+            if (txtName.getText().isBlank()) {
+                markError(txtName, errName, "Required");
+                ok = false;
+            } else clearError(txtName, errName);
 
-    if (age < 18) {
-        markError(dpDob, errDob, "Must be at least 18 years old");
-        ok = false;
-    } else {
-        clearError(dpDob, errDob);
-    }
-}
+            if (dpDob.getValue() == null ||
+                    Period.between(dpDob.getValue(), LocalDate.now()).getYears() < 18) {
+                markError(dpDob, errDob, "Age >= 18");
+                ok = false;
+            } else clearError(dpDob, errDob);
 
-        // Phone
-if (txtPhone.getText().isBlank()) {
-    markError(txtPhone, errPhone, "Required");
-    ok = false;
-} else if (!txtPhone.getText().matches("\\d{9,11}")) {
-    markError(txtPhone, errPhone, "9–11 digits");
-    ok = false;
-} else {
-    clearError(txtPhone, errPhone);
-}
+            if (!txtPhone.getText().matches("\\d{9,11}")) {
+                markError(txtPhone, errPhone, "9–11 digits");
+                ok = false;
+            } else clearError(txtPhone, errPhone);
 
+            if (!txtEmail.getText().matches("^[\\w.-]+@[\\w.-]+\\.[A-Za-z]{2,}$")) {
+                markError(txtEmail, errEmail, "Invalid");
+                ok = false;
+            } else clearError(txtEmail, errEmail);
 
-        // Email
-        if (!isValidEmail(txtEmail.getText())) {
-            markError(txtEmail, errEmail, "Invalid email");
-            ok = false;
-        } else if (isUpdate
-                ? dao.existsEmailExceptId(txtEmail.getText(), txtId.getText())
-                : dao.existsEmail(txtEmail.getText())) {
-            markError(txtEmail, errEmail, "Email already exists");
-            ok = false;
-        } else {
-            clearError(txtEmail, errEmail);
-        }
+            try {
+                int s = Integer.parseInt(txtSalary.getText());
+                if (s <= 0) throw new Exception();
+                clearError(txtSalary, errSalary);
+            } catch (Exception e) {
+                markError(txtSalary, errSalary, "Invalid");
+                ok = false;
+            }
 
-        // Salary
-        try {
-            int s = Integer.parseInt(txtSalary.getText());
-            if (s <= 0) throw new Exception();
-            clearError(txtSalary, errSalary);
-        } catch (Exception e) {
-            markError(txtSalary, errSalary, "Invalid salary");
-            ok = false;
-        }
+            btnSave.setDisable(!ok);
+        };
 
-        btnSave.setDisable(!ok);
-    };
+        txtId.textProperty().addListener((o,a,b)->validate.run());
+        txtName.textProperty().addListener((o,a,b)->validate.run());
+        txtPhone.textProperty().addListener((o,a,b)->validate.run());
+        txtEmail.textProperty().addListener((o,a,b)->validate.run());
+        txtSalary.textProperty().addListener((o,a,b)->validate.run());
+        dpDob.valueProperty().addListener((o,a,b)->validate.run());
 
-    txtId.textProperty().addListener((o, a, b) -> validate.run());
-    txtName.textProperty().addListener((o, a, b) -> validate.run());
-    txtEmail.textProperty().addListener((o, a, b) -> validate.run());
-    txtSalary.textProperty().addListener((o, a, b) -> validate.run());
-    txtPhone.textProperty().addListener((o, a, b) -> validate.run());
-    dpDob.valueProperty().addListener((o, a, b) -> validate.run());
+        GridPane grid = new GridPane();
+        grid.setHgap(10);
+        grid.setVgap(6);
+        grid.setPadding(new Insets(20));
 
+        grid.getColumnConstraints().addAll(
+                new ColumnConstraints(120),
+                new ColumnConstraints(260),
+                new ColumnConstraints(140)
+        );
 
-    // ===== GRID =====
-    GridPane grid = new GridPane();
-    grid.setHgap(10);
-    grid.setVgap(6);
-    grid.setPadding(new Insets(20));
+        int r = 0;
+        grid.addRow(r++, new Label("Employee ID"), txtId, errId);
+        grid.addRow(r++, new Label("Full Name"), txtName, errName);
+        grid.addRow(r++, new Label("DOB"), dpDob, errDob);
+        grid.addRow(r++, new Label("Gender"), cbGender);
+        grid.addRow(r++, new Label("Phone"), txtPhone, errPhone);
+        grid.addRow(r++, new Label("Email"), txtEmail, errEmail);
+        grid.addRow(r++, new Label("Address"), txtAddress);
+        grid.addRow(r++, new Label("Hire Date"), dpHire);
+        grid.addRow(r++, new Label("Position"), cbPosition);
+        grid.addRow(r++, new Label("Status"), cbStatus);
+        grid.addRow(r++, new Label("Daily Salary"), txtSalary, errSalary);
 
-    int r = 0;
-    grid.add(new Label("Employee ID"), 0, r);
-    grid.add(txtId, 1, r);
-    grid.add(errId, 2, r++);
-
-    grid.add(new Label("Full Name"), 0, r);
-    grid.add(txtName, 1, r);
-    grid.add(errName, 2, r++);
-
-    grid.add(new Label("DOB"), 0, r);
-grid.add(dpDob, 1, r);
-grid.add(errDob, 2, r++);
-
-
-    grid.add(new Label("Gender"), 0, r);
-    grid.add(cbGender, 1, r++);
-
-    grid.add(new Label("Phone"), 0, r);
-grid.add(txtPhone, 1, r);
-grid.add(errPhone, 2, r++);
-
-
-    grid.add(new Label("Email"), 0, r);
-    grid.add(txtEmail, 1, r);
-    grid.add(errEmail, 2, r++);
-
-    grid.add(new Label("Address"), 0, r);
-    grid.add(txtAddress, 1, r++);
-
-    grid.add(new Label("Hire Date"), 0, r);
-    grid.add(dpHire, 1, r++);
-
-    grid.add(new Label("Position"), 0, r);
-    grid.add(cbPosition, 1, r++);
-
-    grid.add(new Label("Status"), 0, r);
-    grid.add(cbStatus, 1, r++);
-
-    grid.add(new Label("Daily Salary"), 0, r);
-    grid.add(txtSalary, 1, r);
-    grid.add(errSalary, 2, r++);
-
-    // ===== SAVE =====
-   btnSave.setOnAction(e -> {
+        btnSave.setOnAction(e -> {
     try {
-        Employee newEmp = new Employee(
-                txtId.getText().trim(),
-                txtName.getText().trim(),
-                Date.valueOf(dpDob.getValue()),
-                cbGender.getValue(),
-                txtPhone.getText().trim(),
-                txtEmail.getText().trim(),
-                txtAddress.getText().trim(),
-                Date.valueOf(dpHire.getValue()),
-                cbPosition.getValue(),
-                cbStatus.getValue(),
-                Integer.parseInt(txtSalary.getText())
+        Employee ne = new Employee(
+            txtId.getText(), txtName.getText(),
+            Date.valueOf(dpDob.getValue()),
+            cbGender.getValue(),
+            txtPhone.getText(),
+            txtEmail.getText(),
+            txtAddress.getText(),
+            Date.valueOf(dpHire.getValue()),
+            cbPosition.getValue(),
+            cbStatus.getValue(),
+            Integer.parseInt(txtSalary.getText())
         );
 
         if (isUpdate) {
-            dao.update(newEmp);
-            showSuccess("Employee updated successfully!");
+            dao.update(ne);
         } else {
-            dao.insert(newEmp);
-            showSuccess("Employee added successfully!");
+            dao.insert(ne);
+
+            // 🔥🔥🔥 CHỖ QUAN TRỌNG 🔥🔥🔥
+            CheckInController ctrl = ControllerRegistry.getCheckInController();
+            if (ctrl != null) {
+                ctrl.loadActiveEmployees();
+            }
         }
 
         loadData();
         stage.close();
 
     } catch (Exception ex) {
-        showError(ex.getMessage() != null
-                ? ex.getMessage()
-                : "Operation failed!");
+        showError("Save failed!");
     }
 });
 
 
-    Button btnClose = new Button("Close");
-    btnClose.setOnAction(e -> stage.close());
+        Button btnClose = new Button("Close");
+        btnClose.setOnAction(e -> stage.close());
 
-    HBox hbox = new HBox(10, btnSave, btnClose);
-    hbox.setAlignment(Pos.CENTER_RIGHT);
+        HBox hbox = new HBox(10, btnSave, btnClose);
+        hbox.setAlignment(Pos.CENTER_RIGHT);
 
-    VBox root = new VBox(15, grid, hbox);
-    root.setPadding(new Insets(12));
+        VBox root = new VBox(18, grid, hbox);
+        root.setPadding(new Insets(18));
 
-    stage.setScene(new Scene(root, 520, 560));
-    stage.showAndWait();
-}
+        stage.setScene(new Scene(root, 580, 560));
+        stage.setResizable(false);
+        stage.showAndWait();
+    }
 
-    private void markError(Control field, Label errorLabel, String message) {
-    field.setStyle("-fx-border-color:red; -fx-border-radius:8;");
-    errorLabel.setText(message);
-    errorLabel.setStyle("-fx-text-fill:red; -fx-font-size:11;");
-}
+    private void markError(Control f, Label l, String m) {
+        f.setStyle("-fx-border-color:red;");
+        l.setText(m);
+        l.setVisible(true);
+        l.setManaged(true);
+    }
 
-private void clearError(Control field, Label errorLabel) {
-    field.setStyle("-fx-border-color:#C19A6B; -fx-border-radius:8;");
-    errorLabel.setText("");
-}
+    private void clearError(Control f, Label l) {
+        f.setStyle("-fx-border-color:#C19A6B;");
+        l.setVisible(false);
+        l.setManaged(false);
+    }
 
+    private void showAlert(String m) {
+        new Alert(Alert.AlertType.WARNING, m).showAndWait();
+    }
+
+    private void showSuccess(String m) {
+        new Alert(Alert.AlertType.INFORMATION, m).showAndWait();
+    }
+
+    private void showError(String m) {
+        new Alert(Alert.AlertType.ERROR, m).showAndWait();
+    }
 }

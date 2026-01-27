@@ -365,13 +365,13 @@ public String makeProductId() {
                      ResultSet rs = psLock.executeQuery()) {
 
                     if (!rs.next()) {
-                        // nếu thiếu key (trường hợp DB chưa insert)
+                      
                         throw new RuntimeException("SYSTEM_CONFIG missing key LAST_RESET_DATE");
                     }
                     lastReset = rs.getString(1);
                 }
 
-                LocalDate last = LocalDate.parse(lastReset); // format yyyy-MM-dd
+                LocalDate last = LocalDate.parse(lastReset); 
 
                 if (!last.equals(today)) {
                     try (PreparedStatement ps1 = con.prepareStatement(updateProductSql);
