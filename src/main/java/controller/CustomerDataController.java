@@ -39,8 +39,6 @@ public class CustomerDataController extends BacktoHomeController implements Init
     @FXML
     private TextField findtextcustomer;
     @FXML
-    private Button selectbutton;
-    @FXML
     private TextField cName;
     @FXML
     private TextField cPhone;
@@ -58,8 +56,6 @@ public class CustomerDataController extends BacktoHomeController implements Init
     private RadioButton cGenFemale;
     @FXML
     private Button cAddNew;
-    @FXML
-    private Button cDelete;
     @FXML
     private Button cSave;
     @FXML
@@ -177,13 +173,16 @@ public class CustomerDataController extends BacktoHomeController implements Init
             return ;
         }
         
-        String emailPattern= "^[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,8}$";
+        String emailPattern= "^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$";
         
         if(!email.isEmpty()&&!email.matches(emailPattern)){
             showAlert("Error","Invalid email format!");
             return;
         }
-      
+        Customer selectedCus = ListCustomer.getSelectionModel().getSelectedItem();
+        
+        int idToSave = (selectedCus !=null) ? selectedCus.getId() :0;
+        
         Customer c= new Customer(
         name,
         phone,
@@ -191,17 +190,27 @@ public class CustomerDataController extends BacktoHomeController implements Init
                 cDOB.getValue(),
                 email,
                 cAddress.getText(),
-                0
+                idToSave
         );
-        try{
-        boolean savecus =customerDao.insert(c);
         
-        if(savecus){
-            System.out.println("Done !");
-            
+        
+        
+        try{
+        boolean success;
+        if(idToSave >0){
+            success = customerDao.update(c);
+            if(success) showAlert("Success", "Updated !");
+        
+        }else{
+            success =customerDao.insert(c);
+            if(success){
             allCustomers.add(c);
-            ListCustomer.setItems(allCustomers);
-            
+            showAlert("Success","OK !");
+        }
+        }
+        
+        if(success){
+            allCustomers.setAll(customerDao.findAll());
             clearCustomerForm();
             
         }
@@ -224,7 +233,5 @@ private void showAlert(String title, String content){
     alert.setContentText(content);
     alert.showAndWait();
 }
-    
-    
-    
+
 }

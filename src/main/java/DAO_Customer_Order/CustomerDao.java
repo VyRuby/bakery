@@ -147,6 +147,22 @@ public class CustomerDao {
         
     }}
 
+    
+    public boolean update(Customer c) throws SQLException{
+        String sql = "UPDATE customer SET FullName=?, Phone=?, Gender=?, DOB=?, Email=?, Address=? WHERE CustomerID=?";
+        try (Connection con = ConnectDB.getConnection();
+                PreparedStatement ps= con.prepareStatement(sql)){
+        ps.setString(1, c.getName());
+        ps.setString(2,c.getPhone());
+        ps.setString(3, c.getGender().name());
+        ps.setDate(4, java.sql.Date.valueOf(c.getDob()));
+        ps.setString(5, c.getEmail());
+        ps.setString(6, c.getAddress());
+        ps.setInt(7, c.getId());
+           
+        return ps.executeUpdate()>0;
+        }
+    }
 
 //    catch (SQLException e){
 //        if(e.getErrorCode() == 1062){

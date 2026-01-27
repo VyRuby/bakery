@@ -14,65 +14,87 @@
 <?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.VBox?>
 
-<BorderPane style="-fx-background-color: #EED9C4;" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.CheckInController">
+<BorderPane prefHeight="700.0" prefWidth="1100.0" style="-fx-background-color: #F6EFE6;" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.CheckInController">
 
     <!-- ================= TOP ================= -->
     <top>
-        <VBox spacing="12">
+        <VBox spacing="12" style="-fx-background-color: transparent;">
             <padding>
-                <Insets bottom="10" left="10" right="10" top="10" />
+                <Insets bottom="12" left="18" right="18" top="16" />
             </padding>
 
-            <!-- HEADER -->
-            <HBox alignment="CENTER_LEFT" prefHeight="17.0" prefWidth="846.0" spacing="12" style="-fx-padding: 10; -fx-background-color: white; -fx-background-radius: 16; -fx-border-color: #C19A6B; -fx-border-radius: 16;">
-
-                <ImageView fitHeight="56.0" fitWidth="142.0">
+            <!-- HEADER CARD -->
+            <HBox alignment="CENTER_LEFT" spacing="12" style="-fx-background-color: rgba(255,255,255,0.92);                          -fx-background-radius: 18;                          -fx-border-radius: 18;                          -fx-border-color: rgba(62,43,31,0.12);                          -fx-border-width: 1;                          -fx-padding: 12 14;">
+                <ImageView fitHeight="47.0" fitWidth="216.0" preserveRatio="true" smooth="true">
                     <image>
+                        <!-- nếu ảnh nằm trong resources/image thì dùng @/image/logo.jpeg -->
                         <Image url="@../image/logo.jpeg" />
                     </image>
                 </ImageView>
 
+                <VBox spacing="2">
+                    <Label style="-fx-font-size: 18px; -fx-font-weight: 900; -fx-text-fill: #3E2B1F;" text="CHECK IN / OUT" />
+                    <Label style="-fx-font-size: 12px; -fx-text-fill: #7A6A5E;" text="Employee attendance management" />
+                </VBox>
+
                 <Region HBox.hgrow="ALWAYS" />
 
-                <Label style="-fx-font-size: 22px;                               -fx-font-weight: bold;                               -fx-text-fill: #3E2723;" text="EMPLOYEE CHECK IN / CHECK OUT" />
-
-                <Region HBox.hgrow="ALWAYS" />
+                <Button onAction="#goBack" prefHeight="36" style="-fx-background-color: rgba(139,94,60,0.12);                                -fx-text-fill: #3E2B1F;                                -fx-font-weight: 900;                                -fx-background-radius: 12;                                -fx-padding: 0 14 0 14;                                -fx-cursor: hand;" text="← Back to Home" />
             </HBox>
 
-            <!-- FORM -->
-            <HBox alignment="CENTER_LEFT" spacing="12" style="-fx-padding: 10;                          -fx-background-color: #FAEBD7;                          -fx-background-radius: 14;                          -fx-border-color: #C19A6B;                          -fx-border-radius: 14;">
+            <!-- ACTION BAR CARD -->
+            <HBox alignment="CENTER_LEFT" spacing="12" style="-fx-background-color: rgba(255,255,255,0.92);                          -fx-background-radius: 18;                          -fx-border-radius: 18;                          -fx-border-color: rgba(62,43,31,0.12);                          -fx-border-width: 1;                          -fx-padding: 12 14;">
 
-                <Label style="-fx-font-weight:bold" text="Employee Email:" />
+                <Label style="-fx-text-fill:#5B4B40; -fx-font-weight: 900;" text="Employee Email" />
 
-                <TextField fx:id="txtEmployeeId" prefWidth="220" />
+                <TextField fx:id="txtEmployeeId" prefHeight="36" prefWidth="320" promptText="Enter employee email..." style="-fx-background-radius: 12;                                   -fx-border-radius: 12;                                   -fx-border-color: rgba(62,43,31,0.16);                                   -fx-border-width: 1;                                   -fx-padding: 0 12 0 12;" />
 
-                <Button onAction="#handleCheckIn" text="Check In" />
-                <Button onAction="#handleCheckOut" text="Check Out" />
+                <Button onAction="#handleCheckIn" prefHeight="36" style="-fx-background-color: linear-gradient(to right, #8B5E3C, #A47148);                                -fx-text-fill: white;                                -fx-font-weight: 900;                                -fx-background-radius: 12;                                -fx-padding: 0 14 0 14;                                -fx-cursor: hand;" text="Check In" />
+
+                <Button onAction="#handleCheckOut" prefHeight="36" style="-fx-background-color: rgba(139,94,60,0.12);                                -fx-text-fill: #3E2B1F;                                -fx-font-weight: 900;                                -fx-background-radius: 12;                                -fx-padding: 0 14 0 14;                                -fx-cursor: hand;" text="Check Out" />
 
                 <Region HBox.hgrow="ALWAYS" />
 
-                <!-- FILTER -->
-                <Label text="Filter Date:" />
-                <DatePicker fx:id="dpDate" onAction="#filterByDate" />
+                <Label style="-fx-text-fill:#5B4B40; -fx-font-weight: 900;" text="Filter Date" />
 
-                <Button onAction="#goBack" text="← Home" />
+                <DatePicker fx:id="dpDate" onAction="#filterByDate" style="-fx-background-radius: 12;                                    -fx-border-radius: 12;                                    -fx-border-color: rgba(62,43,31,0.16);                                    -fx-border-width: 1;" />
             </HBox>
+
         </VBox>
     </top>
 
     <!-- ================= CENTER ================= -->
     <center>
-        <TableView fx:id="tblCheckIn" style="-fx-background-color: #FAEBD7;                           -fx-border-color: #C19A6B;                           -fx-border-radius: 16;                           -fx-background-radius: 16;                           -fx-padding: 10;">
-            <columns>
-                <TableColumn fx:id="colId" prefWidth="60" text="ID" />
-                <TableColumn fx:id="colEmpId" prefWidth="120" text="Employee ID" />
-                <TableColumn fx:id="colFullName" prefWidth="180" text="Full Name" />
-                <TableColumn fx:id="colDate" prefWidth="120" text="Work Date" />
-                <TableColumn fx:id="colIn" prefWidth="110" text="Check In" />
-                <TableColumn fx:id="colOut" prefWidth="110" text="Check Out" />
-                <TableColumn fx:id="colLate" prefWidth="80" text="Late" />
-            </columns>
-        </TableView>
+        <VBox style="-fx-background-color: transparent;">
+            <padding>
+                <Insets bottom="18" left="18" right="18" top="6" />
+            </padding>
+
+            <!-- TABLE CARD -->
+            <VBox spacing="10" style="-fx-background-color: rgba(255,255,255,0.92);                          -fx-background-radius: 18;                          -fx-border-radius: 18;                          -fx-border-color: rgba(62,43,31,0.12);                          -fx-border-width: 1;">
+                <padding>
+                    <Insets bottom="14" left="14" right="14" top="14" />
+                </padding>
+
+                <HBox alignment="CENTER_LEFT" spacing="10">
+                    <Label style="-fx-font-size: 16px; -fx-font-weight: 900; -fx-text-fill:#3E2B1F;" text="Attendance Records" />
+                    <Region HBox.hgrow="ALWAYS" />
+                    <Label style="-fx-font-size: 11px; -fx-text-fill:#7A6A5E;" text="Check in, check out and late status" />
+                </HBox>
+
+                <TableView fx:id="tblCheckIn" prefHeight="520" style="-fx-background-radius: 12;                                   -fx-border-radius: 12;                                   -fx-border-color: rgba(62,43,31,0.12);                                   -fx-border-width: 1;">
+                    <columns>
+                        <TableColumn fx:id="colId" prefWidth="60" text="ID" />
+                        <TableColumn fx:id="colEmpId" prefWidth="150" text="Employee ID" />
+                        <TableColumn fx:id="colFullName" prefWidth="200" text="Full Name" />
+                        <TableColumn fx:id="colDate" prefWidth="120" text="Work Date" />
+                        <TableColumn fx:id="colIn" prefWidth="110" text="Check In" />
+                        <TableColumn fx:id="colOut" prefWidth="110" text="Check Out" />
+                        <TableColumn fx:id="colLate" prefWidth="80" text="Late" />
+                    </columns>
+                </TableView>
+            </VBox>
+        </VBox>
     </center>
 
 </BorderPane>

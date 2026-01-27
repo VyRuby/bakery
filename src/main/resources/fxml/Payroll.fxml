@@ -14,74 +14,90 @@
 <?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.VBox?>
 
-<BorderPane style="-fx-background-color: #EED9C4;" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.PayrollController">
+<BorderPane prefHeight="700.0" prefWidth="1100.0" style="-fx-background-color: #F6EFE6;" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.PayrollController">
 
     <!-- ================= TOP ================= -->
     <top>
-        <VBox spacing="12" style="-fx-background-color: #EED9C4;">
+        <VBox spacing="12" style="-fx-background-color: transparent;">
             <padding>
-                <Insets bottom="12" left="16" right="16" top="12" />
+                <Insets bottom="12" left="18" right="18" top="16" />
             </padding>
 
-            <!-- ===== HEADER ===== -->
-            <HBox alignment="CENTER_LEFT" spacing="12" style="-fx-padding: 10; -fx-background-color: white; -fx-background-radius: 16; -fx-border-color: #C19A6B; -fx-border-radius: 16; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.15), 10, 0, 0, 3);">
-
-                <ImageView fitHeight="60.0" fitWidth="129.0" preserveRatio="true">
+            <!-- ===== HEADER CARD ===== -->
+            <HBox alignment="CENTER_LEFT" spacing="12" style="-fx-background-color: rgba(255,255,255,0.92);                          -fx-background-radius: 18;                          -fx-border-radius: 18;                          -fx-border-color: rgba(62,43,31,0.12);                          -fx-border-width: 1;                          -fx-padding: 12 14;">
+                <ImageView fitHeight="50.0" fitWidth="125.0" preserveRatio="true" smooth="true">
                     <image>
                         <Image url="@../image/logo.jpeg" />
                     </image>
                 </ImageView>
 
+                <VBox spacing="2">
+                    <Label style="-fx-font-size: 18px; -fx-font-weight: 900; -fx-text-fill: #3E2B1F;" text="PAYROLL" />
+                    <Label style="-fx-font-size: 12px; -fx-text-fill: #7A6A5E;" text="Payroll Management" />
+                </VBox>
+
                 <Region HBox.hgrow="ALWAYS" />
 
-                <Label style="-fx-font-size: 22px;                               -fx-font-weight: bold;                               -fx-text-fill: #3E2723;" text="PAYROLL MANAGEMENT" />
-
-                <Region HBox.hgrow="ALWAYS" />
-
+                <Button onAction="#goBack" prefHeight="36" style="-fx-background-color: rgba(139,94,60,0.12);                                -fx-text-fill: #3E2B1F;                                -fx-font-weight: 900;                                -fx-background-radius: 12;                                -fx-padding: 0 14 0 14;                                -fx-cursor: hand;" text="← Back to Home" />
             </HBox>
 
-            <!-- ===== FILTER BAR ===== -->
-            <HBox alignment="CENTER_LEFT" spacing="14" style="-fx-padding: 10;                          -fx-background-color: #FAEBD7;                          -fx-background-radius: 14;                          -fx-border-color: #C19A6B;                          -fx-border-radius: 14;">
+            <!-- ===== FILTER CARD ===== -->
+            <HBox alignment="CENTER_LEFT" spacing="12" style="-fx-background-color: rgba(255,255,255,0.92);                          -fx-background-radius: 18;                          -fx-border-radius: 18;                          -fx-border-color: rgba(62,43,31,0.12);                          -fx-border-width: 1;                          -fx-padding: 12 14;">
 
-                <Label style="-fx-text-fill:#3E2723;                               -fx-font-weight:900;" text="Month:" />
+                <Label style="-fx-text-fill:#5B4B40; -fx-font-weight: 900;" text="Month" />
 
-                <ComboBox fx:id="cbMonth" prefWidth="110" style="-fx-background-color:#FFFDF8;                                  -fx-border-color:#C19A6B;                                  -fx-border-radius:10;                                  -fx-background-radius:10;" />
+                <ComboBox fx:id="cbMonth" prefWidth="140" style="-fx-background-radius: 12;                                  -fx-border-radius: 12;                                  -fx-border-color: rgba(62,43,31,0.16);                                  -fx-border-width: 1;" />
 
-                <Label style="-fx-text-fill:#3E2723;                               -fx-font-weight:900;" text="Year:" />
+                <Label style="-fx-text-fill:#5B4B40; -fx-font-weight: 900;" text="Year" />
 
-                <ComboBox fx:id="cbYear" prefWidth="110" style="-fx-background-color:#FFFDF8;                                  -fx-border-color:#C19A6B;                                  -fx-border-radius:10;                                  -fx-background-radius:10;" />
-                <TextField fx:id="txtSearchEmployee" prefWidth="180" promptText="Search employee..." style="-fx-background-color:#FFFDF8;                   -fx-border-color:#C19A6B;                   -fx-border-radius:10;                   -fx-background-radius:10;" />
+                <ComboBox fx:id="cbYear" prefWidth="140" style="-fx-background-radius: 12;                                  -fx-border-radius: 12;                                  -fx-border-color: rgba(62,43,31,0.16);                                  -fx-border-width: 1;" />
 
-<ComboBox fx:id="cbStatus" prefWidth="130" promptText="Status" style="-fx-background-color:#FFFDF8;                  -fx-border-color:#C19A6B;                  -fx-border-radius:10;                  -fx-background-radius:10;" />
+                <Label style="-fx-text-fill:#5B4B40; -fx-font-weight: 900;" text="Status" />
 
+                <ComboBox fx:id="cbStatus" prefWidth="160" promptText="Status" style="-fx-background-radius: 12;                                  -fx-border-radius: 12;                                  -fx-border-color: rgba(62,43,31,0.16);                                  -fx-border-width: 1;" />
 
                 <Region HBox.hgrow="ALWAYS" />
 
-                <Button onAction="#goBack" style="-fx-background-color:#5D3A24;                                -fx-text-fill:white;                                -fx-background-radius:10;                                -fx-font-weight:bold;                                -fx-cursor:hand;" text="← Home" />
+                <TextField fx:id="txtSearchEmployee" prefHeight="36" prefWidth="260" promptText="Search employee..." style="-fx-background-radius: 12;                                   -fx-border-radius: 12;                                   -fx-border-color: rgba(62,43,31,0.16);                                   -fx-border-width: 1;                                   -fx-padding: 0 12 0 12;" />
             </HBox>
+
         </VBox>
     </top>
 
     <!-- ================= CENTER ================= -->
     <center>
-        <VBox style="-fx-background-color:#EED9C4;">
+        <VBox style="-fx-background-color: transparent;">
             <padding>
-                <Insets bottom="10" left="16" right="16" top="6" />
+                <Insets bottom="18" left="18" right="18" top="6" />
             </padding>
 
-            <TableView fx:id="tblPayroll" style="-fx-background-color:#FAEBD7;                               -fx-border-color:#C19A6B;                               -fx-border-radius:14;                               -fx-background-radius:14;">
+            <!-- TABLE CARD -->
+            <VBox spacing="10" style="-fx-background-color: rgba(255,255,255,0.92);                          -fx-background-radius: 18;                          -fx-border-radius: 18;                          -fx-border-color: rgba(62,43,31,0.12);                          -fx-border-width: 1;">
+                <padding>
+                    <Insets bottom="14" left="14" right="14" top="14" />
+                </padding>
 
-                <columns>
-                    <TableColumn fx:id="colEmpId" prefWidth="110" text="Employee ID" />
-                    <TableColumn fx:id="colName" prefWidth="180" text="Full Name" />
-                    <TableColumn fx:id="colMonth" prefWidth="70" text="Month" />
-                    <TableColumn fx:id="colYear" prefWidth="70" text="Year" />
-                    <TableColumn fx:id="colWorkDays" prefWidth="90" text="Work Days" />
-                    <TableColumn fx:id="colBonus" prefWidth="120" text="Bonus" />
-                    <TableColumn fx:id="colPenalty" prefWidth="120" text="Penalty" />
-                    <TableColumn fx:id="colTotalSalary" prefWidth="150" text="Total Salary" />
-                </columns>
-            </TableView>
+                <HBox alignment="CENTER_LEFT" spacing="10">
+                    <Label style="-fx-font-size: 16px; -fx-font-weight: 900; -fx-text-fill:#3E2B1F;" text="Payroll Table" />
+                    <Region HBox.hgrow="ALWAYS" />
+                    <Label style="-fx-font-size: 11px; -fx-text-fill:#7A6A5E;" text="Filter by month, year and status" />
+                </HBox>
+
+                <TableView fx:id="tblPayroll" prefHeight="520" style="-fx-background-radius: 12;                                   -fx-border-radius: 12;                                   -fx-border-color: rgba(62,43,31,0.12);                                   -fx-border-width: 1;">
+
+                    <columns>
+                        <TableColumn fx:id="colEmpId" prefWidth="120" text="Employee ID" />
+                        <TableColumn fx:id="colName" prefWidth="190" text="Full Name" />
+                        <TableColumn fx:id="colMonth" prefWidth="80" text="Month" />
+                        <TableColumn fx:id="colYear" prefWidth="80" text="Year" />
+                        <TableColumn fx:id="colWorkDays" prefWidth="100" text="Work Days" />
+                        <TableColumn fx:id="colBonus" prefWidth="130" text="Bonus" />
+                        <TableColumn fx:id="colPenalty" prefWidth="130" text="Penalty" />
+                        <TableColumn fx:id="colTotalSalary" prefWidth="160" text="Total Salary" />
+                    </columns>
+                </TableView>
+
+            </VBox>
         </VBox>
     </center>
 

@@ -48,11 +48,15 @@ import com.itextpdf.text.*;
 import com.itextpdf.text.pdf.*;
 import java.io.FileOutputStream;
 import java.io.File;
-import org.w3c.dom.Document;
+//import org.w3c.dom.Document;
 import model.Promotion;
 import DAO_Product.PromotionDAO;
 import javafx.scene.control.Alert;
 import javafx.scene.control.TextField;
+import com.itextpdf.text.Document;
+
+
+
 /**
  * FXML Controller class
  *
@@ -175,7 +179,13 @@ public class OrderController extends BacktoHomeController implements Initializab
      ctBaked.setOnAction(e -> applyFilter());
      ctCake.setOnAction(e -> applyFilter());
      ctCookie.setOnAction(e -> applyFilter());
-        
+    
+     DateTimeFormatter dtf =DateTimeFormatter.ofPattern("dd/MM/yyyy");
+     LocalDateTime now = LocalDateTime.now();
+     dateOrder.setText(dtf.format(now));
+    
+    
+    
     }    
     
     
@@ -212,10 +222,7 @@ public class OrderController extends BacktoHomeController implements Initializab
             
         }
         
-        
     }
-    
-    
     
 private CustomerDao customerDao = new CustomerDao();
 private PromotionDAO promotionDAO = new PromotionDAO();
@@ -298,7 +305,7 @@ private PromotionDAO promotionDAO = new PromotionDAO();
         for(OrderDetailItem item : orderList){
             total += item.getTotal();
         }
-        totalOrder.setText(total + "VND");
+        totalOrder.setText(total + "USD");
     }
     private void openProductDetail(Product product){
         try{
@@ -390,17 +397,17 @@ private PromotionDAO promotionDAO = new PromotionDAO();
                     : (float) activePromo.getValue();
             float promotionPrice= originalPrice - discount;
             
-            Label oldPriceLabel= new Label(originalPrice + "VND");
+            Label oldPriceLabel= new Label(originalPrice + "USD");
             oldPriceLabel.setStyle("-fx-text-fill: gray;-fx-strike-through: true ;-fx-font-size: 10px;");
         
-           currentPriceLabel.setText(promotionPrice + "VND");
+           currentPriceLabel.setText(promotionPrice + "USD");
            currentPriceLabel.setStyle("-fx-text-fill: red ;-fx-font-weight: bold;");
            
            priceBox.getChildren().addAll(oldPriceLabel, currentPriceLabel);
            
         
         }else{
-            currentPriceLabel.setText(product.getPrice() + "VND");
+            currentPriceLabel.setText(product.getPrice() + "USD");
             priceBox.getChildren().add(currentPriceLabel);
         }
         
@@ -431,6 +438,10 @@ private PromotionDAO promotionDAO = new PromotionDAO();
         return box;
     }
     
+//    @FXML
+//    private void goBack(ActionEvent event) {
+//    }
+//    
     
     private OrderDao orderDao = new OrderDao();
     private OrderDetailDao orderDetailDao = new OrderDetailDao();
@@ -464,7 +475,7 @@ private PromotionDAO promotionDAO = new PromotionDAO();
         
         int orderId= orderDao.insertOrder(customerId, total , paymentMethod);
         if(orderId == -1){
-            System.out.println("Order fail !");
+            System.out.println("Order failt !");
             return;
         }
         
@@ -478,18 +489,34 @@ private PromotionDAO promotionDAO = new PromotionDAO();
         showAlert(Alert.AlertType.INFORMATION, "Order complete!", "Saved order !", " Invoice in : D:/Invoice_Order" + orderId +".pdf");
         
         System.out.println("order Saved !");
+        
+     
+        try{
+            String filePath = "D:/Invoice_Order"+orderId + ".pdf";
+            File pdfFile= new File(filePath);
+            
+            if(pdfFile.exists()){
+                if(pdfFile.exists()){
+                new ProcessBuilder("cmd","/c","start","",filePath).start();
+                }else{
+                    System.out.println("Not found file");
+                }
+            }
+        }catch(Exception e){
+            System.out.println("Error ! Cant open file");
+        }
+        
         loadProducts();
         orderList.clear();
         orderDetail.refresh();
-        totalOrder.setText("0 VND");
-     
-        
+        totalOrder.setText("0 USD");
     }
 
 
     
     private void exportToPDF(int orderId, String customerName, String paymentMethod, float total){
-        com.itextpdf.text.Document document = new com.itextpdf.text.Document() {};
+        com.itextpdf.text.Document document = new com.itextpdf.text.Document();
+//        Document document = new Document();
         try{
             
             String folderPath = "D:/";
@@ -497,32 +524,56 @@ private PromotionDAO promotionDAO = new PromotionDAO();
             PdfWriter.getInstance(document, new FileOutputStream(folderPath + fileName));
             document.open();
             
-            com.itextpdf.text.Font titleFont = new com.itextpdf.text.Font(com.itextpdf.text.Font.FontFamily.HELVETICA,18 ,com.itextpdf.text.Font.BOLD);
-            com.itextpdf.text.Font  boldFont= new com.itextpdf.text.Font(com.itextpdf.text.Font.FontFamily.HELVETICA, 12 , com.itextpdf.text.Font.BOLD);
+            Font titleFont = new Font(Font.FontFamily.COURIER, 18 , Font.BOLD);
+            Font normalFont = new Font (Font.FontFamily.COURIER, 11, Font.NORMAL);
+            Font boldFont = new Font(Font.FontFamily.COURIER, 11, Font.BOLD);
             
-            Paragraph title= new Paragraph("Invoice", titleFont);
-            title.setAlignment(Element.ALIGN_CENTER);
-            document.add(title);
-            document.add(new Paragraph("*****************", titleFont));
+            Paragraph header = new Paragraph("===============\n"+
+                                             "     BAKERY    \n"+
+                                             "===============\n",titleFont);
+            header.setAlignment(Element.ALIGN_CENTER);
+            document.add(header);
             
-            document.add(new Paragraph("Order ID: " + orderId));
-            document.add(new Paragraph("Customer: " + customerName));
-            document.add(new Paragraph("Date: " + dateOrder.getText()));
-            document.add(new Paragraph("Payment Method: " + paymentMethod));
-            document.add(new Paragraph(" "));
+            document.add(new Paragraph("Order ID: " + orderId, normalFont));
+            document.add(new Paragraph("Customer: " + customerName, normalFont));
+            document.add(new Paragraph("Date: " + dateOrder.getText(), normalFont));
+            document.add(new Paragraph("Payment Method: " + paymentMethod, normalFont));
+            document.add(new Paragraph("---------------"));
+           
             
-            
-            
-            
-            PdfPTable table = new PdfPTable(4);
+            PdfPTable table= new PdfPTable(3);
             table.setWidthPercentage(100);
-            table.setSpacingBefore(10f);
-            table.setSpacingAfter(10f);
+            table.setWidths(new float[]{2,1,1});
             
-            table.addCell(new Paragraph("Product Name", boldFont));
-            table.addCell(new Paragraph("Quantity", boldFont));
-            table.addCell(new Paragraph("Price", boldFont));
-            table.addCell(new Paragraph("Total", boldFont ));
+            addCellNoBorder(table, "Item", boldFont, Element.ALIGN_LEFT);
+            addCellNoBorder(table,"Qty", boldFont, Element.ALIGN_CENTER);
+            addCellNoBorder(table,"Total", boldFont, Element.ALIGN_RIGHT);
+            
+            
+            
+//            com.itextpdf.text.Font titleFont = new com.itextpdf.text.Font(com.itextpdf.text.Font.FontFamily.HELVETICA,18 ,com.itextpdf.text.Font.BOLD);
+//            com.itextpdf.text.Font  boldFont= new com.itextpdf.text.Font(com.itextpdf.text.Font.FontFamily.HELVETICA, 12 , com.itextpdf.text.Font.BOLD);
+//            
+//            Paragraph title= new Paragraph("Invoice", titleFont);
+//            title.setAlignment(Element.ALIGN_CENTER);
+//            document.add(title);
+//            document.add(new Paragraph("*****************", titleFont));
+//            
+//            document.add(new Paragraph("Order ID: " + orderId));
+//            document.add(new Paragraph("Customer: " + customerName));
+//            document.add(new Paragraph("Date: " + dateOrder.getText()));
+//            document.add(new Paragraph("Payment Method: " + paymentMethod));
+//            document.add(new Paragraph(" "));
+//            
+//            PdfPTable table = new PdfPTable(4);
+//            table.setWidthPercentage(100);
+//            table.setSpacingBefore(10f);
+//            table.setSpacingAfter(10f);
+//            
+//            table.addCell(new Paragraph("Product Name", boldFont));
+//            table.addCell(new Paragraph("Quantity", boldFont));
+//            table.addCell(new Paragraph("Price", boldFont));
+//            table.addCell(new Paragraph("Total", boldFont ));
             
             
             for(OrderDetailItem item : orderList){
@@ -530,19 +581,23 @@ private PromotionDAO promotionDAO = new PromotionDAO();
             
             if(item.getPromoID() != null){ 
                 pName +="\n(Promo: "+ item.getPromoID()+")";}
-            table.addCell(new Phrase(pName));
-            table.addCell(String.valueOf(item.getQuantity()));
-            table.addCell(item.getPrice() + "USD");
-            table.addCell(item.getTotal() + "USD");
-            
+//            table.addCell(new Phrase(pName));
+//            table.addCell(String.valueOf(item.getQuantity()));
+//            table.addCell(item.getPrice() + "VND");
+//            table.addCell(item.getTotal() + "VND");
+          addCellNoBorder(table, pName,normalFont,Element.ALIGN_LEFT);
+          addCellNoBorder(table,String.valueOf(item.getQuantity()),normalFont, Element.ALIGN_CENTER);
+          addCellNoBorder(table,String.format("%.0f VND", item.getTotal()),normalFont, Element.ALIGN_RIGHT);
             }
+            
             document.add(table);
-            document.add(new Paragraph("*****************", titleFont));
+            document.add(new Paragraph("*****************", normalFont));
+            Paragraph totalBill= new Paragraph("Total: " + total + "VND",boldFont);
+            totalBill.setAlignment(Element.ALIGN_RIGHT);
+            document.add(totalBill);
             document.add(new Paragraph("Thank You !"));
             
             document.close();
-            
-            
             
         }catch(Exception e){
             System.out.println("Error Print PDF!" + e);
@@ -608,7 +663,12 @@ private void showAlert(Alert.AlertType type, String title, String header, String
     alert.showAndWait();
 }
     
-    
+    private void addCellNoBorder(PdfPTable table, String text, Font font, int alignment){
+        PdfPCell cell= new PdfPCell(new Phrase(text,font));
+        cell.setBorder(com.itextpdf.text.Rectangle.NO_BORDER);
+        cell.setHorizontalAlignment(alignment);
+        table.addCell(cell);
+    }
 
     
 }

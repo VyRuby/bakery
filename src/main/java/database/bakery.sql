@@ -18,7 +18,10 @@ CREATE TABLE EMPLOYEE (
     Address VARCHAR(100),
     HireDate DATE,
     Position ENUM('Manager','Staff'),
-    BaseDailySalary INT,
+    BaseDailySalary DECIMAL(12,2)
+,
+
+
     Status ENUM('Active','Inactive')
 );
 
@@ -27,15 +30,11 @@ CREATE TABLE EMPLOYEE (
 -- =====================================
 INSERT INTO EMPLOYEE VALUES
 ('E01','Nguyen Hong Ngoc','1998-01-10','Female','0901','a@gmail.com','HN','2001-01-01','Manager',500000,'Active'),
-('E02','Tran Van Huy','1997-02-11','Male','0902','b@gmail.com','HCM','2020-05-12','Staff',300000,'Active'),
-('E03','Pham Quoc Anh','2001-03-12','Male','0903','c@gmail.com','DN','2019-06-15','Staff',300000,'Active'),
-('E04','Pham Thi D','1999-04-13','Female','0904','d@gmail.com','HN','2022-02-10','Staff',300000,'Active'),
-('E05','Hoang Van E','1995-05-14','Male','0905','e@gmail.com','HCM','2018-03-20','Staff',300000,'Inactive'),
-('E06','Nguyen Tu Quyen','2004-05-12','Female','0906','tuquyen@gmail.com','HN','2021-07-01','Staff',300000,'Active'),
-('E07','Vu Van G','1997-07-16','Male','0907','g@gmail.com','HN','2020-08-08','Staff',300000,'Active'),
-('E08','Dang Thi H','1996-08-17','Female','0908','h@gmail.com','HCM','2019-09-09','Staff',300000,'Active'),
-('E09','Bui Van I','1995-09-18','Male','0909','i@gmail.com','DN','2018-10-10','Staff',300000,'Active'),
-('E10','Nguyen Thi J','1999-10-19','Female','0910','j@gmail.com','HN','2022-11-11','Staff',300000,'Active');
+('E02','Tran Van Huy','1997-02-11','Male','0902','b@gmail.com','HCM','2000-05-12','Staff',300000,'Active'),
+('E03','Pham Quoc Anh','2001-03-12','Male','0903','c@gmail.com','DN','2005-06-15','Staff',300000,'Active'),
+('E04','Pham Thi D','1999-04-13','Female','0904','d@gmail.com','HN','2002-02-10','Staff',300000,'Active'),
+('E05','Hoang Van E','1995-05-14','Male','0905','e@gmail.com','HCM','2004-03-20','Staff',300000,'Inactive');
+
 
 -- =====================================
 -- CHECKIN / CHECKOUT
@@ -57,15 +56,16 @@ CREATE TABLE EMPLOYEE_CHECKIN (
 -- =====================================
 CREATE TABLE EMPLOYEE_PAYROLL (
     EmployeeID VARCHAR(10),
-    Month INT,
-    Year INT,
+        Month INT CHECK (Month BETWEEN 1 AND 12),
+    Year INT CHECK (Year >= 2000),
     WorkDays INT DEFAULT 0,
     LateEarlyDays INT DEFAULT 0,
-    Bonus INT DEFAULT 0,
-    Penalty INT DEFAULT 0,
-    TotalSalary INT DEFAULT 0,
+      Bonus DECIMAL(12,2) DEFAULT 0,
+    Penalty DECIMAL(12,2) DEFAULT 0,
+    TotalSalary DECIMAL(14,2) DEFAULT 0,
     Locked BOOLEAN DEFAULT 0,
-    PRIMARY KEY (EmployeeID, Month, Year)
+    PRIMARY KEY (EmployeeID, Month, Year),
+FOREIGN KEY (EmployeeID) REFERENCES EMPLOYEE(EmployeeID)
 );
 
 -- =====================================
@@ -139,7 +139,7 @@ END$$
 DELIMITER ;
 
 -- =====================================
--- CORE: RECALC PAYROLL
+-- CORE: RECALC PAYROLL (NEW VERSION)
 -- =====================================
 DELIMITER $$
 
@@ -179,10 +179,10 @@ BEGIN
             p.WorkDays = x.wd,
             p.LateEarlyDays = x.le,
             p.Bonus = IF(x.wd>=25,300000,0),
-            p.Penalty = x.le*200000,
+            p.Penalty = x.le*50000,
             p.TotalSalary =
                 x.wd*e.BaseDailySalary
-                - x.le*200000
+                - x.le*50000
                 + IF(x.wd>=25,300000,0)
         WHERE p.EmployeeID=pEmp
           AND p.Month=m
@@ -192,6 +192,7 @@ BEGIN
 END$$
 
 DELIMITER ;
+
 
 -- =====================================
 -- RECALC PAYROLL FOR WHOLE MONTH
@@ -303,6 +304,24 @@ BEGIN
     UPDATE EMPLOYEE_CHECKIN
     SET CheckOutTime=CURTIME()
     WHERE EmployeeID=vEmp AND WorkDate=CURDATE();
+IF NOT EXISTS (
+    SELECT 1 FROM EMPLOYEE_CHECKIN
+    WHERE EmployeeID=vEmp AND WorkDate=CURDATE()
+) THEN
+    SIGNAL SQLSTATE '45000'
+    SET MESSAGE_TEXT='Not checked in today';
+END IF;
+
+IF EXISTS (
+    SELECT 1 FROM EMPLOYEE_CHECKIN
+    WHERE EmployeeID=vEmp
+      AND WorkDate=CURDATE()
+      AND CheckOutTime IS NOT NULL
+) THEN
+    SIGNAL SQLSTATE '45000'
+    SET MESSAGE_TEXT='Already checked out today';
+END IF;
+
 END$$
 
 DELIMITER ;
@@ -332,12 +351,13 @@ BEGIN
 
         SET d='2025-06-01';
         WHILE d<='2025-12-31' DO
-            IF DAYOFWEEK(d) NOT IN (1,7) AND RAND()>0.15 THEN
+            IF DAYOFWEEK(d) <> 1 AND RAND() > 0.05 THEN
+
                 INSERT IGNORE INTO EMPLOYEE_CHECKIN
                 VALUES (
                     NULL, emp, d,
-                    ADDTIME('07:30:00',SEC_TO_TIME(RAND()*5400)),
-                    ADDTIME('16:30:00',SEC_TO_TIME(RAND()*5400)),
+                    ADDTIME('07:30:00',SEC_TO_TIME(RAND()*2000)),
+                    ADDTIME('16:30:00',SEC_TO_TIME(RAND()*2000)),
                     0,0
                 );
             END IF;
@@ -584,62 +604,7 @@ ADD COLUMN Status ENUM('Active','Inactive') NOT NULL DEFAULT 'Active';
 
 CREATE INDEX idx_product_status ON PRODUCT(Status);
 
--- =========================
--- USER & PERMISSION 
--- =========================
 
-CREATE USER IF NOT EXISTS 'a@gmail.com'@'localhost' IDENTIFIED BY '123';
-CREATE USER IF NOT EXISTS 'b@gmail.com'@'localhost' IDENTIFIED BY '123';
-
--- =========================
--- MANAGER: FULL CONTROL
--- =========================
-GRANT ALL PRIVILEGES ON bakery_db.* TO 'a@gmail.com'@'localhost';
-
--- =========================
--- STAFF (EMPLOYEE)
--- =========================
-
--- ===== EMPLOYEE INFO (READ ONLY)
-GRANT SELECT ON bakery_db.EMPLOYEE TO 'b@gmail.com'@'localhost';
-
--- ===== CHECK-IN / ATTENDANCE (READ LOG ONLY)
-GRANT SELECT ON bakery_db.EMPLOYEE_CHECKIN TO 'b@gmail.com'@'localhost';
-GRANT SELECT ON bakery_db.EMPLOYEE_ATTENDANCE_LOG TO 'b@gmail.com'@'localhost';
-
--- ===== PAYROLL (VIEW ONLY – KHÔNG ĐỤNG TABLE)
-GRANT SELECT ON bakery_db.vw_payroll TO 'b@gmail.com'@'localhost';
-
--- ===== CHECK-IN / CHECK-OUT (ONLY VIA PROCEDURE)
-GRANT EXECUTE ON PROCEDURE bakery_db.sp_CheckInByEmail TO 'b@gmail.com'@'localhost';
-GRANT EXECUTE ON PROCEDURE bakery_db.sp_CheckOutByEmail TO 'b@gmail.com'@'localhost';
-
--- ===== PRODUCT / PROMOTION (SELL VIEW)
-GRANT SELECT ON bakery_db.PRODUCT TO 'b@gmail.com'@'localhost';
-GRANT SELECT ON bakery_db.PRODUCT_CATEGORY TO 'b@gmail.com'@'localhost';
-GRANT SELECT ON bakery_db.PROMOTION TO 'b@gmail.com'@'localhost';
-GRANT SELECT ON bakery_db.PROMOTION_PRODUCT TO 'b@gmail.com'@'localhost';
-
--- ===== CUSTOMER / ORDER (STAFF ĐƯỢC CRUD)
-GRANT SELECT, INSERT, UPDATE, DELETE
-ON bakery_db.customer
-TO 'b@gmail.com'@'localhost';
-
-GRANT SELECT, INSERT, UPDATE, DELETE
-ON bakery_db.orders
-TO 'b@gmail.com'@'localhost';
-
-GRANT SELECT, INSERT, UPDATE, DELETE
-ON bakery_db.orderdetail
-TO 'b@gmail.com'@'localhost';
-
-FLUSH PRIVILEGES;
-
--- =========================
--- TEST
--- =========================
-SHOW GRANTS FOR 'a@gmail.com'@'localhost';
-SHOW GRANTS FOR 'b@gmail.com'@'localhost';
 
 
 CREATE TABLE `customer` (
@@ -1043,3 +1008,61 @@ ALTER TABLE `orders`
 ALTER TABLE `orderdetail`
   ADD CONSTRAINT `fk_order_ref` FOREIGN KEY (`OrderID`) REFERENCES `orders` (`OrderID`) ON DELETE CASCADE;
 COMMIT;
+
+-- =========================
+-- USER & PERMISSION 
+-- =========================
+
+CREATE USER IF NOT EXISTS 'a@gmail.com'@'localhost' IDENTIFIED BY '123';
+CREATE USER IF NOT EXISTS 'b@gmail.com'@'localhost' IDENTIFIED BY '123';
+
+-- =========================
+-- MANAGER: FULL CONTROL
+-- =========================
+GRANT ALL PRIVILEGES ON bakery_db.* TO 'a@gmail.com'@'localhost';
+
+-- =========================
+-- STAFF (EMPLOYEE)
+-- =========================
+
+-- ===== EMPLOYEE INFO (READ ONLY)
+GRANT SELECT ON bakery_db.EMPLOYEE TO 'b@gmail.com'@'localhost';
+
+-- ===== CHECK-IN / ATTENDANCE (READ LOG ONLY)
+GRANT SELECT ON bakery_db.EMPLOYEE_CHECKIN TO 'b@gmail.com'@'localhost';
+GRANT SELECT ON bakery_db.EMPLOYEE_ATTENDANCE_LOG TO 'b@gmail.com'@'localhost';
+
+-- ===== PAYROLL (VIEW ONLY – KHÔNG ĐỤNG TABLE)
+GRANT SELECT ON bakery_db.vw_payroll TO 'b@gmail.com'@'localhost';
+
+-- ===== CHECK-IN / CHECK-OUT (ONLY VIA PROCEDURE)
+GRANT EXECUTE ON PROCEDURE bakery_db.sp_CheckInByEmail TO 'b@gmail.com'@'localhost';
+GRANT EXECUTE ON PROCEDURE bakery_db.sp_CheckOutByEmail TO 'b@gmail.com'@'localhost';
+
+
+-- ===== PRODUCT  (SELL VIEW)
+GRANT SELECT ON bakery_db.PRODUCT TO 'b@gmail.com'@'localhost';
+GRANT SELECT ON bakery_db.PRODUCT_CATEGORY TO 'b@gmail.com'@'localhost';
+
+
+
+-- ===== CUSTOMER / ORDER (STAFF ĐƯỢC CRUD)
+GRANT SELECT, INSERT, UPDATE, DELETE
+ON bakery_db.customer
+TO 'b@gmail.com'@'localhost';
+
+GRANT SELECT, INSERT, UPDATE, DELETE
+ON bakery_db.orders
+TO 'b@gmail.com'@'localhost';
+
+GRANT SELECT, INSERT, UPDATE, DELETE
+ON bakery_db.orderdetail
+TO 'b@gmail.com'@'localhost';
+
+FLUSH PRIVILEGES;
+
+-- =========================
+-- TEST
+-- =========================
+SHOW GRANTS FOR 'a@gmail.com'@'localhost';
+SHOW GRANTS FOR 'b@gmail.com'@'localhost';

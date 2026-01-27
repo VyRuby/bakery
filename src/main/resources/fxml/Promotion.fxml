@@ -117,7 +117,7 @@
                     </columns>
                 </TableView>
 
-                <Label fx:id="lblHint" style="-fx-font-size: 11px; -fx-text-fill: #6B7280;" text="Tip: chọn 1 dòng rồi bấm Edit/Delete." />
+                <Label fx:id="lblHint" style="-fx-font-size: 11px; -fx-text-fill: #6B7280;" />
             </VBox>
         </VBox>
     </center>
