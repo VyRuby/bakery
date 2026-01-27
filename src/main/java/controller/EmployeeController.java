@@ -2,6 +2,9 @@ package controller;
 
 import model.Employee;
 import DAO_Employee.EmployeeDAO;
+import app.Session;
+import javafx.application.Platform;
+import javafx.stage.Stage;
 
 import java.net.URL;
 import java.sql.Date;
@@ -25,6 +28,7 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 public class EmployeeController extends BacktoHomeController implements Initializable {
+    
 
     // ===== TABLE =====
     @FXML private TableView<Employee> tblEmployee;
@@ -47,6 +51,22 @@ public class EmployeeController extends BacktoHomeController implements Initiali
     // ================= INITIALIZE =================
     @Override
     public void initialize(URL url, ResourceBundle rb) {
+          // ===== CHECK PERMISSION =====
+    if (Session.role == null || !Session.role.equalsIgnoreCase("Manager")) {
+
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle("Access Denied");
+        alert.setHeaderText(null);
+        alert.setContentText("You do not have permission to access Employee Management.");
+        alert.showAndWait();
+
+        Platform.runLater(() -> {
+            Stage stage = (Stage) tblEmployee.getScene().getWindow();
+            stage.close();
+        });
+
+        return;
+    }
 
         cbFilterStatus.getItems().addAll("ALL", "Active", "Inactive");
         cbFilterStatus.setValue("ALL");

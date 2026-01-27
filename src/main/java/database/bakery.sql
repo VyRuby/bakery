@@ -1039,9 +1039,11 @@ GRANT SELECT ON bakery_db.vw_payroll TO 'b@gmail.com'@'localhost';
 GRANT EXECUTE ON PROCEDURE bakery_db.sp_CheckInByEmail TO 'b@gmail.com'@'localhost';
 GRANT EXECUTE ON PROCEDURE bakery_db.sp_CheckOutByEmail TO 'b@gmail.com'@'localhost';
 
+
 -- ===== PRODUCT  (SELL VIEW)
 GRANT SELECT ON bakery_db.PRODUCT TO 'b@gmail.com'@'localhost';
 GRANT SELECT ON bakery_db.PRODUCT_CATEGORY TO 'b@gmail.com'@'localhost';
+
 
 
 -- ===== CUSTOMER / ORDER (STAFF ĐƯỢC CRUD)

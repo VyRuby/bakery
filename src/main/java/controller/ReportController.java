@@ -2,12 +2,14 @@ package controller;
 
 import DAO_Report.ReportDAO;
 import DAO_Report.ReportDAO.TopProductStat;
+import app.Session;
 import java.net.URL;
 import java.text.NumberFormat;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Locale;
 import java.util.ResourceBundle;
+import javafx.application.Platform;
 
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
@@ -18,6 +20,8 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressIndicator;
 import javafx.event.ActionEvent;
+import javafx.scene.control.Alert;
+import javafx.stage.Stage;
 
 import model.Report;
 
@@ -43,6 +47,22 @@ public class ReportController extends BacktoHomeController implements Initializa
         loadMonthlySummary();
 
         initTopProductsPie();
+          // ===== CHECK PERMISSION =====
+    if (Session.role == null || !Session.role.equalsIgnoreCase("Manager")) {
+
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle("Access Denied");
+        alert.setHeaderText(null);
+        alert.setContentText("You do not have permission to access Reports.");
+        alert.showAndWait();
+
+        Platform.runLater(() -> {
+            Stage stage = (Stage) revenueProgress.getScene().getWindow();
+            stage.close();
+        });
+
+        return; // ❗ bắt buộc
+    }
     }
 
     // ====== TOP: revenue this month ======

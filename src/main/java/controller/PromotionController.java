@@ -1,10 +1,12 @@
 package controller;
 
 import DAO_Product.PromotionDAO;
+import app.Session;
 import java.net.URL;
 import java.time.LocalTime;
 import java.util.Optional;
 import java.util.ResourceBundle;
+import javafx.application.Platform;
 
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -63,6 +65,27 @@ public class PromotionController extends BacktoHomeController implements Initial
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
+        
+      // ===== CHECK PERMISSION =====
+    if (Session.role == null || !Session.role.equalsIgnoreCase("Manager")) {
+
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle("Access Denied");
+        alert.setHeaderText(null);
+        alert.setContentText("You do not have permission to access Promotion Management.");
+        alert.showAndWait();
+
+        // đóng cửa sổ promotion
+        Platform.runLater(() -> {
+            Stage stage = (Stage) txtSearch.getScene().getWindow();
+            stage.close();
+        });
+
+        return; // ❗ BẮT BUỘC
+    }
+
+    // ===== PHẦN CÒN LẠI GIỮ NGUYÊN =====
+    System.out.println("PromotionController initialize()");
         System.out.println("PromotionController initialize()");
 
         colId.setCellValueFactory(new PropertyValueFactory<>("promoId"));
