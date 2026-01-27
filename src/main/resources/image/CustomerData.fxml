@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.DatePicker?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.RadioButton?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.ToggleGroup?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.VBox?>
+
+<BorderPane prefHeight="700.0" prefWidth="1100.0" style="-fx-background-color: #F6EFE6;" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.CustomerDataController">
+
+    <!-- TOP BAR -->
+    <top>
+        <HBox alignment="CENTER_LEFT" prefHeight="78.0" spacing="14.0" style="-fx-background-color: rgba(255,255,255,0.92);                      -fx-border-color: rgba(62,43,31,0.12);                      -fx-border-width: 0 0 1 0;">
+            <padding>
+                <Insets bottom="14" left="18" right="18" top="14" />
+            </padding>
+
+            <HBox alignment="CENTER_LEFT" prefHeight="49.0" prefWidth="286.0" spacing="10">
+                <ImageView fitHeight="17.0" fitWidth="138.0" preserveRatio="true" smooth="true">
+                    <image>
+                        <Image url="@../image/logo.jpeg" />
+                    </image>
+                </ImageView>
+
+                <VBox alignment="CENTER_LEFT" prefHeight="49.0" prefWidth="186.0" spacing="2">
+                    <Label style="-fx-font-size: 18px; -fx-font-weight: 900; -fx-text-fill: #3E2B1F;" text="GATEAUET" />
+                    <Label style="-fx-font-size: 12px; -fx-text-fill: #7A6A5E;" text="Customer Management" />
+                </VBox>
+            </HBox>
+
+            <Region HBox.hgrow="ALWAYS" />
+
+            <ImageView fitHeight="38.0" fitWidth="140.0" opacity="0.95" preserveRatio="true" smooth="true">
+                <image>
+                    <!--<Image url="@/image/top-banner.png" />-->
+                </image>
+            </ImageView>
+
+            <Region HBox.hgrow="ALWAYS" />
+
+          
+        </HBox>
+    </top>
+
+    <!-- CENTER -->
+    <center>
+        <HBox spacing="14">
+            <padding>
+                <Insets bottom="18" left="18" right="18" top="18" />
+            </padding>
+
+            <!-- LEFT SIDEBAR -->
+            <VBox prefWidth="260" spacing="12" style="-fx-background-color: rgba(255,255,255,0.92);                          -fx-background-radius: 18;                          -fx-border-radius: 18;                          -fx-border-color: rgba(62,43,31,0.12);                          -fx-border-width: 1;">
+                <padding>
+                    <Insets bottom="14" left="14" right="14" top="14" />
+                </padding>
+
+                <Label style="-fx-font-size: 18px; -fx-font-weight: 900; -fx-text-fill: #3E2B1F;" text="Customer" />
+
+                <Label style="-fx-font-size: 13px; -fx-font-weight: 900; -fx-text-fill: #5B4B40;" text="Search" />
+
+                <TextField fx:id="findtextcustomer" prefHeight="38" promptText="Search by name / phone..." style="-fx-background-radius: 12;                                   -fx-border-radius: 12;                                   -fx-border-color: rgba(62,43,31,0.16);                                   -fx-border-width: 1;                                   -fx-padding: 0 12 0 12;" />
+
+                <Separator opacity="0.6" />
+
+                <Label style="-fx-font-size: 13px; -fx-font-weight: 900; -fx-text-fill: #5B4B40;" text="Quick Action" />
+
+                <!--<Button fx:id="selectbutton" maxWidth="1.7976931348623157E308" prefHeight="40" style="-fx-background-color: rgba(139,94,60,0.12);                                -fx-text-fill: #3E2B1F;                                -fx-font-weight: 900;                                -fx-background-radius: 12;                                -fx-cursor: hand;" text="Select" />-->
+
+                <Button fx:id="cAddNew" maxWidth="1.7976931348623157E308" prefHeight="40" style="-fx-background-color: linear-gradient(to right, #8B5E3C, #A47148);                                -fx-text-fill: white;                                -fx-font-weight: 900;                                -fx-background-radius: 12;                                -fx-cursor: hand;" text="Clear" />
+
+                <Button fx:id="cDelete" maxWidth="1.7976931348623157E308" prefHeight="40" style="-fx-background-color: rgba(220,38,38,0.12);                                -fx-text-fill: #B91C1C;                                -fx-font-weight: 900;                                -fx-background-radius: 12;                                -fx-cursor: hand;" text="Delete" />
+
+                <Region VBox.vgrow="ALWAYS" />
+
+                <Button fx:id="btnBack" maxWidth="1.7976931348623157E308" onAction="#goBack" prefHeight="42" style="-fx-background-color: #8B5E3C;                                -fx-text-fill: white;                                -fx-font-weight: 900;                                -fx-background-radius: 12;                                -fx-cursor: hand;" text="← Back to Home" />
+            </VBox>
+
+            <!-- MIDDLE: LIST CARD -->
+            <VBox prefHeight="536.0" prefWidth="460.0" spacing="10" style="-fx-background-color: rgba(255,255,255,0.92);                          -fx-background-radius: 18;                          -fx-border-radius: 18;                          -fx-border-color: rgba(62,43,31,0.12);                          -fx-border-width: 1;">
+                <padding>
+                    <Insets bottom="14" left="14" right="14" top="14" />
+                </padding>
+
+                <Label style="-fx-font-size: 18px; -fx-font-weight: 900; -fx-text-fill: #3E2B1F;" text="Customer List" />
+
+                <ListView fx:id="ListCustomer" prefHeight="560" style="-fx-background-radius: 12;                                  -fx-border-radius: 12;                                  -fx-border-color: rgba(62,43,31,0.12);                                  -fx-border-width: 1;" />
+            </VBox>
+
+            <!-- RIGHT: FORM CARD -->
+            <VBox prefHeight="536.0" prefWidth="358.0" spacing="12" style="-fx-background-color: rgba(255,255,255,0.92);                          -fx-background-radius: 18;                          -fx-border-radius: 18;                          -fx-border-color: rgba(62,43,31,0.12);                          -fx-border-width: 1;">
+                <padding>
+                    <Insets bottom="14" left="14" right="14" top="14" />
+                </padding>
+
+                <Label style="-fx-font-size: 18px; -fx-font-weight: 900; -fx-text-fill: #3E2B1F;" text="Customer Information" />
+
+                <GridPane hgap="12" vgap="12">
+                    <columnConstraints>
+                        <ColumnConstraints prefWidth="120" />
+                        <ColumnConstraints />
+                    </columnConstraints>
+
+                    <rowConstraints>
+                        <RowConstraints />
+                        <RowConstraints />
+                        <RowConstraints />
+                        <RowConstraints />
+                        <RowConstraints />
+                        <RowConstraints />
+                    </rowConstraints>
+
+                    <Label style="-fx-font-weight: 900; -fx-text-fill: #5B4B40;" text="Name:" GridPane.columnIndex="0" GridPane.rowIndex="0" />
+                    <TextField fx:id="cName" prefHeight="38" style="-fx-background-radius: 12;                                       -fx-border-radius: 12;                                       -fx-border-color: rgba(62,43,31,0.16);                                       -fx-border-width: 1;                                       -fx-padding: 0 12 0 12;" GridPane.columnIndex="1" GridPane.rowIndex="0" />
+
+                    <Label style="-fx-font-weight: 900; -fx-text-fill: #5B4B40;" text="Phone:" GridPane.columnIndex="0" GridPane.rowIndex="1" />
+                    <TextField fx:id="cPhone" prefHeight="38" style="-fx-background-radius: 12;                                       -fx-border-radius: 12;                                       -fx-border-color: rgba(62,43,31,0.16);                                       -fx-border-width: 1;                                       -fx-padding: 0 12 0 12;" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+
+                    <Label style="-fx-font-weight: 900; -fx-text-fill: #5B4B40;" text="Email:" GridPane.columnIndex="0" GridPane.rowIndex="2" />
+                    <TextField fx:id="cEmail" prefHeight="38" style="-fx-background-radius: 12;                                       -fx-border-radius: 12;                                       -fx-border-color: rgba(62,43,31,0.16);                                       -fx-border-width: 1;                                       -fx-padding: 0 12 0 12;" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+
+                    <Label style="-fx-font-weight: 900; -fx-text-fill: #5B4B40;" text="Address:" GridPane.columnIndex="0" GridPane.rowIndex="3" />
+                    <TextField fx:id="cAddress" prefHeight="38" style="-fx-background-radius: 12;                                       -fx-border-radius: 12;                                       -fx-border-color: rgba(62,43,31,0.16);                                       -fx-border-width: 1;                                       -fx-padding: 0 12 0 12;" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+
+                    <Label style="-fx-font-weight: 900; -fx-text-fill: #5B4B40;" text="Gender:" GridPane.columnIndex="0" GridPane.rowIndex="4" />
+                    <HBox alignment="CENTER_LEFT" spacing="18" GridPane.columnIndex="1" GridPane.rowIndex="4">
+                        <RadioButton fx:id="cGenMale" style="-fx-text-fill:#3E2B1F; -fx-font-weight:800;" text="Male">
+                            <toggleGroup>
+                                <ToggleGroup fx:id="cGender" />
+                            </toggleGroup>
+                        </RadioButton>
+                        <RadioButton fx:id="cGenFemale" style="-fx-text-fill:#3E2B1F; -fx-font-weight:800;" text="Female" toggleGroup="$cGender" />
+                    </HBox>
+
+                    <Label style="-fx-font-weight: 900; -fx-text-fill: #5B4B40;" text="Date Of Birth:" GridPane.columnIndex="0" GridPane.rowIndex="5" />
+                    <DatePicker fx:id="cDOB" style="-fx-background-radius: 12;                                        -fx-border-radius: 12;                                        -fx-border-color: rgba(62,43,31,0.16);                                        -fx-border-width: 1;" GridPane.columnIndex="1" GridPane.rowIndex="5" />
+                </GridPane>
+
+                <Separator opacity="0.6" />
+
+                <HBox alignment="CENTER_RIGHT">
+                    <Button fx:id="cSave" onAction="#handleSaveCus" prefHeight="40" prefWidth="120" style="-fx-background-color: linear-gradient(to right, #8B5E3C, #A47148);                                    -fx-text-fill: white;                                    -fx-font-weight: 900;                                    -fx-background-radius: 12;                                    -fx-cursor: hand;" text="Save" />
+                </HBox>
+
+            </VBox>
+
+        </HBox>
+    </center>
+
+    <bottom>
+        <HBox alignment="CENTER" prefHeight="50" style="-fx-background-color: rgba(255,255,255,0.92);                      -fx-border-color: rgba(62,43,31,0.12);                      -fx-border-width: 1 0 0 0;">
+            <padding>
+                <Insets bottom="10" left="18" right="18" top="10" />
+            </padding>
+            <Label text=" " />
+        </HBox>
+    </bottom>
+
+</BorderPane>

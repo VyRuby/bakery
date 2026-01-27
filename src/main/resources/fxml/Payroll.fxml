@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.VBox?>
+
+<BorderPane prefHeight="700.0" prefWidth="1100.0"
+            style="-fx-background-color: #F6EFE6;"
+            xmlns="http://javafx.com/javafx/25"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="controller.PayrollController">
+
+    <!-- ================= TOP ================= -->
+    <top>
+        <VBox spacing="12" style="-fx-background-color: transparent;">
+            <padding>
+                <Insets bottom="12" left="18" right="18" top="16" />
+            </padding>
+
+            <!-- ===== HEADER CARD ===== -->
+            <HBox alignment="CENTER_LEFT" spacing="12"
+                  style="-fx-background-color: rgba(255,255,255,0.92);
+                         -fx-background-radius: 18;
+                         -fx-border-radius: 18;
+                         -fx-border-color: rgba(62,43,31,0.12);
+                         -fx-border-width: 1;
+                         -fx-padding: 12 14;">
+
+                <ImageView fitHeight="50" fitWidth="130" preserveRatio="true">
+                    <image>
+                        <Image url="@../image/logo.jpeg" />
+                    </image>
+                </ImageView>
+
+                <VBox spacing="2">
+                    <Label text="PAYROLL"
+                           style="-fx-font-size: 18px;
+                                  -fx-font-weight: 900;
+                                  -fx-text-fill: #3E2B1F;" />
+                    <Label text="Payroll Management"
+                           style="-fx-font-size: 12px;
+                                  -fx-text-fill: #7A6A5E;" />
+                </VBox>
+
+                <Region HBox.hgrow="ALWAYS" />
+
+                <Button text="← Back to Home"
+                        onAction="#goBack"
+                        prefHeight="36"
+                        style="-fx-background-color: rgba(139,94,60,0.12);
+                               -fx-text-fill: #3E2B1F;
+                               -fx-font-weight: 900;
+                               -fx-background-radius: 12;
+                               -fx-padding: 0 14;
+                               -fx-cursor: hand;" />
+            </HBox>
+
+            <!-- ===== FILTER CARD ===== -->
+            <HBox alignment="CENTER_LEFT" spacing="12"
+                  style="-fx-background-color: rgba(255,255,255,0.92);
+                         -fx-background-radius: 18;
+                         -fx-border-radius: 18;
+                         -fx-border-color: rgba(62,43,31,0.12);
+                         -fx-border-width: 1;
+                         -fx-padding: 12 14;">
+
+                <Label text="Month"
+                       style="-fx-text-fill:#5B4B40; -fx-font-weight: 900;" />
+
+                <ComboBox fx:id="cbMonth" prefWidth="140"
+                          style="-fx-background-radius: 12;
+                                 -fx-border-radius: 12;
+                                 -fx-border-color: rgba(62,43,31,0.16);
+                                 -fx-border-width: 1;" />
+
+                <Label text="Year"
+                       style="-fx-text-fill:#5B4B40; -fx-font-weight: 900;" />
+
+                <ComboBox fx:id="cbYear" prefWidth="140"
+                          style="-fx-background-radius: 12;
+                                 -fx-border-radius: 12;
+                                 -fx-border-color: rgba(62,43,31,0.16);
+                                 -fx-border-width: 1;" />
+
+                <Label text="Status"
+                       style="-fx-text-fill:#5B4B40; -fx-font-weight: 900;" />
+
+                <ComboBox fx:id="cbStatus" prefWidth="160" promptText="Status"
+                          style="-fx-background-radius: 12;
+                                 -fx-border-radius: 12;
+                                 -fx-border-color: rgba(62,43,31,0.16);
+                                 -fx-border-width: 1;" />
+
+                <Region HBox.hgrow="ALWAYS" />
+
+                <TextField fx:id="txtSearchEmployee"
+                           prefHeight="36"
+                           prefWidth="260"
+                           promptText="Search employee..."
+                           style="-fx-background-radius: 12;
+                                  -fx-border-radius: 12;
+                                  -fx-border-color: rgba(62,43,31,0.16);
+                                  -fx-border-width: 1;
+                                  -fx-padding: 0 12;" />
+            </HBox>
+        </VBox>
+    </top>
+
+    <!-- ================= CENTER ================= -->
+    <center>
+        <VBox style="-fx-background-color: transparent;">
+            <padding>
+                <Insets bottom="18" left="18" right="18" top="6" />
+            </padding>
+
+            <!-- ===== TABLE CARD ===== -->
+            <VBox spacing="10"
+                  style="-fx-background-color: rgba(255,255,255,0.92);
+                         -fx-background-radius: 18;
+                         -fx-border-radius: 18;
+                         -fx-border-color: rgba(62,43,31,0.12);
+                         -fx-border-width: 1;">
+                <padding>
+                    <Insets bottom="14" left="14" right="14" top="14" />
+                </padding>
+
+                <HBox alignment="CENTER_LEFT">
+                    <Label text="Payroll Table"
+                           style="-fx-font-size: 16px;
+                                  -fx-font-weight: 900;
+                                  -fx-text-fill:#3E2B1F;" />
+                    <Region HBox.hgrow="ALWAYS" />
+                    <Label text="Filter by month, year and status"
+                           style="-fx-font-size: 11px;
+                                  -fx-text-fill:#7A6A5E;" />
+                </HBox>
+
+                <TableView fx:id="tblPayroll" prefHeight="520"
+                           style="-fx-background-radius: 12;
+                                  -fx-border-radius: 12;
+                                  -fx-border-color: rgba(62,43,31,0.12);
+                                  -fx-border-width: 1;">
+
+                    <columns>
+                        <TableColumn fx:id="colEmpId" prefWidth="120" text="Employee ID" />
+                        <TableColumn fx:id="colName" prefWidth="190" text="Full Name" />
+                        <TableColumn fx:id="colMonth" prefWidth="80" text="Month" />
+                        <TableColumn fx:id="colYear" prefWidth="80" text="Year" />
+                        <TableColumn fx:id="colWorkDays" prefWidth="100" text="Work Days" />
+                        <TableColumn fx:id="colBonus" prefWidth="130" text="Bonus" />
+                        <TableColumn fx:id="colPenalty" prefWidth="130" text="Penalty" />
+                        <TableColumn fx:id="colTotalSalary" prefWidth="160" text="Total Salary" />
+                    </columns>
+                </TableView>
+            </VBox>
+        </VBox>
+    </center>
+
+</BorderPane>
