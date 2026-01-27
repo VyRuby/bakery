@@ -32,11 +32,10 @@ public class Customer {
         this.dob = dob;
     }
 
-    public Customer(int id, String phone, String name ) {
+    public Customer(int id, String name, String phone  ) {
         this.id = id;
-        this.phone = phone;
         this.name = name;
-        
+        this.phone = phone;
     }
 
     public Customer( String name,String phone,Gender gender, LocalDate dob, String email, String address,  int id  ) {

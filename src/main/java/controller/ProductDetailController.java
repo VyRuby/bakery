@@ -57,7 +57,7 @@ public class ProductDetailController implements Initializable {
         this.product = product;
         
         NameDetail.setText(product.getProductName());
-        PriceDetail.setText(finalPrice + "USD");
+        PriceDetail.setText(finalPrice + "VND");
         if(finalPrice<product.getPrice()){
             PriceDetail.setStyle("-fx-text-fill: red ; -fx-weight:bold;");
             
@@ -66,7 +66,7 @@ public class ProductDetailController implements Initializable {
         }
         
         
-        QuantityDetail.setText(product.getQuantity() + product.getUnit());
+        QuantityDetail.setText(product.getQuantity() +" " + product.getUnit());
         CategoryDetail.setText(product.getCategoryId());
         DecriptionDetail.setText(product.getDescription());
         

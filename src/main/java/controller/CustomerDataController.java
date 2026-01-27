@@ -39,8 +39,6 @@ public class CustomerDataController extends BacktoHomeController implements Init
     @FXML
     private TextField findtextcustomer;
     @FXML
-    private Button selectbutton;
-    @FXML
     private TextField cName;
     @FXML
     private TextField cPhone;
@@ -58,8 +56,6 @@ public class CustomerDataController extends BacktoHomeController implements Init
     private RadioButton cGenFemale;
     @FXML
     private Button cAddNew;
-    @FXML
-    private Button cDelete;
     @FXML
     private Button cSave;
     @FXML
@@ -92,6 +88,12 @@ public class CustomerDataController extends BacktoHomeController implements Init
             setText(c.getName()+ " - " + c.getPhone() );
         }
     }
+    });
+    
+    cPhone.textProperty().addListener((observable, oldValue, newValue)->{
+      if(!newValue.matches("\\d*")){
+          cPhone.setText(newValue.replaceAll("[^\\d]", ""));
+      }  
     });
     
     findtextcustomer.textProperty().addListener((observable,oldVable, newVable)-> {
@@ -163,28 +165,52 @@ public class CustomerDataController extends BacktoHomeController implements Init
 
     @FXML
     private void handleSaveCus(ActionEvent event) {
-        if(cName.getText().isEmpty()||cPhone.getText().isEmpty()){
+        String email = cEmail.getText().trim();
+        String phone = cPhone.getText().trim();
+        String name= cName.getText().trim();
+        if(name.isEmpty()||phone.isEmpty()){
             System.out.println("Phone and Name cant be null!");
             return ;
         }
+        
+        String emailPattern= "^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$";
+        
+        if(!email.isEmpty()&&!email.matches(emailPattern)){
+            showAlert("Error","Invalid email format!");
+            return;
+        }
+        Customer selectedCus = ListCustomer.getSelectionModel().getSelectedItem();
+        
+        int idToSave = (selectedCus !=null) ? selectedCus.getId() :0;
+        
         Customer c= new Customer(
-        cName.getText(),
-                cPhone.getText(),
+        name,
+        phone,
                 cGenMale.isSelected() ? Customer.Gender.Male : Customer.Gender.Female,
                 cDOB.getValue(),
-                cEmail.getText(),
+                email,
                 cAddress.getText(),
-                0
+                idToSave
         );
-        try{
-        boolean savecus =customerDao.insert(c);
         
-        if(savecus){
-            System.out.println("Done !");
-            
+        
+        
+        try{
+        boolean success;
+        if(idToSave >0){
+            success = customerDao.update(c);
+            if(success) showAlert("Success", "Updated !");
+        
+        }else{
+            success =customerDao.insert(c);
+            if(success){
             allCustomers.add(c);
-            ListCustomer.setItems(allCustomers);
-            
+            showAlert("Success","OK !");
+        }
+        }
+        
+        if(success){
+            allCustomers.setAll(customerDao.findAll());
             clearCustomerForm();
             
         }
@@ -196,10 +222,7 @@ public class CustomerDataController extends BacktoHomeController implements Init
             
         }else{
                 showAlert("Error", e.getMessage());
-            }
-        
-        
-        
+            }       
     }
     }
     
@@ -210,7 +233,5 @@ private void showAlert(String title, String content){
     alert.setContentText(content);
     alert.showAndWait();
 }
-    
-    
-    
+
 }
