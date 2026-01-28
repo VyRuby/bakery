@@ -12,12 +12,11 @@ public class Product {
     private String description;
     private String image;
 
-    // ✅ NEW: status (Active / Inactive)
+   
     private String status;
 
     // ===== Constructors =====
 
-    // Constructor đầy đủ (dùng cho DAO)
     public Product(String productId, String productName, String categoryId,
                    int quantity, String unit,
                    float costPrice, float price,
@@ -35,8 +34,6 @@ public class Product {
         this.image = image;
         this.status = status;
     }
-
-    // Constructor cũ (để KHÔNG vỡ code cũ)
     public Product(String productId, String productName, String categoryId,
                    int quantity, String unit,
                    float costPrice, float price,
@@ -48,8 +45,7 @@ public class Product {
              description, image,
              "Active"); // mặc định Active
     }
-
-    // Constructor rỗng
+    
     public Product() {
         this.status = "Active";
     }
@@ -141,7 +137,6 @@ public class Product {
         }
     }
 
-    // ===== Optional: toString (hiển thị đẹp trong ComboBox/ListView) =====
     @Override
     public String toString() {
         return productId + " - " + productName;

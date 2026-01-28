@@ -6,10 +6,8 @@
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.Font?>
-<?import javafx.scene.control.CheckBox?>
 
-
-<BorderPane xmlns="http://javafx.com/javafx/13"
+<BorderPane xmlns="http://javafx.com/javafx"
             xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="controller.ProductAddEditController"
             prefWidth="780" prefHeight="520"
@@ -50,32 +48,52 @@
                         <ColumnConstraints percentWidth="72"/>
                     </columnConstraints>
 
-                    <Label text="Product ID:" GridPane.rowIndex="0" GridPane.columnIndex="0"
-                           style="-fx-text-fill: #374151; -fx-font-weight: 700;"/>
+                    <!-- Product ID  -->
+                    <HBox spacing="2" alignment="CENTER_LEFT" GridPane.rowIndex="0" GridPane.columnIndex="0">
+                        <Label text="Product ID:"
+                               style="-fx-text-fill: #374151; -fx-font-weight: 700;"/>
+                        
+                    </HBox>
                     <TextField fx:id="txtId" GridPane.rowIndex="0" GridPane.columnIndex="1"
                                promptText="e.g. P01"
                                style="-fx-background-color: white; -fx-background-radius: 10; -fx-border-radius: 10; -fx-border-color: #E5E7EB;"/>
 
-                    <Label text="Name:" GridPane.rowIndex="1" GridPane.columnIndex="0"
-                           style="-fx-text-fill: #374151; -fx-font-weight: 700;"/>
+                    <!-- Name * -->
+                    <HBox spacing="2" alignment="CENTER_LEFT" GridPane.rowIndex="1" GridPane.columnIndex="0">
+                        <Label text="Name:"
+                               style="-fx-text-fill: #374151; -fx-font-weight: 700;"/>
+                        <Label text="*" style="-fx-text-fill:#C0392B; -fx-font-weight: 900;"/>
+                    </HBox>
                     <TextField fx:id="txtName" GridPane.rowIndex="1" GridPane.columnIndex="1"
                                promptText="Product name"
                                style="-fx-background-color: white; -fx-background-radius: 10; -fx-border-radius: 10; -fx-border-color: #E5E7EB;"/>
 
-                    <Label text="Category:" GridPane.rowIndex="2" GridPane.columnIndex="0"
-                           style="-fx-text-fill: #374151; -fx-font-weight: 700;"/>
+                    <!-- Category * -->
+                    <HBox spacing="2" alignment="CENTER_LEFT" GridPane.rowIndex="2" GridPane.columnIndex="0">
+                        <Label text="Category:"
+                               style="-fx-text-fill: #374151; -fx-font-weight: 700;"/>
+                        <Label text="*" style="-fx-text-fill:#C0392B; -fx-font-weight: 900;"/>
+                    </HBox>
                     <ComboBox fx:id="cbCategory" GridPane.rowIndex="2" GridPane.columnIndex="1"
                               promptText="Select category"
                               style="-fx-background-color: white; -fx-background-radius: 10; -fx-border-radius: 10; -fx-border-color: #E5E7EB;"/>
 
-                    <Label text="Unit:" GridPane.rowIndex="3" GridPane.columnIndex="0"
-                           style="-fx-text-fill: #374151; -fx-font-weight: 700;"/>
+                    <!-- Unit * -->
+                    <HBox spacing="2" alignment="CENTER_LEFT" GridPane.rowIndex="3" GridPane.columnIndex="0">
+                        <Label text="Unit:"
+                               style="-fx-text-fill: #374151; -fx-font-weight: 700;"/>
+                       
+                    </HBox>
                     <TextField fx:id="txtUnit" GridPane.rowIndex="3" GridPane.columnIndex="1"
                                promptText="piece / box / cup..."
                                style="-fx-background-color: white; -fx-background-radius: 10; -fx-border-radius: 10; -fx-border-color: #E5E7EB;"/>
 
-                    <Label text="Price:" GridPane.rowIndex="4" GridPane.columnIndex="0"
-                           style="-fx-text-fill: #374151; -fx-font-weight: 700;"/>
+                    <!-- Price * -->
+                    <HBox spacing="2" alignment="CENTER_LEFT" GridPane.rowIndex="4" GridPane.columnIndex="0">
+                        <Label text="Price:"
+                               style="-fx-text-fill: #374151; -fx-font-weight: 700;"/>
+                        <Label text="*" style="-fx-text-fill:#C0392B; -fx-font-weight: 900;"/>
+                    </HBox>
                     <TextField fx:id="txtPrice" GridPane.rowIndex="4" GridPane.columnIndex="1"
                                promptText="e.g. 150000"
                                style="-fx-background-color: white; -fx-background-radius: 10; -fx-border-radius: 10; -fx-border-color: #E5E7EB;"/>
@@ -88,9 +106,9 @@
                                style="-fx-background-color: #F3F4F6; -fx-text-fill: #111827; -fx-padding: 6 10; -fx-background-radius: 10; -fx-font-weight: 700;"/>
                         <Label text="(Quantity is managed in Import screen)"
                                style="-fx-text-fill: #6B7280; -fx-font-size: 11px;"/>
-                       
                     </HBox>
 
+                    <!-- Image path (not required) -->
                     <Label text="Image path:" GridPane.rowIndex="6" GridPane.columnIndex="0"
                            style="-fx-text-fill: #374151; -fx-font-weight: 700;"/>
                     <HBox spacing="10" GridPane.rowIndex="6" GridPane.columnIndex="1">
@@ -103,10 +121,15 @@
                     </HBox>
                 </GridPane>
 
+                <!-- Description (not required) -->
                 <Label text="Description:" style="-fx-text-fill: #374151; -fx-font-weight: 700;"/>
                 <TextArea fx:id="txtDescription" prefRowCount="5" wrapText="true"
                           promptText="Write something about this product..."
                           style="-fx-background-color: white; -fx-background-radius: 10; -fx-border-radius: 10; -fx-border-color: #E5E7EB;"/>
+
+                <!-- Required note -->
+                <Label text="(*) Required fields"
+                       style="-fx-text-fill:#7A6A5E; -fx-font-size: 11px; -fx-font-weight: 700;"/>
 
                 <Label fx:id="lblMsg" text=""
                        style="-fx-text-fill: #B91C1C; -fx-font-size: 12px;"/>

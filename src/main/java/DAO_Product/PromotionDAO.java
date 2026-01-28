@@ -36,8 +36,6 @@ public class PromotionDAO {
                         rs.getDouble("Value"),
                         rs.getString("Status")
                 );
-
-                // load productIds theo promo
                 p.setProductIds(getProductIdsByPromo(p.getPromoId(), con));
                 list.add(p);
             }
@@ -69,8 +67,6 @@ public class PromotionDAO {
                 ps.setString(6, p.getStatus());
                 ps.executeUpdate();
             }
-
-            // insert mapping PROMOTION_PRODUCT
             insertPromoProducts(p, con);
 
             con.commit();
@@ -107,10 +103,9 @@ public class PromotionDAO {
                 ps.executeUpdate();
             }
 
-            // xóa mapping cũ theo PromoID
+      
             deletePromoProducts(p.getPromoId(), con);
 
-            // insert mapping mới (nếu chọn product)
             insertPromoProducts(p, con);
 
             con.commit();
@@ -166,7 +161,7 @@ public class PromotionDAO {
             for (String pid : p.getProductIds()) {
                 psIns.setString(1, p.getPromoId());
                 psIns.setString(2, pid);
-                psIns.executeUpdate(); // nếu pid đã thuộc promo khác -> UNIQUE(ProductID) sẽ throw (đúng)
+                psIns.executeUpdate(); 
             }
         }
     }
@@ -229,7 +224,7 @@ public class PromotionDAO {
         return map;
     }
 
-    // Lấy promo active theo product (không có StartTime/EndTime)
+    // Lấy promo active theo product 
     public Promotion getActivePromoByProduct(String productId) {
 
         String sql =
@@ -263,7 +258,7 @@ public class PromotionDAO {
         return null;
     }
     
-    // ================= AUTO GENERATE PROMO ID (PR01, PR02, ...) =================
+    // ================= AUTO GEN PROMO ID =================
 public String autoPromoId() {
 
     String sql = "SELECT PromoID FROM PROMOTION WHERE PromoID LIKE 'PR%' ORDER BY PromoID DESC LIMIT 1";
@@ -275,8 +270,8 @@ public String autoPromoId() {
         int next = 1;
 
         if (rs.next()) {
-            String lastId = rs.getString("PromoID"); // VD: PR07
-            String num = lastId.substring(2);        // "07"
+            String lastId = rs.getString("PromoID"); 
+            String num = lastId.substring(2);        
             next = Integer.parseInt(num) + 1;
         }
 

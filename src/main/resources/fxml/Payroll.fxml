@@ -102,16 +102,15 @@
                                  -fx-border-width: 1;" />
 
                 <Region HBox.hgrow="ALWAYS" />
+<TextField fx:id="txtSearchEmployee"
+           prefWidth="220"
+           promptText="Search employee..."
+           style="-fx-background-radius:12;
+                  -fx-border-radius:12;
+                  -fx-border-color: rgba(62,43,31,0.16);
+                  -fx-padding:0 12;" />
 
-                <TextField fx:id="txtSearchEmployee"
-                           prefHeight="36"
-                           prefWidth="260"
-                           promptText="Search employee..."
-                           style="-fx-background-radius: 12;
-                                  -fx-border-radius: 12;
-                                  -fx-border-color: rgba(62,43,31,0.16);
-                                  -fx-border-width: 1;
-                                  -fx-padding: 0 12;" />
+                
             </HBox>
         </VBox>
     </top>

@@ -74,7 +74,6 @@ public class ProductController extends BacktoHomeController implements Initializ
     private FilteredList<Product> filteredList;
     private SortedList<Product> sortedList;
 
-    // map CategoryID -> CategoryName (đúng theo DB của bạn)
     private final Map<String, String> categoryMap = Map.of(
             "C01", "Baked",
             "C02", "Cake",
@@ -121,7 +120,7 @@ public class ProductController extends BacktoHomeController implements Initializ
         );
         cbFilter.setValue("All");
 
-        // Inactive mờ đi
+        // Inactive làm mờ
         tblProducts.setRowFactory(tv -> new TableRow<>() {
             @Override
             protected void updateItem(Product item, boolean empty) {
@@ -210,8 +209,6 @@ public class ProductController extends BacktoHomeController implements Initializ
         if (p == null) return;
 
         try {
-            // Add mới -> mặc định Active (nếu model có status)
-            // Nếu Product constructor chưa có status thì bỏ qua cũng ok.
             try {
                 p.setStatus("Active");
             } catch (Exception ignore) {}
@@ -241,7 +238,6 @@ public class ProductController extends BacktoHomeController implements Initializ
         Product updated = showProductPopup(selected);
         if (updated == null) return;
 
-        // đảm bảo quantity giữ nguyên + status giữ nguyên
         updated.setQuantity(selected.getQuantity());
         try { updated.setStatus(safeStatus(selected)); } catch (Exception ignore) {}
 
@@ -371,14 +367,13 @@ private void applyFilter() {
                 matchFilter = isActive && product.getQuantity() == 0;
                 break;
             default:
-                matchFilter = true; // All
+                matchFilter = true; 
         }
 
         return matchSearch && matchCategory && matchFilter;
     });
 }
 
-// nếu status null -> coi như Active để không crash
 private String safeStatus(Product p) {
     try {
         String s = p.getStatus();

@@ -14,7 +14,7 @@
 <?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.VBox?>
 
-<BorderPane prefHeight="700.0" prefWidth="1100.0" style="-fx-background-color: #F6F7FB;" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.PromotionController">
+<BorderPane prefHeight="700.0" prefWidth="1100.0" style="-fx-background-color: #F6F7FB;" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.PromotionController">
 
     <!-- TOP BAR -->
     <top>
@@ -39,7 +39,7 @@
 
             <Region HBox.hgrow="ALWAYS" />
 
-            <!-- Banner (optional) -->
+            <!-- Banner -->
             <ImageView fitHeight="38.0" fitWidth="140.0" opacity="0.92" preserveRatio="true">
                 <image>
                     <Image url="@image/top-banner.png" />

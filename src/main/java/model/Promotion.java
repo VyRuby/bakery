@@ -18,7 +18,6 @@ public class Promotion {
     // enum('Active','Inactive')
     private String status;
 
-    // mapping PROMOTION_PRODUCT
     private List<String> productIds = new ArrayList<>();
 
     public Promotion() {}

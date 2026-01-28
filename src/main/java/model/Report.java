@@ -58,7 +58,6 @@ public class Report {
         return profit;
     }
 
-    // ===== LOGIC =====
     private void calcProfit() {
         this.profit = this.totalRevenue - this.totalImportCost;
     }

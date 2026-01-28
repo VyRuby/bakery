@@ -358,17 +358,18 @@ public class EmployeeController extends BacktoHomeController implements Initiali
             Integer.parseInt(txtSalary.getText())
         );
 
-        if (isUpdate) {
-            dao.update(ne);
-        } else {
-            dao.insert(ne);
+      if (isUpdate) {
+    dao.update(ne);
+} else {
+    dao.insert(ne);
+}
 
-            // 🔥🔥🔥 CHỖ QUAN TRỌNG 🔥🔥🔥
-            CheckInController ctrl = ControllerRegistry.getCheckInController();
-            if (ctrl != null) {
-                ctrl.loadActiveEmployees();
-            }
-        }
+// 🔥 GỌI CHUNG
+CheckInController ctrl = ControllerRegistry.getCheckInController();
+if (ctrl != null) {
+    ctrl.loadActiveEmployees();
+}
+
 
         loadData();
         stage.close();

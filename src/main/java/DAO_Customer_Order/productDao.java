@@ -165,14 +165,11 @@ public String makeProductId() {
             String numPart = lastId.substring(2);      
             next = Integer.parseInt(numPart) + 1;
         }
-
-        // format 2 chữ số: PD01, PD02...
         if (next < 10) return "PD0" + next;
         return "PD" + next;
 
     } catch (Exception e) {
         e.printStackTrace();
-        // fallback nếu lỗi DB
         return "PD01";
     }
 }
@@ -429,7 +426,7 @@ public String makeProductId() {
             p.setProductId(rs.getString("ProductID"));
             p.setProductName(rs.getString("ProductName"));
             p.setQuantity(rs.getInt("Quantity"));
-            // set các field khác nếu có
+           
             list.add(p);
         }
     } catch (Exception e) {

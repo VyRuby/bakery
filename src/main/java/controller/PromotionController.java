@@ -84,7 +84,6 @@ public class PromotionController extends BacktoHomeController implements Initial
         return; // ❗ BẮT BUỘC
     }
 
-    // ===== PHẦN CÒN LẠI GIỮ NGUYÊN =====
     System.out.println("PromotionController initialize()");
         System.out.println("PromotionController initialize()");
 

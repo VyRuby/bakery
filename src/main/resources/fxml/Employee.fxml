@@ -55,6 +55,7 @@
 
             <Region VBox.vgrow="ALWAYS"/>
 
+            
             <VBox spacing="10"
                   style="-fx-background-color: rgba(139,94,60,0.08);
                          -fx-background-radius:16;

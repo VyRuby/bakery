@@ -88,6 +88,7 @@ CREATE TRIGGER trg_checkin_before_ins
 BEFORE INSERT ON EMPLOYEE_CHECKIN
 FOR EACH ROW
 BEGIN
+    -- không cho checkin ngày khác hôm nay (trừ khi cho phép)
     IF IFNULL(@ALLOW_PAST,0)=0 AND NEW.WorkDate <> CURDATE() THEN
         SIGNAL SQLSTATE '45000'
         SET MESSAGE_TEXT = 'Check-in only allowed for today';
@@ -97,18 +98,27 @@ BEGIN
     SET NEW.IsEarlyLeave = 0;
 END$$
 
+
 CREATE TRIGGER trg_checkin_before_upd
 BEFORE UPDATE ON EMPLOYEE_CHECKIN
 FOR EACH ROW
 BEGIN
+    -- không cho sửa ngày cũ
     IF IFNULL(@ALLOW_PAST,0)=0 AND OLD.WorkDate <> CURDATE() THEN
         SIGNAL SQLSTATE '45000'
         SET MESSAGE_TEXT = 'Cannot modify past attendance records';
     END IF;
 
+    -- luôn cập nhật Late theo giờ checkin
     SET NEW.IsLate = (NEW.CheckInTime > '08:00:00');
-    SET NEW.IsEarlyLeave =
-        (NEW.CheckOutTime IS NOT NULL AND NEW.CheckOutTime < '17:00:00');
+
+    -- CHỈ set EarlyLeave khi VỪA checkout
+    IF NEW.CheckOutTime IS NOT NULL AND OLD.CheckOutTime IS NULL THEN
+    SET NEW.IsEarlyLeave = (NEW.CheckOutTime < '17:00:00');
+ELSE
+    SET NEW.IsEarlyLeave = OLD.IsEarlyLeave;
+END IF;
+
 END$$
 
 DELIMITER ;
@@ -291,39 +301,47 @@ CREATE PROCEDURE sp_CheckOutByEmail(pEmail VARCHAR(100))
 BEGIN
     DECLARE vEmp VARCHAR(10);
 
+    -- lấy nhân viên
     SELECT EmployeeID INTO vEmp
     FROM EMPLOYEE
-    WHERE Email=pEmail AND Status='Active'
+    WHERE Email = pEmail AND Status = 'Active'
     LIMIT 1;
 
     IF vEmp IS NULL THEN
         SIGNAL SQLSTATE '45000'
-        SET MESSAGE_TEXT='Invalid email or inactive employee';
+        SET MESSAGE_TEXT = 'Invalid email or inactive employee';
     END IF;
 
-    UPDATE EMPLOYEE_CHECKIN
-    SET CheckOutTime=CURTIME()
-    WHERE EmployeeID=vEmp AND WorkDate=CURDATE();
-IF NOT EXISTS (
-    SELECT 1 FROM EMPLOYEE_CHECKIN
-    WHERE EmployeeID=vEmp AND WorkDate=CURDATE()
-) THEN
-    SIGNAL SQLSTATE '45000'
-    SET MESSAGE_TEXT='Not checked in today';
-END IF;
+    -- ❌ chưa checkin hôm nay
+    IF NOT EXISTS (
+        SELECT 1
+        FROM EMPLOYEE_CHECKIN
+        WHERE EmployeeID = vEmp
+          AND WorkDate = CURDATE()
+    ) THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'Not checked in today';
+    END IF;
 
-IF EXISTS (
-    SELECT 1 FROM EMPLOYEE_CHECKIN
-    WHERE EmployeeID=vEmp
-      AND WorkDate=CURDATE()
-      AND CheckOutTime IS NOT NULL
-) THEN
-    SIGNAL SQLSTATE '45000'
-    SET MESSAGE_TEXT='Already checked out today';
-END IF;
+    -- ❌ đã checkout rồi
+    IF EXISTS (
+        SELECT 1
+        FROM EMPLOYEE_CHECKIN
+        WHERE EmployeeID = vEmp
+          AND WorkDate = CURDATE()
+          AND CheckOutTime IS NOT NULL
+    ) THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'Already checked out today';
+    END IF;
+
+    -- ✅ hợp lệ → checkout
+    UPDATE EMPLOYEE_CHECKIN
+    SET CheckOutTime = CURTIME()
+    WHERE EmployeeID = vEmp
+      AND WorkDate = CURDATE();
 
 END$$
-
 DELIMITER ;
 
 -- =====================================
@@ -479,6 +497,9 @@ CREATE INDEX idx_pp_promo   ON PROMOTION_PRODUCT(PromoID);
 ALTER TABLE PRODUCT
 ADD CONSTRAINT uq_product_name UNIQUE (ProductName);
 
+ALTER TABLE PROMOTION
+ADD COLUMN CreatedAt DATETIME DEFAULT CURRENT_TIMESTAMP;
+
 -- ===== CATEGORY =====
 INSERT INTO PRODUCT_CATEGORY (CategoryID, CategoryName) VALUES
 ('C01', 'Cake'),
@@ -501,7 +522,7 @@ INSERT INTO PRODUCT (ProductID, ProductName, CategoryID, Quantity, Unit, Price, 
 ('PD12', 'Earl Grey Financier', 'C02', 16, 'pack', 48000, '', '');
 
 
--- ===== PROMOTION (phải có StartTime/EndTime) =====
+-- ===== PROMOTION =====
 INSERT INTO PROMOTION
 (PromoID, PromoName, Description, PromoType, Value, Status)
 VALUES
@@ -570,7 +591,7 @@ INSERT IGNORE INTO SYSTEM_CONFIG (ConfigKey, ConfigValue)
 VALUES ('LAST_RESET_DATE', '2000-01-01');
 
 
--- IMPORT sample (1 lần nhập)
+-- IMPORT sample 
 INSERT INTO IMPORT (ImportID, Note) VALUES
 ('IM001', 'Morning restock');
 

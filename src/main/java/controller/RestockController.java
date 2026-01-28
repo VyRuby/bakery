@@ -24,7 +24,7 @@ public class RestockController {
     private final productDao dao = new productDao();
     private final ObservableList<RestockItem> restockList = FXCollections.observableArrayList();
 
-    // Nếu null -> tạo mới dòng trong list, nếu != null -> đang sửa dòng đó
+
     private RestockItem editingItem = null;
 
     // 1 popup = 1 ImportID
@@ -33,12 +33,11 @@ public class RestockController {
     @FXML
     public void initialize() {
 
-        // ===== 1) Tạo ImportID cho cả popup + tạo IMPORT header 1 lần =====
+        // ===== Tạo ImportID cho cả popup + tạo IMPORT header 1 lần =====
         currentImportId = dao.genImportId();
         dao.createImportHeader(currentImportId);
         lblMsg.setText("ImportID: " + currentImportId);
 
-        // ===== 2) Load products vào ComboBox =====
         cbProduct.setItems(FXCollections.observableArrayList(dao.findAll()));
         cbProduct.setConverter(new StringConverter<>() {
             @Override
@@ -49,17 +48,15 @@ public class RestockController {
             public Product fromString(String s) { return null; }
         });
 
-        // ===== 3) Spinner qty =====
         spQty.setValueFactory(new IntegerSpinnerValueFactory(1, 100000, 1));
 
-        // ===== 4) ListView =====
         lvProducts.setItems(restockList);
 
-        // ===== 5) Chặn nhập chữ cho Cost Price =====
+        // =====Chặn nhập chữ cho Cost Price =====
         UnaryOperator<TextFormatter.Change> filter = change -> {
             String newText = change.getControlNewText();
 
-            // cho phép rỗng (user xoá)
+ 
             if (newText.isEmpty()) return change;
 
             // cho phép số và tối đa 2 chữ số thập phân
@@ -69,13 +66,12 @@ public class RestockController {
         };
         txtCostPrice.setTextFormatter(new TextFormatter<>(filter));
 
-        // ===== 6) Click dòng trong list -> đổ dữ liệu lên form để sửa =====
         lvProducts.getSelectionModel().selectedItemProperty().addListener((obs, oldVal, newVal) -> {
             if (newVal == null) return;
 
             editingItem = newVal;
 
-            // set combobox theo productId
+
             Product p = cbProduct.getItems().stream()
                     .filter(x -> x.getProductId().equals(newVal.getProductId()))
                     .findFirst()
@@ -88,7 +84,7 @@ public class RestockController {
             lblMsg.setText("Editing: " + newVal.getProductId() + " (IM: " + currentImportId + ")");
         });
 
-        // ===== 7) Tự fill costPrice khi chọn product (chỉ khi không edit) =====
+        // ===== Tự fill costPrice khi chọn product =====
         cbProduct.valueProperty().addListener((obs, oldProduct, newProduct) -> {
             if (newProduct == null) return;
             if (editingItem == null) {
@@ -131,17 +127,15 @@ public class RestockController {
         }
 
         try {
-            // ===== luôn dùng ImportID của popup =====
+
             String importId = currentImportId;
             String productId = p.getProductId();
 
-            // 1) upsert IMPORT_DETAIL (cùng importId)
             dao.upsertImportDetail(importId, productId, qty, cost);
 
-            // 2) update PRODUCT (SET quantity, không cộng)
+            // không cộng dồn
             dao.updateProductSetQuantity(productId, qty, cost);
 
-            // 3) update listview
             if (editingItem == null) {
                 RestockItem item = new RestockItem(importId, productId, p.getProductName(), qty, cost);
                 restockList.add(0, item);
@@ -163,7 +157,6 @@ public class RestockController {
 
     @FXML
     private void onClose() {
-        // Nếu không có sản phẩm nào trong popup → xoá IMPORT rỗng
         if (restockList.isEmpty() && currentImportId != null) {
             try {
                 dao.deleteImportIfEmpty(currentImportId);

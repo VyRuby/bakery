@@ -242,7 +242,7 @@ public class PromoAddEditController {
             lblMsg.setText("Value must be numeric.");
             return;
         }
-        if (value < 0) { lblMsg.setText("Value must be >= 0"); return; }
+        if (value < 5) { lblMsg.setText("Value must be >= 5"); return; }
         if ("percent".equals(type) && value > 100) { lblMsg.setText("Percent must be <= 100"); return; }
 
         String status = cbStatus.getValue();

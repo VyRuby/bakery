@@ -94,35 +94,34 @@ private final Map<String, String> nameToId = Map.of(
         cbCategory.getItems().setAll("Baked", "Cake", "Cookie");
     }    
     
-   @FXML
+  @FXML
 private void handleSave(ActionEvent event) {
     try {
         lblMsg.setText("");
 
-        String id = txtId.getText().trim().toUpperCase();
-        String name = txtName.getText().trim();
+        String id = txtId.getText() == null ? "" : txtId.getText().trim().toUpperCase();
+        String name = txtName.getText() == null ? "" : txtName.getText().trim();
 
         String categoryName = cbCategory.getValue();
         String categoryId = nameToId.getOrDefault(categoryName, categoryName);
 
-        String unit = txtUnit.getText().trim();
-        String image = txtImage.getText().trim();
-        String desc = txtDescription.getText().trim();
+        String unit = txtUnit.getText() == null ? "" : txtUnit.getText().trim();
+        String image = txtImage.getText() == null ? "" : txtImage.getText().trim();
+        String desc = txtDescription.getText() == null ? "" : txtDescription.getText().trim();
 
-        // validate rỗng
+        // ===== validate rỗng =====
         if (id.isEmpty() || name.isEmpty() || categoryId == null || categoryId.isBlank()) {
             lblMsg.setText("Please input Id, Name and choose Category.");
             return;
         }
 
-        // validate format
+        // ===== validate format ID =====
         if (!id.matches("^PD\\d{2}$")) {
             lblMsg.setText("Product ID must be in format PD00 (e.g. PD01).");
             return;
         }
 
-
-        // CHECK TRÙNG TÊN (ADD/EDIT)
+        // ===== CHECK TRÙNG TÊN (ADD/EDIT) =====
         productDao dao = new productDao();
         if (editingProduct == null) { // ADD
             if (dao.existsName(name)) {
@@ -136,28 +135,41 @@ private void handleSave(ActionEvent event) {
             }
         }
 
-        float price = Float.parseFloat(txtPrice.getText().trim());
+        // ===== VALIDATE PRICE: phải là số & > 0 =====
+        String priceText = txtPrice.getText() == null ? "" : txtPrice.getText().trim();
+        if (priceText.isEmpty()) {
+            lblMsg.setText("Price is required.");
+            return;
+        }
 
-        float costPrice = (editingProduct != null)
-                ? editingProduct.getCostPrice()
-                : 0f;
+        float price;
+        try {
+            price = Float.parseFloat(priceText);
+        } catch (NumberFormatException e) {
+            lblMsg.setText("Price must be a valid number.");
+            return;
+        }
 
-        int quantity = (editingProduct != null)
-                ? editingProduct.getQuantity()
-                : 0;
+        if (price <= 0) {
+            lblMsg.setText("Price must be greater than 0.");
+            return;
+        }
+
+      
+        float costPrice = (editingProduct != null) ? editingProduct.getCostPrice() : 0f;
+        int quantity = (editingProduct != null) ? editingProduct.getQuantity() : 0;
 
         Product p = new Product(id, name, categoryId, quantity, unit, costPrice, price, desc, image);
         result = p;
 
         ((Stage) btnSave.getScene().getWindow()).close();
 
-    } catch (NumberFormatException e) {
-        lblMsg.setText("Price is invalid.");
     } catch (Exception e) {
         lblMsg.setText("Error when saving into database.");
         e.printStackTrace();
     }
 }
+
 
 @FXML
 private void onCancel(ActionEvent event) {
@@ -237,8 +249,8 @@ private void onBrowseImage(ActionEvent event) {
 
     }
 
-    private Product editingProduct; // null = Add, != null = Edit
-    private Product result;         // product trả về cho controller cha
+    private Product editingProduct; 
+    private Product result;         
   
     //SETMODE
     public void setMode(Product product) {

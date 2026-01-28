@@ -34,8 +34,8 @@ public class ReportController extends BacktoHomeController implements Initializa
     @FXML private BarChart<String, Number> chartBottom;
 
     // pie chart controls
-    @FXML private ComboBox<String> cbTopMode;     // Month | Quarter
-    @FXML private ComboBox<String> cbTopPeriod;   // 2026-01 | 2026-Q1
+    @FXML private ComboBox<String> cbTopMode;   
+    @FXML private ComboBox<String> cbTopPeriod;   
     @FXML private PieChart pieTopProducts;
 
     private final ReportDAO dao = new ReportDAO();
@@ -87,7 +87,7 @@ public class ReportController extends BacktoHomeController implements Initializa
 
             lbRevenue.setText(formatVND(revenue));
 
-            // ProgressIndicator: nếu bạn không có target -> cho full khi có doanh thu
+          
             revenueProgress.setProgress(revenue > 0 ? 1.0 : 0.0);
 
         } catch (Exception e) {
@@ -104,7 +104,7 @@ public class ReportController extends BacktoHomeController implements Initializa
 
         List<Report> list = dao.revenueByWeek();
 
-        // ✅ chỉ lấy 12 tuần gần nhất
+   
         int n = 12;
         if (list.size() > n) {
             list = list.subList(list.size() - n, list.size());
@@ -118,7 +118,7 @@ public class ReportController extends BacktoHomeController implements Initializa
         }
         chartGrowth.getData().add(s);
 
-        // ✅ giảm rối: xoay label + bỏ symbol
+      
         CategoryAxis x = (CategoryAxis) chartGrowth.getXAxis();
         x.setTickLabelRotation(45);
 
@@ -174,7 +174,7 @@ public class ReportController extends BacktoHomeController implements Initializa
             cbTopPeriod.setItems(FXCollections.observableArrayList(periods));
 
             if (!periods.isEmpty()) {
-                cbTopPeriod.getSelectionModel().select(0); // chọn period mới nhất
+                cbTopPeriod.getSelectionModel().select(0); 
             } else {
                 pieTopProducts.setData(FXCollections.observableArrayList());
             }
@@ -207,12 +207,10 @@ public class ReportController extends BacktoHomeController implements Initializa
         }
 
         pieTopProducts.setData(data);
-
-        // ✅ luôn hiện legend + label (label có thể bị ẩn khi nhỏ, tooltip sẽ chắc chắn có)
         pieTopProducts.setLegendVisible(true);
         pieTopProducts.setLabelsVisible(true);
 
-        // ✅ tooltip cho từng lát
+ 
         for (PieChart.Data d : pieTopProducts.getData()) {
             javafx.scene.control.Tooltip.install(d.getNode(), new javafx.scene.control.Tooltip(d.getName()));
         }
