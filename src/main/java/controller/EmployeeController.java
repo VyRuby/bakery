@@ -2,6 +2,7 @@ package controller;
 
 import model.Employee;
 import DAO_Employee.EmployeeDAO;
+import app.App;
 import app.Session;
 import javafx.application.Platform;
 import javafx.stage.Stage;
@@ -61,11 +62,14 @@ public class EmployeeController extends BacktoHomeController implements Initiali
         alert.showAndWait();
 
         Platform.runLater(() -> {
-            Stage stage = (Stage) tblEmployee.getScene().getWindow();
-            stage.close();
-        });
+        try {
+            App.setRoot("Home"); // quay về menu
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    });
 
-        return;
+    return;
     }
 
         cbFilterStatus.getItems().addAll("ALL", "Active", "Inactive");

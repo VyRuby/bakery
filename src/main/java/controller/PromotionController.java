@@ -1,6 +1,7 @@
 package controller;
 
 import DAO_Product.PromotionDAO;
+import app.App;
 import app.Session;
 import java.net.URL;
 import java.time.LocalTime;
@@ -75,15 +76,18 @@ public class PromotionController extends BacktoHomeController implements Initial
         alert.setContentText("You do not have permission to access Promotion Management.");
         alert.showAndWait();
 
-        // đóng cửa sổ promotion
-        Platform.runLater(() -> {
-            Stage stage = (Stage) txtSearch.getScene().getWindow();
-            stage.close();
-        });
+       Platform.runLater(() -> {
+        try {
+            App.setRoot("Home"); // quay về menu
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    });
 
-        return; // ❗ BẮT BUỘC
+    return;
     }
 
+    // ===== PHẦN CÒN LẠI GIỮ NGUYÊN =====
     System.out.println("PromotionController initialize()");
         System.out.println("PromotionController initialize()");
 

@@ -2,6 +2,7 @@ package controller;
 
 import DAO_Report.ReportDAO;
 import DAO_Report.ReportDAO.TopProductStat;
+import app.App;
 import app.Session;
 import java.net.URL;
 import java.text.NumberFormat;
@@ -34,8 +35,8 @@ public class ReportController extends BacktoHomeController implements Initializa
     @FXML private BarChart<String, Number> chartBottom;
 
     // pie chart controls
-    @FXML private ComboBox<String> cbTopMode;   
-    @FXML private ComboBox<String> cbTopPeriod;   
+    @FXML private ComboBox<String> cbTopMode;     // Month | Quarter
+    @FXML private ComboBox<String> cbTopPeriod;   // 2026-01 | 2026-Q1
     @FXML private PieChart pieTopProducts;
 
     private final ReportDAO dao = new ReportDAO();
@@ -57,11 +58,14 @@ public class ReportController extends BacktoHomeController implements Initializa
         alert.showAndWait();
 
         Platform.runLater(() -> {
-            Stage stage = (Stage) revenueProgress.getScene().getWindow();
-            stage.close();
-        });
+        try {
+            App.setRoot("Home"); // quay về menu
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    });
 
-        return; // ❗ bắt buộc
+    return;
     }
     }
 
@@ -87,7 +91,7 @@ public class ReportController extends BacktoHomeController implements Initializa
 
             lbRevenue.setText(formatVND(revenue));
 
-          
+         
             revenueProgress.setProgress(revenue > 0 ? 1.0 : 0.0);
 
         } catch (Exception e) {
@@ -104,7 +108,6 @@ public class ReportController extends BacktoHomeController implements Initializa
 
         List<Report> list = dao.revenueByWeek();
 
-   
         int n = 12;
         if (list.size() > n) {
             list = list.subList(list.size() - n, list.size());
@@ -118,7 +121,6 @@ public class ReportController extends BacktoHomeController implements Initializa
         }
         chartGrowth.getData().add(s);
 
-      
         CategoryAxis x = (CategoryAxis) chartGrowth.getXAxis();
         x.setTickLabelRotation(45);
 
@@ -174,7 +176,7 @@ public class ReportController extends BacktoHomeController implements Initializa
             cbTopPeriod.setItems(FXCollections.observableArrayList(periods));
 
             if (!periods.isEmpty()) {
-                cbTopPeriod.getSelectionModel().select(0); 
+                cbTopPeriod.getSelectionModel().select(0); // chọn period mới nhất
             } else {
                 pieTopProducts.setData(FXCollections.observableArrayList());
             }
@@ -207,10 +209,12 @@ public class ReportController extends BacktoHomeController implements Initializa
         }
 
         pieTopProducts.setData(data);
+
+      
         pieTopProducts.setLegendVisible(true);
         pieTopProducts.setLabelsVisible(true);
 
- 
+      
         for (PieChart.Data d : pieTopProducts.getData()) {
             javafx.scene.control.Tooltip.install(d.getNode(), new javafx.scene.control.Tooltip(d.getName()));
         }
