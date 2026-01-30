@@ -116,6 +116,10 @@ public class CheckInController extends BacktoHomeController implements Initializ
             }
 
             dao.checkInByEmail(emp.getEmail());
+               PayrollController payrollCtrl = ControllerRegistry.getPayrollController();
+        if (payrollCtrl != null) {
+            payrollCtrl.reload();
+        }
             refreshAfterAction();
             alertInfo("Check-In successful!");
 
@@ -138,6 +142,10 @@ public class CheckInController extends BacktoHomeController implements Initializ
             }
 
             dao.checkOutByEmail(emp.getEmail());
+               PayrollController payrollCtrl = ControllerRegistry.getPayrollController();
+        if (payrollCtrl != null) {
+            payrollCtrl.reload();
+        }
             refreshAfterAction();
             alertInfo("Check-Out successful!");
 

@@ -305,7 +305,7 @@ private PromotionDAO promotionDAO = new PromotionDAO();
         for(OrderDetailItem item : orderList){
             total += item.getTotal();
         }
-        totalOrder.setText(total + "USD");
+        totalOrder.setText(total + "VND");
     }
     private void openProductDetail(Product product){
         try{
@@ -397,17 +397,17 @@ private PromotionDAO promotionDAO = new PromotionDAO();
                     : (float) activePromo.getValue();
             float promotionPrice= originalPrice - discount;
             
-            Label oldPriceLabel= new Label(originalPrice + "USD");
+            Label oldPriceLabel= new Label(originalPrice + "VND");
             oldPriceLabel.setStyle("-fx-text-fill: gray;-fx-strike-through: true ;-fx-font-size: 10px;");
         
-           currentPriceLabel.setText(promotionPrice + "USD");
+           currentPriceLabel.setText(promotionPrice + "VND");
            currentPriceLabel.setStyle("-fx-text-fill: red ;-fx-font-weight: bold;");
            
            priceBox.getChildren().addAll(oldPriceLabel, currentPriceLabel);
            
         
         }else{
-            currentPriceLabel.setText(product.getPrice() + "USD");
+            currentPriceLabel.setText(product.getPrice() + "VND");
             priceBox.getChildren().add(currentPriceLabel);
         }
         
@@ -438,10 +438,7 @@ private PromotionDAO promotionDAO = new PromotionDAO();
         return box;
     }
     
-//    @FXML
-//    private void goBack(ActionEvent event) {
-//    }
-//    
+   
     
     private OrderDao orderDao = new OrderDao();
     private OrderDetailDao orderDetailDao = new OrderDetailDao();

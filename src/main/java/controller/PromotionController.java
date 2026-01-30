@@ -117,7 +117,7 @@ public class PromotionController extends BacktoHomeController implements Initial
         tblPromotions.setItems(sortedList);
 
    
-        cbFilter.getItems().setAll("All", "Active", "Inactive", "Upcoming", "Expired");
+        cbFilter.getItems().setAll("All", "Active", "Inactive");
         cbFilter.setValue("All");
 
         applyFilter();

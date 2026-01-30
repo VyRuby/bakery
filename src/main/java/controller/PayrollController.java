@@ -37,6 +37,8 @@ public class PayrollController extends BacktoHomeController implements Initializ
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
+        
+    ControllerRegistry.setPayrollController(this);
         initTable();
         initFilter();
         initExtraFilter();
@@ -64,7 +66,7 @@ public class PayrollController extends BacktoHomeController implements Initializ
         cbStatus.setOnAction(e -> applyFilter());
     }
 
-    private void reload() {
+    public void reload() {
         int month = Integer.parseInt(cbMonth.getValue());
         int year = Integer.parseInt(cbYear.getValue());
 
@@ -81,28 +83,47 @@ public class PayrollController extends BacktoHomeController implements Initializ
     }
 
     private void applyFilter() {
-        String keyword = txtSearchEmployee.getText() == null ? "" :
-                txtSearchEmployee.getText().toLowerCase();
+    String keyword = txtSearchEmployee.getText() == null ? "" :
+            txtSearchEmployee.getText().toLowerCase();
 
-        String status = cbStatus.getValue();
+    String status = cbStatus.getValue();
 
-        filteredData.setPredicate(p -> {
+    filteredData.setPredicate(p -> {
 
-            boolean matchEmp =
-                    p.getEmployeeID().toLowerCase().contains(keyword) ||
-                    p.getFullName().toLowerCase().contains(keyword);
+        boolean matchEmp =
+                p.getEmployeeID().toLowerCase().contains(keyword) ||
+                p.getFullName().toLowerCase().contains(keyword);
 
-            boolean matchStatus = switch (status) {
-                case "Bonus" -> p.getBonus().compareTo(BigDecimal.ZERO) > 0;
-                case "Penalty" -> p.getPenalty().compareTo(BigDecimal.ZERO) > 0;
-                case "Normal" -> p.getBonus().compareTo(BigDecimal.ZERO) == 0
-                              && p.getPenalty().compareTo(BigDecimal.ZERO) == 0;
-                default -> true;
-            };
+        // ===== FIX NULL TẠI ĐÂY =====
+        BigDecimal bonus = p.getBonus();
+        if (bonus == null) bonus = BigDecimal.ZERO;
 
-            return matchEmp && matchStatus;
-        });
-    }
+        BigDecimal penalty = p.getPenalty();
+        if (penalty == null) penalty = BigDecimal.ZERO;
+        // ===========================
+
+        boolean matchStatus = true;
+
+        if (status != null) {
+            switch (status) {
+                case "Bonus":
+                    matchStatus = bonus.compareTo(BigDecimal.ZERO) > 0;
+                    break;
+                case "Penalty":
+                    matchStatus = penalty.compareTo(BigDecimal.ZERO) > 0;
+                    break;
+                case "Normal":
+                    matchStatus =
+                            bonus.compareTo(BigDecimal.ZERO) == 0 &&
+                            penalty.compareTo(BigDecimal.ZERO) == 0;
+                    break;
+            }
+        }
+
+        return matchEmp && matchStatus;
+    });
+}
+
 
     private void initTable() {
 

@@ -172,17 +172,25 @@ BEGIN
         UPDATE EMPLOYEE_PAYROLL p
         JOIN (
             SELECT
-                COUNT(*) wd,
-                SUM(
-                    CASE
-                        WHEN IsLate=1 OR IsEarlyLeave=1 THEN 1
-                        ELSE 0
-                    END
-                ) le
-            FROM EMPLOYEE_CHECKIN
-            WHERE EmployeeID=pEmp
-              AND MONTH(WorkDate)=m
-              AND YEAR(WorkDate)=y
+    SUM(
+        CASE
+            WHEN CheckOutTime IS NOT NULL THEN 1
+            ELSE 0
+        END
+    ) wd,
+    SUM(
+        CASE
+            WHEN CheckOutTime IS NOT NULL
+             AND (IsLate=1 OR IsEarlyLeave=1)
+            THEN 1
+            ELSE 0
+        END
+    ) le
+FROM EMPLOYEE_CHECKIN
+WHERE EmployeeID=pEmp
+  AND MONTH(WorkDate)=m
+  AND YEAR(WorkDate)=y
+
         ) x
         JOIN EMPLOYEE e ON e.EmployeeID=pEmp
         SET
